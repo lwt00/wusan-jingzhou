@@ -263,7 +263,7 @@
     particle.el.classList.add('absorbing');
     setTimeout(() => removeParticle(particle), 280);
     state.knowledgeActive = false;
-    openQuiz(abilityConfigs[abilitySequence[state.nextKnowledgeIndex]]);
+    openQuiz(quizData[state.nextKnowledgeIndex]);
   }
 
   function updatePlayer(delta, width, height) {
@@ -336,46 +336,33 @@
     }
   }
 
-  function openQuiz(config) {
+  function openQuiz(data) {
     state.paused = true;
-    state.activeQuiz = {
-      config,
-      questions: shuffle(questionBanks[config.id]).slice(0, 4),
-      index: 0,
-      correctCount: 0,
-      answered: false
-    };
+    state.activeQuiz = data;
     state.selectedOption = null;
     state.quizResolved = false;
     state.quizSuccess = false;
-    renderQuestion();
-    quizBackdrop.classList.add('visible');
-    quizBackdrop.setAttribute('aria-hidden', 'false');
-  }
-
-  function renderQuestion() {
-    const quiz = state.activeQuiz;
-    const question = quiz.questions[quiz.index];
-    quizTag.textContent = quiz.config.tag;
-    quizProgress.textContent = `${String(quiz.index + 1).padStart(2, '0')} / 04`;
-    quizTitle.textContent = question.title;
-    quizContext.textContent = quiz.config.context;
+    quizTag.textContent = data.tag;
+    quizProgress.textContent = `${String(state.nextKnowledgeIndex + 1).padStart(2, '0')} / 03`;
+    quizTitle.textContent = data.title;
+    quizContext.textContent = data.context;
     quizFeedback.textContent = '';
     quizFeedback.className = 'quiz-feedback';
     quizContinue.textContent = '确认答案';
     quizContinue.disabled = true;
     quizOptions.innerHTML = '';
-    question.options.forEach((option, index) => {
+    data.options.forEach((option, index) => {
       const button = document.createElement('button');
       button.className = 'quiz-option';
       button.innerHTML = `<span class="option-letter">${String.fromCharCode(65 + index)}</span><span>${option}</span>`;
       button.addEventListener('click', () => selectOption(index));
       quizOptions.appendChild(button);
     });
+    quizBackdrop.classList.add('visible');
+    quizBackdrop.setAttribute('aria-hidden', 'false');
   }
 
   function selectOption(index) {
-    if (!state.activeQuiz || state.activeQuiz.answered) return;
     state.selectedOption = index;
     [...quizOptions.children].forEach((option, optionIndex) => option.classList.toggle('selected', optionIndex === index));
     quizContinue.disabled = false;
@@ -383,11 +370,9 @@
   }
 
   function submitQuiz() {
-    if (state.selectedOption === null || !state.activeQuiz || state.activeQuiz.answered) return;
-    const quiz = state.activeQuiz;
-    const data = quiz.questions[quiz.index];
+    if (state.selectedOption === null || !state.activeQuiz) return;
+    const data = state.activeQuiz;
     const options = [...quizOptions.children];
-    quiz.answered = true;
     if (state.selectedOption !== data.answer) {
       options[state.selectedOption].classList.remove('selected');
       options[state.selectedOption].classList.add('wrong');
@@ -396,77 +381,20 @@
       quizFeedback.className = 'quiz-feedback error';
       quizFeedback.innerHTML = `回答错误。正确答案是 <strong>${String.fromCharCode(65 + data.answer)}. ${data.options[data.answer]}</strong>。<br>${data.explanation}<br><strong>惩罚：雾霾生成速度提高 20%</strong>`;
       state.spawnInterval = Math.max(520, state.spawnInterval * .8);
-      quizContinue.textContent = quiz.index === 3 ? '查看结果' : '下一题';
+      quizContinue.textContent = '继续净化';
       quizContinue.disabled = false;
       state.selectedOption = null;
       return;
     }
     options[data.answer].classList.remove('selected');
     options[data.answer].classList.add('correct');
-    quiz.correctCount += 1;
     quizFeedback.className = 'quiz-feedback success';
-    quizFeedback.innerHTML = `回答正确。${data.explanation}`;
+    quizFeedback.innerHTML = `${data.explanation}<br><strong>${data.effect}</strong>`;
     state.quizResolved = true;
-    quizContinue.textContent = quiz.index === 3 ? '查看结果' : '下一题';
-    quizContinue.disabled = false;
-  }
-
-  function advanceQuiz() {
-    if (!state.activeQuiz || !state.activeQuiz.answered) return;
-    if (state.activeQuiz.index < 3) {
-      state.activeQuiz.index += 1;
-      state.activeQuiz.answered = false;
-      state.selectedOption = null;
-      renderQuestion();
-      return;
-    }
-    finishQuizRound();
-  }
-
-  function finishQuizRound() {
-    const quiz = state.activeQuiz;
-    if (!quiz) return;
-    if (quiz.correctCount >= 3) {
-      state.quizSuccess = true;
-      quizBackdrop.classList.remove('visible');
-      quizBackdrop.setAttribute('aria-hidden', 'true');
-      showDataReveal(quiz.config, quiz.correctCount);
-      return;
-    }
-    quizFeedback.className = 'quiz-feedback error';
-    quizFeedback.innerHTML = `本轮答对 <strong>${quiz.correctCount} / 4</strong>，还未达到获得道具所需的 3 题。<br><strong>雾霾生成速度提高 20%，本轮道具未解锁。</strong>`;
+    state.quizSuccess = true;
+    unlockAbility(data.id);
     quizContinue.textContent = '继续净化';
     quizContinue.disabled = false;
-    state.quizResolved = true;
-  }
-
-  function showDataReveal(config, score) {
-    state.revealActive = true;
-    dataRevealScore.textContent = `答对 ${score} / 4`;
-    dataRevealTitle.textContent = config.title;
-    dataRevealSubtitle.textContent = config.subtitle;
-    dataRevealEffect.textContent = config.effect;
-    dataRevealHint.textContent = config.hint;
-    rewardCard.innerHTML = `<span class="reward-card-mark">${config.mark}</span><span class="reward-card-word">${config.title}</span>`;
-    rewardCard.classList.remove('revealed');
-    dataRevealCopy.textContent = '';
-    dataRevealContinue.disabled = true;
-    dataRevealOverlay.classList.add('visible');
-    dataRevealOverlay.setAttribute('aria-hidden', 'false');
-    let index = 0;
-    const writeNext = () => {
-      if (!state.revealActive) return;
-      dataRevealCopy.textContent = config.data.slice(0, index);
-      index += 1;
-      if (index <= config.data.length) {
-        setTimeout(writeNext, 25);
-      } else {
-        unlockAbility(config.id);
-        rewardCard.classList.add('revealed');
-        dataRevealContinue.disabled = false;
-      }
-    };
-    writeNext();
   }
 
   function unlockAbility(id) {
@@ -478,25 +406,15 @@
     if (id === 'sorting') { state.cleanPowerBonus = .75; core.classList.add('rise-3'); }
   }
 
-  function closeQuizFailure() {
+  function closeQuiz() {
     quizBackdrop.classList.remove('visible');
     quizBackdrop.setAttribute('aria-hidden', 'true');
     state.nextKnowledgeIndex += 1;
+    const succeeded = state.quizSuccess;
     state.activeQuiz = null;
     state.paused = false;
     phaseLabel.textContent = '净化行动进行中';
-    showToast('本轮道具未解锁，惩罚已生效，雾霾生成速度提高 20%');
-  }
-
-  function closeDataReveal() {
-    dataRevealOverlay.classList.remove('visible');
-    dataRevealOverlay.setAttribute('aria-hidden', 'true');
-    state.revealActive = false;
-    state.nextKnowledgeIndex += 1;
-    state.activeQuiz = null;
-    state.paused = false;
-    phaseLabel.textContent = '净化行动进行中';
-    showToast('净化能力已生效，继续追上雾霾');
+    showToast(succeeded ? '净化能力已生效，继续追上雾霾' : '惩罚已生效，雾霾生成速度提高 20%');
   }
 
   function finishGame() {
