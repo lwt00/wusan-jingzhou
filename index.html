@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>雾散荆州 · 清气行动</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div>
+          <p class="kicker">JINGZHOU · AIR ACTION</p>
+          <h1>雾散荆州</h1>
+        </div>
+      </div>
+      <div class="session-chip"><span class="live-dot"></span><span id="phaseLabel">净化行动进行中</span></div>
+    </header>
+
+    <section class="hero-copy">
+      <div>
+        <p class="eyebrow">让城市重新呼吸</p>
+        <h2>追上每一颗雾霾，<br><em>把荆州还给清风。</em></h2>
+        <p class="intro">使用方向键移动清气核心。吸附雾霾后将它分解，完成环保问答还能解锁更强的净化能力。</p>
+      </div>
+      <div class="stat-block" aria-live="polite">
+        <div class="stat-label">本局模拟污染指数</div>
+        <div class="stat-number" id="pollutionValue">100</div>
+        <div class="status-line"><span id="airStatus">重度污染</span><span class="status-separator">/</span><span>目标 ≤ 20</span></div>
+        <div class="meter"><span id="pollutionMeter"></span></div>
+      </div>
+    </section>
+
+    <section class="playfield-wrap">
+      <div class="playfield" id="playfield" tabindex="0" aria-label="荆州净化游戏区域，使用WASD或方向键移动吸附核">
+        <div class="postcard-image" aria-hidden="true">
+          <div class="sky-glow"></div>
+          <div class="sun-disc"></div>
+          <div class="distant-hills"></div>
+          <div class="city-wall"><span class="watchtower tower-a"></span><span class="watchtower tower-b"></span><span class="wall-gate"></span></div>
+          <div class="river"></div>
+          <div class="river-shine"></div>
+          <div class="bridge"><i></i><i></i><i></i><i></i></div>
+          <div class="foreground-reeds"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="mist-layer" id="mistLayer" aria-hidden="true"></div>
+        <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
+        <div class="core" id="core" aria-label="清气吸附核">
+          <div class="core-ring ring-outer"></div>
+          <div class="core-ring ring-inner"></div>
+          <div class="core-orb"><span class="core-symbol">◒</span></div>
+          <div class="core-glow"></div>
+        </div>
+        <div class="field-hint" id="fieldHint"><span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span><span>移动清气核心</span></div>
+        <div class="toast" id="toast" role="status"></div>
+        <div class="data-reveal-overlay" id="dataRevealOverlay" aria-hidden="true">
+          <section class="data-reveal-panel" role="dialog" aria-modal="true" aria-labelledby="dataRevealTitle">
+            <div class="data-reveal-topline"><span class="data-reveal-label">环保行动兑现</span><span id="dataRevealScore">答对 0 / 4</span></div>
+            <h3 id="dataRevealTitle">太阳能光伏</h3>
+            <p class="data-reveal-subtitle" id="dataRevealSubtitle">每一次选择，都会改变空气的生成方式。</p>
+            <div class="data-reveal-copy" id="dataRevealCopy" aria-live="polite"></div>
+            <div class="data-reveal-reward">
+              <div class="reward-card" id="rewardCard"><span class="reward-card-mark">☼</span><span class="reward-card-word">太阳能光伏</span></div>
+              <div><strong id="dataRevealEffect">雾霾生成速度 −15%</strong><p id="dataRevealHint">道具已加入净化能力。</p></div>
+            </div>
+            <button class="quiz-continue data-reveal-continue" id="dataRevealContinue" disabled>继续净化</button>
+          </section>
+        </div>
+        <div class="completion-overlay" id="completionOverlay">
+          <div class="completion-content">
+            <div class="completion-seal">清风已至</div>
+            <p class="eyebrow">JINGZHOU IS CLEAR</p>
+            <h3>雾散，见荆州。</h3>
+            <p>你让这座城市重新呼吸。每一次环保选择，都会让清风更近一步。</p>
+            <button class="primary-button" id="restartButton">再来一次 <span>↗</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="playfield-caption"><span>荆州明信片 · 游戏化模拟场景</span><span id="particleCount">雾霾颗粒 0</span></div>
+    </section>
+
+    <section class="control-deck">
+      <div class="control-copy">
+        <div class="section-label">净化能力</div>
+        <h3>环保行动粒子</h3>
+        <p>捕获金色粒子，完成 4 道环保题。答对 3 题及以上，牌面才会翻转并兑现净化能力。</p>
+      </div>
+      <div class="ability-strip" id="abilityStrip">
+        <article class="ability-card locked" data-ability="solar">
+          <div class="card-top"><span class="card-index">01</span><span class="card-state">待唤起</span></div>
+          <div class="card-visual solar-visual"><span>☼</span></div>
+          <h4>太阳能光伏</h4>
+          <p>降低雾霾生成速度</p>
+        </article>
+        <article class="ability-card locked" data-ability="mobility">
+          <div class="card-top"><span class="card-index">02</span><span class="card-state">待唤起</span></div>
+          <div class="card-visual mobility-visual"><span>↝</span></div>
+          <h4>绿色出行</h4>
+          <p>扩大吸附范围</p>
+        </article>
+        <article class="ability-card locked" data-ability="sorting">
+          <div class="card-top"><span class="card-index">03</span><span class="card-state">待唤起</span></div>
+          <div class="card-visual sorting-visual"><span>✦</span></div>
+          <h4>垃圾分类</h4>
+          <p>增加核心容量</p>
+        </article>
+      </div>
+      <div class="deck-note"><span class="note-dot"></span><span>答案只是入口，行动才是净化能力。</span></div>
+    </section>
+
+    <footer class="footer-note">
+      <span>本局指数为游戏化模拟值，不代表实时空气质量监测数据。</span>
+      <span>键盘操作 · 方向键同样可用</span>
+    </footer>
+  </main>
+
+  <div class="quiz-backdrop" id="quizBackdrop" aria-hidden="true">
+    <section class="quiz-modal" role="dialog" aria-modal="true" aria-labelledby="quizTitle">
+      <div class="quiz-meta"><span class="quiz-tag" id="quizTag">环保行动粒子</span><span class="quiz-progress" id="quizProgress">01 / 04</span></div>
+      <h3 id="quizTitle">太阳能发电如果替代火力发电，会减少哪些污染物？</h3>
+      <p class="quiz-context" id="quizContext">答对后将解锁“太阳能光伏”能力。</p>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="quiz-continue" id="quizContinue" disabled>确认答案</button>
+    </section>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
