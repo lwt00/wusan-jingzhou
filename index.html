@@ -21,12 +21,12 @@
 
     <section class="hero-copy">
       <div>
-        <p class="eyebrow">让城市重新呼吸</p>
-        <h2>追上每一颗雾霾，<br><em>把荆州还给清风。</em></h2>
-        <p class="intro">使用方向键移动清气核心。吸附雾霾后将它分解，完成环保问答还能解锁更强的净化能力。</p>
+        <p class="eyebrow">四站清风路线</p>
+        <h2>从一处景点出发，<br><em>让荆州逐站清晰。</em></h2>
+        <p class="intro">先在地图上选择当前景点，再进入放大后的关卡场景。移动清气核心，吸附并分解雾霾颗粒。</p>
       </div>
       <div class="stat-block" aria-live="polite">
-        <div class="stat-label">本局模拟污染指数</div>
+        <div class="stat-label">当前关卡污染指数</div>
         <div class="stat-number" id="pollutionValue">100</div>
         <div class="status-line"><span id="airStatus">重度污染</span><span class="status-separator">/</span><span>目标 ≤ 20</span></div>
         <div class="meter"><span id="pollutionMeter"></span></div>
@@ -34,96 +34,89 @@
     </section>
 
     <section class="playfield-wrap">
-      <div class="playfield" id="playfield" tabindex="0" aria-label="荆州净化游戏区域，使用WASD或方向键移动吸附核">
-        <div class="postcard-image" aria-hidden="true">
-          <div class="sky-glow"></div>
-          <div class="sun-disc"></div>
-          <div class="distant-hills"></div>
-          <div class="city-wall"><span class="watchtower tower-a"></span><span class="watchtower tower-b"></span><span class="wall-gate"></span></div>
-          <div class="river"></div>
-          <div class="river-shine"></div>
-          <div class="bridge"><i></i><i></i><i></i><i></i></div>
-          <div class="foreground-reeds"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="playfield" id="playfield" tabindex="0" aria-label="荆州四站清雾地图">
+        <div class="map-scene active" id="mapScene" aria-label="荆州地图总览">
+          <div class="map-mist" aria-hidden="true"></div>
+          <div class="cleared-zone" data-level="0" style="--x:25%;--y:25%;--w:52%;--h:52%;" aria-hidden="true"></div>
+          <div class="cleared-zone" data-level="1" style="--x:25%;--y:75%;--w:52%;--h:52%;" aria-hidden="true"></div>
+          <div class="cleared-zone" data-level="2" style="--x:75%;--y:75%;--w:52%;--h:52%;" aria-hidden="true"></div>
+          <div class="cleared-zone" data-level="3" style="--x:75%;--y:25%;--w:52%;--h:52%;" aria-hidden="true"></div>
+          <div class="cleared-seam" data-level-a="0" data-level-b="1" data-seam="left-horizontal" aria-hidden="true"></div>
+          <div class="cleared-seam" data-level-a="1" data-level-b="2" data-seam="bottom-vertical" aria-hidden="true"></div>
+          <div class="cleared-seam" data-level-a="0" data-level-b="3" data-seam="top-vertical" aria-hidden="true"></div>
+          <div class="cleared-seam" data-level-a="2" data-level-b="3" data-seam="right-horizontal" aria-hidden="true"></div>
+          <button class="map-marker available" data-level="0" style="--x:18%;--y:12%;" aria-label="进入关羽祠">
+            <span class="marker-pin">●</span><span class="marker-label">关羽祠</span><span class="marker-status">当前关卡</span>
+          </button>
+          <button class="map-marker locked" data-level="1" style="--x:48%;--y:44%;" aria-label="宾阳楼，未解锁">
+            <span class="marker-pin">●</span><span class="marker-label">宾阳楼</span><span class="marker-status">未解锁</span>
+          </button>
+          <button class="map-marker locked" data-level="2" style="--x:82%;--y:45%;" aria-label="张居正故居，未解锁">
+            <span class="marker-pin">●</span><span class="marker-label">张居正故居</span><span class="marker-status">未解锁</span>
+          </button>
+          <button class="map-marker locked" data-level="3" style="--x:53%;--y:12%;" aria-label="荆州大学城，未解锁">
+            <span class="marker-pin">●</span><span class="marker-label">荆州大学城</span><span class="marker-status">未解锁</span>
+          </button>
+          <div class="map-instruction">选择当前标记，进入景点关卡</div>
         </div>
-        <div class="mist-layer" id="mistLayer" aria-hidden="true"></div>
-        <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
-        <div class="core" id="core" aria-label="清气吸附核">
-          <div class="core-ring ring-outer"></div>
-          <div class="core-ring ring-inner"></div>
-          <div class="core-orb"><span class="core-symbol">◒</span></div>
-          <div class="core-glow"></div>
-        </div>
-        <div class="field-hint" id="fieldHint"><span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span><span>移动清气核心</span></div>
-        <div class="toast" id="toast" role="status"></div>
-        <div class="data-reveal-overlay" id="dataRevealOverlay" aria-hidden="true">
-          <section class="data-reveal-panel" role="dialog" aria-modal="true" aria-labelledby="dataRevealTitle">
-            <div class="data-reveal-topline"><span class="data-reveal-label">环保行动兑现</span><span id="dataRevealScore">答对 0 / 4</span></div>
-            <h3 id="dataRevealTitle">太阳能光伏</h3>
-            <p class="data-reveal-subtitle" id="dataRevealSubtitle">每一次选择，都会改变空气的生成方式。</p>
-            <div class="data-reveal-copy" id="dataRevealCopy" aria-live="polite"></div>
-            <div class="data-reveal-reward">
-              <div class="reward-card" id="rewardCard"><span class="reward-card-mark">☼</span><span class="reward-card-word">太阳能光伏</span></div>
-              <div><strong id="dataRevealEffect">雾霾生成速度 −15%</strong><p id="dataRevealHint">道具已加入净化能力。</p></div>
-            </div>
-            <button class="quiz-continue data-reveal-continue" id="dataRevealContinue" disabled>继续净化</button>
-          </section>
-        </div>
-        <div class="completion-overlay" id="completionOverlay">
-          <div class="completion-content">
-            <div class="completion-seal">清风已至</div>
-            <p class="eyebrow">JINGZHOU IS CLEAR</p>
-            <h3>雾散，见荆州。</h3>
-            <p>你让这座城市重新呼吸。每一次环保选择，都会让清风更近一步。</p>
-            <button class="primary-button" id="restartButton">再来一次 <span>↗</span></button>
+        <div class="level-scene" id="levelScene" aria-hidden="true">
+          <div class="level-header"><span id="levelNumber">01 / 04</span><strong id="levelTitle">关羽祠</strong><span id="levelObjective">清除雾霾至 20</span></div>
+          <div class="level-background" id="levelBackground" aria-hidden="true"></div>
+          <div class="mist-layer" id="mistLayer" aria-hidden="true"></div>
+          <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
+          <div class="core" id="core" aria-label="清气吸附核">
+            <div class="core-ring ring-outer"></div>
+            <div class="core-ring ring-inner"></div>
+            <div class="core-orb"><span class="core-symbol">◒</span></div>
+            <div class="core-glow"></div>
           </div>
+          <div class="field-hint" id="fieldHint"><span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span><span>移动清气核心</span></div>
+          <div class="joystick" id="joystick" role="application" aria-label="触摸摇杆，拖动控制清气核心">
+            <div class="joystick-base"><div class="joystick-knob" id="joystickKnob"></div></div>
+            <span class="joystick-label">拖动移动</span>
+          </div>
+          <div class="toast" id="toast" role="status"></div>
         </div>
       </div>
-      <div class="playfield-caption"><span>荆州明信片 · 游戏化模拟场景</span><span id="particleCount">雾霾颗粒 0</span></div>
     </section>
-
-    <section class="control-deck">
-      <div class="control-copy">
-        <div class="section-label">净化能力</div>
-        <h3>环保行动粒子</h3>
-        <p>捕获金色粒子，完成 4 道环保题。答对 3 题及以上，牌面才会翻转并兑现净化能力。</p>
-      </div>
-      <div class="ability-strip" id="abilityStrip">
-        <article class="ability-card locked" data-ability="solar">
-          <div class="card-top"><span class="card-index">01</span><span class="card-state">待唤起</span></div>
-          <div class="card-visual solar-visual"><span>☼</span></div>
-          <h4>太阳能光伏</h4>
-          <p>降低雾霾生成速度</p>
-        </article>
-        <article class="ability-card locked" data-ability="mobility">
-          <div class="card-top"><span class="card-index">02</span><span class="card-state">待唤起</span></div>
-          <div class="card-visual mobility-visual"><span>↝</span></div>
-          <h4>绿色出行</h4>
-          <p>扩大吸附范围</p>
-        </article>
-        <article class="ability-card locked" data-ability="sorting">
-          <div class="card-top"><span class="card-index">03</span><span class="card-state">待唤起</span></div>
-          <div class="card-visual sorting-visual"><span>✦</span></div>
-          <h4>垃圾分类</h4>
-          <p>增加核心容量</p>
-        </article>
-      </div>
-      <div class="deck-note"><span class="note-dot"></span><span>答案只是入口，行动才是净化能力。</span></div>
-    </section>
-
-    <footer class="footer-note">
-      <span>本局指数为游戏化模拟值，不代表实时空气质量监测数据。</span>
-      <span>键盘操作 · 方向键同样可用</span>
-    </footer>
   </main>
 
-  <div class="quiz-backdrop" id="quizBackdrop" aria-hidden="true">
-    <section class="quiz-modal" role="dialog" aria-modal="true" aria-labelledby="quizTitle">
-      <div class="quiz-meta"><span class="quiz-tag" id="quizTag">环保行动粒子</span><span class="quiz-progress" id="quizProgress">01 / 04</span></div>
-      <h3 id="quizTitle">太阳能发电如果替代火力发电，会减少哪些污染物？</h3>
-      <p class="quiz-context" id="quizContext">答对后将解锁“太阳能光伏”能力。</p>
-      <div class="quiz-options" id="quizOptions"></div>
-      <div class="quiz-feedback" id="quizFeedback"></div>
-      <button class="quiz-continue" id="quizContinue" disabled>确认答案</button>
+  <audio id="backgroundMusic" src="雾散背景音乐.mp3" loop preload="auto" aria-hidden="true"></audio>
+
+  <div class="intro-overlay visible" id="introOverlay" aria-hidden="false">
+    <section class="intro-panel" role="dialog" aria-modal="true" aria-label="雾散荆州开场">
+      <div class="intro-lead visible" id="introLead">
+        <div class="intro-atmosphere" aria-hidden="true"></div>
+        <div class="intro-lead-copy">
+          <p class="intro-overline">JINGZHOU · AIR ACTION</p>
+          <h2>荆州，曾经看得很远。</h2>
+        </div>
+      </div>
+      <div class="intro-video-state" id="introVideoState" aria-hidden="true">
+        <video id="introVideo" class="intro-video" autoplay muted preload="auto" playsinline aria-label="荆州序幕视频"></video>
+        <button class="intro-skip" id="introSkip" type="button">跳过开场</button>
+        <div class="intro-video-hint" id="introVideoHint" aria-hidden="true">点击画面播放声音</div>
+      </div>
+      <div class="intro-end-state" id="introEndState" aria-hidden="true">
+        <div class="intro-end-copy">
+          <p class="intro-overline">JINGZHOU IS WAITING</p>
+          <h2>雾霾笼罩荆州</h2>
+          <p>风景正在等待重新清晰。</p>
+          <button class="primary-button" id="beginClean" type="button">开始清雾</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="video-overlay" id="videoOverlay" aria-hidden="true">
+    <section class="video-panel" role="dialog" aria-modal="true" aria-label="景点宣传视频">
+      <div class="video-kicker" id="videoKicker">景点宣传视频</div>
+      <div class="video-placeholder">
+        <video id="promoVideo" class="promo-video" autoplay preload="auto" playsinline aria-label="景点宣传视频"></video>
+      </div>
+      <div class="video-end-state" id="videoEndState" aria-hidden="true">
+        <button class="primary-button" id="videoContinue">回到总地图，开始下一步探索</button>
+      </div>
     </section>
   </div>
 
