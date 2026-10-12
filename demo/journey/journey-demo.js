@@ -50,6 +50,34 @@
       architecture.addChild(sprite);buildingSprites.push(sprite);
     }
   } catch(error){status.textContent='建筑图层加载失败，请刷新检查素材';app.destroy(true,{children:true,texture:true,textureSource:true});return;}
+  // 雾境：浓雾团盖住未探索关卡，抵达/通关后飘散；长雾带铺开场氛围与远景。
+  const fogLayer=layer(0);
+  const fogPuffs=[],fogBands=[];
+  try {
+    const denseImage=new Image();denseImage.src='assets/fog-dense-1.png';await denseImage.decode();
+    const denseTexture=Texture.from(denseImage);
+    for(const [i,station] of stations.entries()){
+      const puff=new Sprite(denseTexture);puff.anchor.set(.5,.5);
+      const puffSize=[655,600,675,665][i];
+      puff.width=puffSize;puff.height=puffSize;
+      // 雾心对准建筑立面中心（建筑锚点在底部），略下移罩住台基。
+      puff.position.set(station.x,[434,580,475,610][i]-[345,315,355,350][i]/2+30);
+      puff.alpha=1;fogLayer.addChild(puff);
+      fogPuffs.push({g:puff,base:puff.x,baseY:puff.y,seed:i*1.7,target:.92,veil:.92});
+    }
+    const bandImage=new Image();bandImage.src='assets/fog-band-1.png';await bandImage.decode();
+    const bandTexture=Texture.from(bandImage);
+    for(const [i,[bx,by,bw,bh,bt]] of [[-60,150,1740,250,.55],[-20,430,1740,210,.5],[-40,650,1740,230,.6]].entries()){
+      const band=new Sprite(bandTexture);band.anchor.set(0,.5);
+      band.width=bw;band.height=bh;band.position.set(bx,by);band.alpha=1;
+      fogLayer.addChild(band);
+      fogBands.push({g:band,base:bx,baseY:by,seed:i*2.3,target:bt,veil:bt});
+    }
+  } catch(error){console.error('雾层素材加载失败',error);status.textContent='雾层素材加载失败，已跳过雾效（检查 assets/fog-*.png）';}
+  function fogSnap(){
+    fogPuffs.forEach(f=>{f.g.alpha=f.target;f.g.x=f.base;f.g.y=f.baseY;});
+    fogBands.forEach(f=>{f.g.alpha=f.target;f.g.x=f.base;});
+  }
   const ground=layer(1);
   const trail=new Graphics();ground.addChild(trail);
   let lastTrailX=-1;
@@ -109,8 +137,13 @@ let walking=mode==='walking';const phase=(x-START)/32;legs.clear();for(let i=0;i
       seals[i].tint=completed[i]?0xba6750:i===stationIndex?0xe1b663:0xffffff;
       buildingSprites[i].alpha=1;
       buildingSprites[i].filters=completed[i]||i===stationIndex?[]:[pendingFilter];
+      // 已通关或当前挑战的关卡雾散，其余关卡保持浓雾罩顶。
+      if(fogPuffs[i])fogPuffs[i].target=completed[i]||i===stationIndex?0:fogPuffs[i].veil;
       label.dataset.state=completed[i]?'completed':i===stationIndex?'current':'pending';
     });
+    const allDone=completed.every(Boolean);
+    fogBands.forEach(f=>f.target=allDone?.3:f.veil);
+    if(reduced.matches)fogSnap();
     [...route.children].forEach((node,i)=>{
       node.className=completed[i]?'done':i===stationIndex?'current':i===targetIndex?'travelling':'';
       node.querySelector('small').textContent=completed[i]?'已通关':i===targetIndex?'正在前往':i===stationIndex?'等待通关':'尚未抵达';
@@ -147,7 +180,10 @@ let walking=mode==='walking';const phase=(x-START)/32;legs.clear();for(let i=0;i
   app.ticker.add(ticker=>{if(stopped||document.hidden)return;const dt=Math.min(ticker.elapsedMS/1000,.08);ambient+=dt;
     if(mode==='walking'){elapsed=Math.min(DURATION,elapsed+dt);const u=elapsed/DURATION,e=u*u*(3-2*u);x=legStart+(legEnd-legStart)*e;camera+=(cameraTarget()-camera)*(1-Math.exp(-7*dt));if(u===1){mode='settling';status.textContent=`正在停靠${stations[targetIndex].name}`;controls();}}
     else if(mode==='settling'){camera+=(cameraTarget()-camera)*(1-Math.exp(-7*dt));if(Math.abs(camera-cameraTarget())<.3)arrive();}
-    clouds.forEach(({g,base},i)=>{g.x=base+Math.sin(ambient*.09+i)*50;g.y=270+(i%3)*130+Math.sin(ambient*.12+i)*3;});branches.forEach((branch,i)=>branch.rotation=Math.sin(ambient*.35+i)*.009);glow.alpha=.8+Math.sin(ambient*.1)*.12;
+    clouds.forEach(({g,base},i)=>{g.x=base+Math.sin(ambient*.09+i)*50;g.y=270+(i%3)*130+Math.sin(ambient*.12+i)*3;});
+    // 雾散缓动：浓雾团按指数缓动淡出并轻微漂移，看起来是"飘走"而非"淡出"。
+    fogPuffs.forEach(f=>{f.g.alpha+=(f.target-f.g.alpha)*(1-Math.exp(-2.2*dt));f.g.x=f.base+Math.sin(ambient*.05+f.seed)*16;f.g.y=f.baseY+Math.sin(ambient*.08+f.seed)*7;});
+    fogBands.forEach(f=>{f.g.alpha+=(f.target-f.g.alpha)*(1-Math.exp(-1.4*dt));f.g.x=f.base+Math.sin(ambient*.03+f.seed)*26;});branches.forEach((branch,i)=>branch.rotation=Math.sin(ambient*.35+i)*.009);glow.alpha=.8+Math.sin(ambient*.1)*.12;
     renderPose();if(mode==='walking'||mode==='settling')recordPosition();});
   function resize(){
     const width=host.clientWidth,height=host.clientHeight;

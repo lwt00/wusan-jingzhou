@@ -1,5 +1,7 @@
 # 当前版本：独立建筑图层已接入
 
+2026-10-12 新增雾层：fog-dense-1.png / fog-band-1.png（规格与提示词见 FOG-LAYER.md）。开场全雾萦绕，仅当前挑战关卡（首站关羽祠）雾散露出，通关行进后逐站飘散。
+
 terrain-v3.png 为无建筑地形。guanyu-layer.png、binyang-layer.png、zhangjuzheng-layer.png、museum-layer.png 为四张独立透明建筑图。完成状态可分别渲染，生成规格见 LAYERED-V3.md。后续需要真实建筑校准和精致角色，以下为历史素材规划。
 
 # 最新状态：插画已接入
