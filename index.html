@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>雾散荆州 · 清气行动</title>
+  <title>雾散荆州 · 奇幻清雾之旅</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -12,27 +12,37 @@
       <div class="brand-lockup">
         <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
         <div>
-          <p class="kicker">JINGZHOU · AIR ACTION</p>
+          <p class="kicker">JINGZHOU · MIST ADVENTURE</p>
           <h1>雾散荆州</h1>
         </div>
       </div>
-      <div class="session-chip"><span class="live-dot"></span><span id="phaseLabel">净化行动进行中</span></div>
+      <div class="session-chip"><span class="live-dot"></span><span id="phaseLabel">奇幻清雾之旅</span></div>
     </header>
 
     <section class="hero-copy">
       <div>
-        <p class="eyebrow">四站清风路线</p>
+        <p class="eyebrow">四处地标 · 自由探索</p>
         <h2>从一处景点出发，<br><em>让荆州逐站清晰。</em></h2>
-        <p class="intro">先在地图上选择当前景点，再进入放大后的关卡场景。移动清气核心，吸附并分解雾霾颗粒。</p>
+        <p class="intro">你是一名荆州文化探索者。在虚构的奇幻荆州中，迷雾遮蔽了四处文化地标。任选一站出发，驱散迷雾、寻找散落的文化印记，每一次发现都为《荆州印象册》添上一页。</p>
+        <p class="fiction-note">本游戏中的迷雾为虚构冒险设定，不代表荆州真实空气质量状况。</p>
       </div>
       <div class="stat-block" aria-live="polite">
-        <div class="stat-label">当前关卡污染指数</div>
+        <div class="stat-label">当前关卡迷雾浓度</div>
         <div class="stat-number" id="pollutionValue">100</div>
-        <div class="status-line"><span id="airStatus">重度污染</span><span class="status-separator">/</span><span>目标 ≤ 20</span></div>
+        <div class="status-line"><span id="airStatus">浓雾状态</span><span class="status-separator">/</span><span id="mistGoal">清雾目标 ≤ 20</span></div>
+        <div class="stat-note">游戏数值 0～100 · 非真实 AQI 或环境监测数据</div>
         <div class="meter"><span id="pollutionMeter"></span></div>
       </div>
     </section>
 
+    <nav class="exploration-toolbar" aria-label="文化探索工具">
+      <strong id="explorationProgress" aria-live="polite">文化探索进度：0/4</strong>
+      <button class="primary-button" id="albumOpen">荆州印象册 · 0/4</button>
+      <button class="secondary-button" id="resetProgress">重置探索进度</button>
+    </nav>
+    <p id="saveNotice" class="fiction-note" role="status" hidden></p>
+    <p id="collectionMessage" class="collection-message" hidden>荆州文化探索完成！你已收集四枚文化印记，共同拼出了属于自己的荆州印象。可查看印象册或重访任意地标。</p>
+    <section id="taskPanel" class="task-panel" hidden aria-label="当前文化任务"><strong id="taskName"></strong><span id="taskProgress" role="status"></span><p id="taskHelp"></p><p id="taskFeedback" role="status"></p><button id="artifactOpen" class="secondary-button" hidden>打开文物观察卡</button></section>
     <section class="playfield-wrap">
       <div class="playfield" id="playfield" tabindex="0" aria-label="荆州四站清雾地图">
         <div class="map-scene active" id="mapScene" aria-label="荆州地图总览">
@@ -45,33 +55,37 @@
           <div class="cleared-seam" data-level-a="1" data-level-b="2" data-seam="bottom-vertical" aria-hidden="true"></div>
           <div class="cleared-seam" data-level-a="0" data-level-b="3" data-seam="top-vertical" aria-hidden="true"></div>
           <div class="cleared-seam" data-level-a="2" data-level-b="3" data-seam="right-horizontal" aria-hidden="true"></div>
+          <div class="museum-map-placeholder" aria-label="博物馆地图开发占位">荆州博物馆素材待补充</div>
           <button class="map-marker available" data-level="0" style="--x:18%;--y:12%;" aria-label="进入关羽祠">
-            <span class="marker-pin">●</span><span class="marker-label">关羽祠</span><span class="marker-status">当前关卡</span>
+            <span class="marker-pin">●</span><span class="marker-label">关羽祠</span><span class="marker-status">可探索</span>
           </button>
-          <button class="map-marker locked" data-level="1" style="--x:48%;--y:44%;" aria-label="宾阳楼，未解锁">
-            <span class="marker-pin">●</span><span class="marker-label">宾阳楼</span><span class="marker-status">未解锁</span>
+          <button class="map-marker available" data-level="1" style="--x:48%;--y:44%;" aria-label="宾阳楼，可探索">
+            <span class="marker-pin">●</span><span class="marker-label">宾阳楼</span><span class="marker-status">可探索</span>
           </button>
-          <button class="map-marker locked" data-level="2" style="--x:82%;--y:45%;" aria-label="张居正故居，未解锁">
-            <span class="marker-pin">●</span><span class="marker-label">张居正故居</span><span class="marker-status">未解锁</span>
+          <button class="map-marker available" data-level="2" style="--x:82%;--y:45%;" aria-label="张居正故居，可探索">
+            <span class="marker-pin">●</span><span class="marker-label">张居正故居</span><span class="marker-status">可探索</span>
           </button>
-          <button class="map-marker locked" data-level="3" style="--x:53%;--y:12%;" aria-label="荆州大学城，未解锁">
-            <span class="marker-pin">●</span><span class="marker-label">荆州大学城</span><span class="marker-status">未解锁</span>
+          <button class="map-marker available" data-level="3" style="--x:53%;--y:12%;" aria-label="荆州博物馆，可探索">
+            <span class="marker-pin">●</span><span class="marker-label">荆州博物馆</span><span class="marker-status">可探索</span>
           </button>
-          <div class="map-instruction">选择当前标记，进入景点关卡</div>
+          <div class="map-instruction">任选文化地标探索 · 已完成地点可重访</div>
         </div>
         <div class="level-scene" id="levelScene" aria-hidden="true">
-          <div class="level-header"><span id="levelNumber">01 / 04</span><strong id="levelTitle">关羽祠</strong><span id="levelObjective">清除雾霾至 20</span></div>
+          <button id="levelExit" class="secondary-button level-exit">返回地图</button>
+          <div class="level-header"><span id="levelNumber">01 / 04</span><strong id="levelTitle">关羽祠</strong><span id="levelObjective">迷雾浓度降至 20</span></div>
           <div class="level-background" id="levelBackground" aria-hidden="true"></div>
+          <div class="museum-placeholder" id="museumPlaceholder" hidden><strong>荆州博物馆素材待补充</strong><span>开发占位场景 · 可正常进行清雾探索</span></div>
           <div class="mist-layer" id="mistLayer" aria-hidden="true"></div>
+          <div id="taskLayer" class="task-layer" aria-label="文化探索目标"></div>
           <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
-          <div class="core" id="core" aria-label="清气吸附核">
+          <div class="core" id="core" aria-label="清雾吸附核">
             <div class="core-ring ring-outer"></div>
             <div class="core-ring ring-inner"></div>
             <div class="core-orb"><span class="core-symbol">◒</span></div>
             <div class="core-glow"></div>
           </div>
-          <div class="field-hint" id="fieldHint"><span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span><span>移动清气核心</span></div>
-          <div class="joystick" id="joystick" role="application" aria-label="触摸摇杆，拖动控制清气核心">
+          <div class="field-hint" id="fieldHint"><span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span><span>移动清雾核心</span></div>
+          <div class="joystick" id="joystick" role="application" aria-label="触摸摇杆，拖动控制清雾核心">
             <div class="joystick-base"><div class="joystick-knob" id="joystickKnob"></div></div>
             <span class="joystick-label">拖动移动</span>
           </div>
@@ -88,8 +102,8 @@
       <div class="intro-lead visible" id="introLead">
         <div class="intro-atmosphere" aria-hidden="true"></div>
         <div class="intro-lead-copy">
-          <p class="intro-overline">JINGZHOU · AIR ACTION</p>
-          <h2>荆州，曾经看得很远。</h2>
+          <p class="intro-overline">JINGZHOU · MIST ADVENTURE</p>
+          <h2>一场奇幻之旅，从荆州开始。</h2>
         </div>
       </div>
       <div class="intro-video-state" id="introVideoState" aria-hidden="true">
@@ -100,9 +114,10 @@
       <div class="intro-end-state" id="introEndState" aria-hidden="true">
         <div class="intro-end-copy">
           <p class="intro-overline">JINGZHOU IS WAITING</p>
-          <h2>雾霾笼罩荆州</h2>
-          <p>风景正在等待重新清晰。</p>
-          <button class="primary-button" id="beginClean" type="button">开始清雾</button>
+          <h2>神秘迷雾笼罩奇幻荆州</h2>
+          <p class="story-prologue">千年荆州，藏着无数等待发现的故事。<br>一场神秘的迷雾，暂时遮蔽了四处文化地标。<br>从三国忠义到古城风华，从历史革新到文明传承。<br>作为荆州文化探索者，你可以任选一站踏上旅程，<br>驱散迷雾，收集文化印记，留下属于你的荆州记忆。</p>
+          <p class="fiction-note">本游戏中的迷雾为虚构冒险设定，不代表荆州真实空气质量状况。</p>
+          <button class="primary-button" id="beginClean" type="button">开始文化探索</button>
         </div>
       </div>
     </section>
@@ -111,7 +126,9 @@
   <div class="video-overlay" id="videoOverlay" aria-hidden="true">
     <section class="video-panel" role="dialog" aria-modal="true" aria-label="景点宣传视频">
       <div class="video-kicker" id="videoKicker">景点宣传视频</div>
+      <p class="video-fiction-note">游戏中的艺术化场景展示 · 迷雾为虚构设定，不代表荆州真实空气质量状况</p>
       <div class="video-placeholder">
+        <div class="museum-video-placeholder" id="museumVideoPlaceholder" hidden><strong>荆州博物馆素材待补充</strong><p>正式文化素材后续补充，可跳过并返回文化发现。</p></div>
         <video id="promoVideo" class="promo-video" autoplay preload="auto" playsinline aria-label="景点宣传视频"></video>
       </div>
       <div class="video-end-state" id="videoEndState" aria-hidden="true">
@@ -120,6 +137,31 @@
     </section>
   </div>
 
+  <dialog id="discoveryDialog" class="culture-dialog" aria-labelledby="discoveryTitle">
+    <p class="eyebrow">探索完成 · 文化发现</p><h2 id="discoveryTitle"></h2>
+    <p id="discoveryTask"></p>
+    <p id="discoveryMark" class="culture-mark"></p><p id="discoveryTheme"></p><p id="discoveryDescription"></p>
+    <p class="fiction-note">迷雾与文化印记为虚构游戏设定；以下文化资料来自真实文化介绍。</p>
+    <a id="discoveryMore" class="culture-more" target="_blank" rel="noopener noreferrer">了解更多文化 ↗</a><p id="discoverySourceNote" class="fiction-note"></p>
+    <p id="discoveryAll" class="collection-message" hidden>荆州文化探索完成！你已收集四枚文化印记，共同拼出了属于自己的荆州印象。</p>
+    <div class="dialog-actions"><button id="discoveryMap" class="secondary-button">返回地图</button><button id="discoveryAlbum" class="primary-button">查看荆州印象册</button><button id="discoveryVideo" class="secondary-button">观看现有艺术化视频（可跳过）</button></div>
+  </dialog>
+  <dialog id="albumDialog" class="culture-dialog album-dialog" aria-labelledby="albumTitle">
+    <div class="album-heading"><div><p class="eyebrow">每一次发现，成为一页记忆</p><h2 id="albumTitle">荆州印象册</h2><p id="albumProgress" aria-live="polite">已收集：0/4</p></div><button id="albumClose" class="secondary-button">返回地图</button></div>
+    <p>每完成一处探索，就留下一个文化主题和一枚印记。你可以随时回顾已发现的故事，也可以返回地图继续探索。</p>
+    <section id="journeyReview" class="collection-message" hidden aria-label="完整旅程回顾"><h3>荆州文化探索完成！</h3><p>从关羽祠的三国忠义，到宾阳楼的古城风华；<br>从张居正故居的改革精神，到荆州博物馆的文明传承。</p><p>四段探索，四枚文化印记。<br>迷雾散去，属于你的荆州印象已完整呈现。</p><p>这份记忆会为你保留，欢迎重访任意文化地标。</p></section>
+    <p class="fiction-note">图片为艺术化游戏场景，非实景照片；文化印记为游戏设定。</p><div id="albumCards" class="album-cards"></div>
+  </dialog>
+  <dialog id="artifactDialog" class="culture-dialog" aria-labelledby="artifactTitle">
+    <p class="eyebrow">文物探秘 · 开发占位观察</p><h2 id="artifactTitle">文物名称：待核实补充</h2>
+    <p>荆州博物馆素材待补充。以下是观察方法的开发示意卡，非真实馆藏图片；正式文物名称、介绍与图片将在核实后补充。</p>
+    <div class="artifact-demo" aria-label="开发示意图，非真实文物"><span aria-hidden="true">◇</span><p>开发示意图 · 非真实文物</p></div>
+    <div class="dialog-actions" aria-label="观察点"><button class="secondary-button" data-inspect="silhouette">① 观察轮廓</button><button class="secondary-button" data-inspect="pattern">② 观察纹样</button><button class="secondary-button" data-inspect="record">③ 保护记录</button></div>
+    <p id="artifactDetail" role="status"></p>
+    <fieldset class="artifact-question"><legend>阅读三个观察点后回答：开发卡的“保护记录”建议怎样做？</legend><button class="secondary-button" data-answer="touch" disabled>触摸并移动展示物</button><button class="secondary-button" data-answer="record" disabled>记录观察信息，保持原状</button><button class="secondary-button" data-answer="invent" disabled>自行编写年代和名称</button></fieldset>
+    <p id="artifactFeedback" role="status"></p>
+    <div class="dialog-actions"><button id="artifactResume" class="secondary-button">回到场景（可再打开）</button><button id="artifactExit" class="secondary-button">返回地图</button></div>
+  </dialog>
   <script src="game.js"></script>
 </body>
 </html>
