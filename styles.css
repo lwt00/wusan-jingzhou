@@ -428,3 +428,34 @@ button { font: inherit; }
   .map-scene .marker-status { flex-basis:100%; }
   .map-scroll-title { writing-mode:horizontal-tb; left:10px; top:3px; padding:3px 5px; font-size:10px; }
 }
+
+/* ===== ·é»ðÊØ³Ç ¡¤ ±öÑôÂ¥ ===== */
+.siege-layer { position:absolute; inset:0; z-index:7; pointer-events:none; }
+.siege-objects { position:absolute; inset:0; }
+.siege-view .core, .siege-view .field-hint { opacity:0; pointer-events:none; }
+.siege-view .joystick { display:none !important; }
+.enemy-ship { position:absolute; width:52px; height:26px; transform:translate(-50%,-50%); pointer-events:none; }
+.enemy-ship::before { content:""; position:absolute; left:0; right:0; bottom:0; height:12px; background:linear-gradient(180deg,#4a3a2b,#2e2318); border-radius:12px 12px 4px 4px; box-shadow:0 2px 6px rgba(20,30,36,.4); }
+.enemy-ship::after { content:""; position:absolute; left:50%; bottom:10px; width:0; height:0; transform:translateX(-50%); border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:16px solid rgba(214,196,158,.92); }
+.enemy-ship.from-right::after { transform:translateX(-50%) scaleX(-1); }
+.enemy-ship.ship-big { width:78px; height:36px; }
+.enemy-ship.ship-big::before { height:16px; }
+.enemy-ship.ship-big::after { border-left-width:10px; border-right-width:10px; border-bottom-width:22px; }
+.enemy-ship.hit-flash::before { background:#8a5a3a; }
+.enemy-ship.sinking { transition:transform .55s ease, opacity .55s ease; transform:translate(-50%,-50%) translateY(16px) rotate(9deg); opacity:0; }
+.bolt { position:absolute; width:26px; height:3px; margin:-1.5px 0 0 -13px; border-radius:2px; background:linear-gradient(90deg,#7a5c34,#3e2f1c); transform:rotate(var(--ang)); box-shadow:0 1px 3px rgba(30,20,10,.5); pointer-events:none; }
+.splash-burst { background:#bfe8f2 !important; box-shadow:0 0 10px #8fd8e8 !important; }
+.breach-burst { background:#f0b08a !important; box-shadow:0 0 12px #e08a5a !important; }
+.ballista { position:absolute; left:50%; bottom:2.5%; width:64px; height:36px; transform:translateX(-50%); display:none; }
+.siege-view .ballista { display:block; }
+.ballista-base { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:34px; height:14px; background:#4a3a2b; border-radius:4px 4px 2px 2px; }
+.ballista-arm { position:absolute; bottom:11px; left:50%; transform:translateX(-50%); width:58px; height:6px; background:linear-gradient(90deg,#2e2318,#6b5236,#2e2318); border-radius:3px; }
+.beacon-row { position:absolute; top:15%; left:50%; transform:translateX(-50%); display:flex; gap:14px; z-index:8; }
+.beacon { pointer-events:auto; display:grid; place-items:center; gap:3px; padding:8px 10px 6px; border:1px solid rgba(112,77,38,.5); background:rgba(250,247,231,.92); color:var(--ink); border-radius:6px; font:inherit; font-size:10px; cursor:pointer; touch-action:manipulation; }
+.beacon i { width:16px; height:16px; border-radius:50%; background:#c9bda2; border:1px solid rgba(112,77,38,.5); transition:background .25s, box-shadow .25s; }
+.beacon.lit i { background:#f2a24b; box-shadow:0 0 14px #e08a3a, 0 0 4px #fff3d0 inset; }
+.beacon.wrong { border-color:#b45445; color:#b45445; }
+.beacon:focus-visible { outline:3px solid #95681e; outline-offset:3px; }
+.siege-hud { position:absolute; top:56px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:10px; padding:6px 12px; background:rgba(247,245,232,.85); border:1px solid rgba(23,52,76,.15); border-radius:4px; font-size:11px; white-space:nowrap; z-index:8; }
+.siege-hpwrap { width:80px; height:6px; overflow:hidden; background:rgba(23,52,76,.12); border-radius:6px; }
+.siege-hpwrap i { display:block; width:100%; height:100%; background:#38a885; transform-origin:left; transition:transform .3s ease, background .3s ease; }

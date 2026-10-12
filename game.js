@@ -53,7 +53,7 @@
       description: '关羽与荆州有着深厚的历史文化联系，忠义精神也是当地三国文化记忆的一部分。走近关羽祠，以忠诚、信义与责任为线索，思考传统文化如何走入今天的生活。这一页荆州记忆，留给愿意守护承诺的探索者。',
       source: 'https://wlt.hubei.gov.cn/bmdt/ztzl/mzyj/202309/t20230920_4860952.shtml',
       image: '关羽祠-关卡背景.png', video: '关羽祠.mp4' },
-    { id: 'binyang', taskType: 'area-explore', taskName: '古城寻迹', taskSummary: '建筑观察主题：城门、城墙、楼阁。区域划分为游戏观察任务。', title: '宾阳楼', theme: '荆州古城文化', mark: '古城印记',
+    { id: 'binyang', taskType: 'tower-defense', taskName: '烽火守城', taskSummary: '城防军事主题：点击水面发射弩箭拦截敌船，守住城门；波次之间按序点亮烽火台传讯。', title: '宾阳楼', theme: '荆州古城文化', mark: '古城印记',
       description: '宾阳楼坐落于荆州古城东门，是古城的标志性建筑之一。城楼采用重檐歇山式屋顶，与城墙共同勾勒古城轮廓。观察屋顶、城门与城墙的关系，在建筑细节中发现历史留下的印记，也认识保护城市文化景观的意义。',
       source: 'https://wlt.hubei.gov.cn/bmdt/ztzl/mzyj/202309/t20230920_4860952.shtml',
       image: '宾阳楼-关卡背景.png', video: '宾阳楼.mp4' },
@@ -109,6 +109,25 @@
   const artifactOpen = document.getElementById('artifactOpen');
   const visitedTutorials = new Set();
   let task = null;
+  // ===== 烽火守城（宾阳楼专属玩法）=====
+  const siegeLayer = document.getElementById('siegeLayer');
+  const siegeObjects = document.getElementById('siegeObjects');
+  const siegeWaveLabel = document.getElementById('siegeWave');
+  const siegeHpBar = document.getElementById('siegeHpBar');
+  const siegeHpLabel = document.getElementById('siegeHpLabel');
+  const beaconRow = document.getElementById('beaconRow');
+  const beaconButtons = [...document.querySelectorAll('.beacon')];
+  const SIEGE_WAVES = [
+    { ships: [0, 0, 1, 0], interval: 2.2, speed: 1 },
+    { ships: [0, 1, 0, 0, 1], interval: 2.0, speed: 1.15 },
+    { ships: [0, 1, 2, 0, 1, 2], interval: 1.8, speed: 1.3 }
+  ];
+  const SHIP_TYPES = [
+    { hp: 1, damage: 10, speed: .075, cls: 'ship-small' },
+    { hp: 1, damage: 14, speed: .06, cls: 'ship-medium' },
+    { hp: 2, damage: 22, speed: .045, cls: 'ship-big' }
+  ];
+  let siege = null;
   const targetPositions = [{x:.24,y:.42}, {x:.76,y:.44}, {x:.50,y:.73}];
   const areaTexts = [
     ['城门', '城门是观察古城出入口与城市空间的线索。这里的区域划分是游戏任务，不代表建筑实测位置。'],
@@ -137,6 +156,12 @@
       document.querySelectorAll('[data-answer]').forEach(b=>b.disabled=true);
       document.getElementById('artifactDetail').textContent = '请选择三个观察点，阅读轮廓、纹样和保护记录。';
       document.getElementById('artifactFeedback').textContent = '';
+    } else if (task.type === 'tower-defense') {
+      taskHelp.textContent = visitedTutorials.has(config.id) || completedLevels[config.id]
+        ? '点击水面发射弩箭，拦截全部三波敌船，守住城门。'
+        : '点击／触摸护城河水面发射弩箭拦截敌船；敌船撞上城门会损伤耐久。波次之间按顺序点亮烽火台传讯。';
+      visitedTutorials.add(config.id);
+      initSiege();
     } else {
       const texts = task.type === 'area-explore' ? areaTexts : clueTexts;
       taskHelp.textContent = task.type === 'area-explore'
@@ -182,8 +207,192 @@
     target.done=true; taskFeedback.textContent=`已收集${target.name}：${target.text}`;
     renderTask(); checkTaskCompletion();
   }
+  // ===== 烽火守城核心逻辑 =====
+  function initSiege() {
+    document.getElementById('levelScene').classList.add('siege-view');
+    joystick.classList.remove('visible');
+    siege = { wave: 1, wallHp: 100, phase: 'combat', ships: [], bolts: [], spawnQueue: [], spawnTimer: 0, beaconSeq: [], beaconStep: 0, beaconLock: false };
+    siegeObjects.replaceChildren(); beaconRow.hidden = true;
+    beaconButtons.forEach(b => b.classList.remove('lit', 'wrong'));
+    startWave(1); renderSiegeHud();
+  }
+  function cleanupSiege() {
+    siege = null;
+    document.getElementById('levelScene').classList.remove('siege-view');
+    siegeObjects.replaceChildren(); beaconRow.hidden = true;
+    beaconButtons.forEach(b => b.classList.remove('lit', 'wrong'));
+  }
+  function startWave(n) {
+    const spec = SIEGE_WAVES[n - 1];
+    siege.wave = n; siege.phase = 'combat'; siege.spawnTimer = 0;
+    siege.spawnQueue = spec.ships.map((type, i) => ({ type, at: .6 + i * spec.interval }));
+    beaconRow.hidden = true;
+    taskFeedback.textContent = `第 ${n} 波敌船来袭！点击水面发射弩箭。`;
+    renderSiegeHud(); renderTask();
+  }
+  function spawnShip(kindIndex) {
+    const spec = SHIP_TYPES[kindIndex];
+    const fromLeft = Math.random() < .5;
+    const el = document.createElement('span');
+    el.className = `enemy-ship ${spec.cls} ${fromLeft ? 'from-left' : 'from-right'}`;
+    const ship = { kind: kindIndex, x: fromLeft ? -.05 : 1.05, y: rand(.56, .86), vx: (fromLeft ? 1 : -1) * spec.speed * SIEGE_WAVES[siege.wave - 1].speed, hp: spec.hp, spec, el };
+    siegeObjects.appendChild(el); siege.ships.push(ship); renderShip(ship);
+  }
+  function renderShip(ship) { ship.el.style.left = `${ship.x * 100}%`; ship.el.style.top = `${ship.y * 100}%`; }
+  function renderBolt(bolt) { bolt.el.style.left = `${bolt.x * 100}%`; bolt.el.style.top = `${bolt.y * 100}%`; }
+  function removeShip(ship) {
+    ship.el.remove();
+    const index = siege.ships.indexOf(ship);
+    if (index >= 0) siege.ships.splice(index, 1);
+  }
+  function createSiegeBurst(x, y, breach) {
+    const token = runToken;
+    for (let i = 0; i < 10; i += 1) {
+      const burst = document.createElement('span');
+      const angle = Math.PI * 2 * i / 10 + rand(-.15, .15);
+      const distance = rand(25, 67);
+      burst.className = `clean-burst ${breach ? 'breach-burst' : 'splash-burst'}`;
+      burst.style.left = `${x * 100}%`; burst.style.top = `${y * 100}%`;
+      burst.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
+      burst.style.setProperty('--dy', `${Math.sin(angle) * distance}px`);
+      siegeObjects.appendChild(burst);
+      setTimeout(() => { if (token === runToken) burst.remove(); }, 900);
+    }
+  }
+  function destroyShip(ship) {
+    createSiegeBurst(ship.x, ship.y, false);
+    ship.el.classList.add('sinking');
+    const el = ship.el; const token = runToken;
+    setTimeout(() => { if (token === runToken) el.remove(); }, 560);
+    removeShip(ship);
+    setPollution(state.levelPollution - 6);
+  }
+  function breachShip(ship) {
+    removeShip(ship);
+    createSiegeBurst(ship.x, ship.y, true);
+    siege.wallHp = Math.max(0, siege.wallHp - ship.spec.damage);
+    if (siege.wallHp <= 0) {
+      for (const s of [...siege.ships]) removeShip(s);
+      const spec = SIEGE_WAVES[siege.wave - 1];
+      siege.spawnQueue = spec.ships.map((type, i) => ({ type, at: .8 + i * spec.interval }));
+      siege.spawnTimer = 0; siege.wallHp = 100;
+      taskFeedback.textContent = '城门告急！守军奋力击退攻势，本波敌船重新集结。';
+      showToast('城门耐久耗尽 · 本波敌船重新来犯');
+    } else {
+      taskFeedback.textContent = `敌船冲撞城门！耐久 -${ship.spec.damage}`;
+    }
+    renderSiegeHud(); renderTask();
+  }
+  function fireBolt(x, y) {
+    if (!siege || siege.phase !== 'combat' || state.paused || blockingDialog()) return;
+    const sx = .5, sy = .93;
+    const dx = x - sx, dy = y - sy; const len = Math.hypot(dx, dy) || 1;
+    const el = document.createElement('span');
+    el.className = 'bolt';
+    const bolt = { x: sx, y: sy, vx: dx / len * 1.15, vy: dy / len * 1.15, el };
+    el.style.setProperty('--ang', `${Math.atan2(dy, dx)}rad`);
+    siegeObjects.appendChild(el); siege.bolts.push(bolt); renderBolt(bolt);
+  }
+  function endWave() {
+    if (siege.phase !== 'combat') return;
+    if (siege.wave >= SIEGE_WAVES.length) {
+      siege.phase = 'victory';
+      taskFeedback.textContent = '敌船尽退，烽火传讯已达援军！古城安然无恙。';
+      checkTaskCompletion();
+      return;
+    }
+    siege.phase = 'beacon';
+    startBeaconRound();
+  }
+  function startBeaconRound() {
+    siege.beaconSeq = Array.from({ length: siege.wave + 2 }, () => Math.floor(Math.random() * beaconButtons.length));
+    siege.beaconStep = 0; siege.beaconLock = true;
+    beaconRow.hidden = false;
+    beaconButtons.forEach(b => b.classList.remove('lit', 'wrong'));
+    taskFeedback.textContent = '敌船暂退！记住烽火台点亮的顺序，依次点亮传讯。';
+    playBeaconSequence();
+  }
+  function playBeaconSequence() {
+    const token = runToken;
+    siege.beaconSeq.forEach((idx, i) => {
+      setTimeout(() => {
+        if (token !== runToken || !siege || siege.phase !== 'beacon') return;
+        const btn = beaconButtons[idx];
+        btn.classList.add('lit');
+        setTimeout(() => { if (token === runToken) btn.classList.remove('lit'); }, 420);
+      }, 700 + i * 640);
+    });
+    setTimeout(() => { if (token === runToken && siege) siege.beaconLock = false; }, 700 + siege.beaconSeq.length * 640);
+  }
+  beaconButtons.forEach(btn => btn.addEventListener('click', () => {
+    if (!siege || siege.phase !== 'beacon' || siege.beaconLock) return;
+    const idx = Number(btn.dataset.beacon);
+    if (idx === siege.beaconSeq[siege.beaconStep]) {
+      btn.classList.add('lit');
+      const token = runToken;
+      setTimeout(() => { if (token === runToken) btn.classList.remove('lit'); }, 420);
+      siege.beaconStep += 1;
+      if (siege.beaconStep >= siege.beaconSeq.length) {
+        siege.beaconLock = true;
+        taskFeedback.textContent = '烽火传讯成功！援军已知晓敌情。';
+        showToast('烽火传讯成功 · 下一波敌船即将来袭');
+        setTimeout(() => { if (token === runToken && siege) startWave(siege.wave + 1); }, 1400);
+      } else {
+        taskFeedback.textContent = `传讯中 ${siege.beaconStep}/${siege.beaconSeq.length}`;
+      }
+    } else {
+      siege.beaconLock = true;
+      btn.classList.add('wrong');
+      taskFeedback.textContent = '顺序有误，请再看一遍烽火信号。';
+      const token = runToken;
+      setTimeout(() => {
+        if (token !== runToken || !siege) return;
+        btn.classList.remove('wrong'); siege.beaconStep = 0;
+        beaconButtons.forEach(b => b.classList.remove('lit'));
+        playBeaconSequence();
+      }, 900);
+    }
+  }));
+  function updateSiege(delta) {
+    if (!siege || siege.phase !== 'combat') return;
+    siege.spawnTimer += delta;
+    while (siege.spawnQueue.length && siege.spawnTimer >= siege.spawnQueue[0].at) spawnShip(siege.spawnQueue.shift().type);
+    for (const ship of [...siege.ships]) {
+      ship.x += ship.vx * delta;
+      if (Math.abs(ship.x - .5) < .052) { breachShip(ship); continue; }
+      renderShip(ship);
+    }
+    for (const bolt of [...siege.bolts]) {
+      bolt.x += bolt.vx * delta; bolt.y += bolt.vy * delta;
+      let hit = null;
+      for (const ship of siege.ships) {
+        if (Math.hypot(ship.x - bolt.x, ship.y - bolt.y) < .052) { hit = ship; break; }
+      }
+      if (hit) {
+        hit.hp -= 1;
+        bolt.el.remove(); siege.bolts.splice(siege.bolts.indexOf(bolt), 1);
+        if (hit.hp <= 0) destroyShip(hit);
+        else { hit.el.classList.remove('hit-flash'); void hit.el.offsetWidth; hit.el.classList.add('hit-flash'); }
+      } else if (bolt.x < -.08 || bolt.x > 1.08 || bolt.y < -.08 || bolt.y > 1.08) {
+        bolt.el.remove(); siege.bolts.splice(siege.bolts.indexOf(bolt), 1);
+      } else renderBolt(bolt);
+    }
+    if (!siege.spawnQueue.length && !siege.ships.length) endWave();
+  }
+  function renderSiegeHud() {
+    siegeWaveLabel.textContent = `第 ${Math.min(siege.wave, SIEGE_WAVES.length)} / ${SIEGE_WAVES.length} 波`;
+    siegeHpBar.style.transform = `scaleX(${siege.wallHp / 100})`;
+    siegeHpBar.style.background = siege.wallHp > 50 ? '#38a885' : siege.wallHp > 25 ? '#d6a23d' : '#d26745';
+    siegeHpLabel.textContent = `城门耐久 ${siege.wallHp}`;
+  }
   function renderTask() {
     if(!task) return;
+    if(task.type==='tower-defense') {
+      taskProgress.textContent = siege
+        ? `第 ${Math.min(siege.wave, SIEGE_WAVES.length)} / ${SIEGE_WAVES.length} 波 · 城门耐久 ${siege.wallHp}${siege.phase==='beacon' ? ' · 烽火传讯中' : ''}`
+        : '准备守城';
+      return;
+    }
     const count=task.targets.filter(t=>t.done).length;
     if(task.type==='free-clean') taskProgress.textContent=`迷雾浓度：${Math.round(state.levelPollution)} / 目标 ≤ 20`;
     else if(task.type==='artifact-observe') taskProgress.textContent=state.levelPollution<=20 ? '清雾完成 · 待完成观察挑战' : '清雾至 20，解锁观察卡';
@@ -203,6 +412,7 @@
   function taskSatisfied() {
     if(!task) return false;
     if(task.type==='free-clean') return state.levelPollution<=20;
+    if(task.type==='tower-defense') return Boolean(siege && siege.phase==='victory');
     if(task.type==='area-explore' || task.type==='clue-collect') return task.targets.length===3 && task.targets.every(t=>t.done);
     return state.levelPollution<=20 && task.answerPassed;
   }
@@ -214,8 +424,9 @@
       if(!task.artifactOpened) {task.artifactOpened=true; openArtifact();}
     }
   }
-  function updateTask() {
+  function updateTask(delta) {
     if(!task || state.paused || blockingDialog()) return;
+    if(task.type==='tower-defense') { updateSiege(delta); return; }
     if(task.type==='clue-collect') for(const target of task.targets) {
       if(target.revealed && !target.done && Math.hypot(state.player.x-target.x,state.player.y-target.y)<.04) collectClue(target);
     }
@@ -563,16 +774,17 @@
   function startLevel(index) {
     if (!levelConfigs[index] || state.mode !== 'map') return;
     clearTimeout(completionTimer); runToken += 1; state.keys.clear(); resetJoystick(); fieldHint.classList.remove('is-hidden');
+    cleanupSiege();
     const config = levelConfigs[index];
     state.currentLevel = index; state.paused = false; state.levelPollution = 100; state.cleanCount = 0;
     state.spawnTimer = 0; state.player = { x: .5, y: .54, speed: .42 };
     clearParticles(); levelScene.classList.remove('complete-view'); levelBackground.style.backgroundImage = config.image ? `url("${config.image}")` : 'none';
     museumPlaceholder.hidden = Boolean(config.image);
     levelBackground.classList.toggle('museum-development-background', !config.image);
-    levelNumber.textContent = `${String(index + 1).padStart(2, '0')} / 04`; levelTitle.textContent = config.title; levelObjective.textContent = config.taskType === 'area-explore' ? '探索三个区域' : config.taskType === 'clue-collect' ? '收集三条线索' : config.taskType === 'artifact-observe' ? '清雾 + 观察挑战' : '迷雾浓度降至 20';
-    document.getElementById('mistGoal').textContent = ['area-explore','clue-collect'].includes(config.taskType) ? '通关条件见文化任务' : '清雾目标 ≤ 20';
+    levelNumber.textContent = `${String(index + 1).padStart(2, '0')} / 04`; levelTitle.textContent = config.title; levelObjective.textContent = config.taskType === 'tower-defense' ? '拦截三波敌船 · 守住城门' : config.taskType === 'area-explore' ? '探索三个区域' : config.taskType === 'clue-collect' ? '收集三条线索' : config.taskType === 'artifact-observe' ? '清雾 + 观察挑战' : '迷雾浓度降至 20';
+    document.getElementById('mistGoal').textContent = config.taskType === 'tower-defense' ? '目标：守住城门' : ['area-explore','clue-collect'].includes(config.taskType) ? '通关条件见文化任务' : '清雾目标 ≤ 20';
     phaseLabel.textContent = `${config.title} · ${config.taskName}`; setMode('level'); initTask(config); setPollution(100);
-    for (let count = 0; count < 18; count += 1) spawnPollution();
+    if (config.taskType !== 'tower-defense') for (let count = 0; count < 18; count += 1) spawnPollution();
     updateRouteUi(); showToast(`进入${config.title} · ${config.taskName}`); field.focus({ preventScroll: true });
   }
 
@@ -641,6 +853,7 @@
     clearTimeout(completionTimer); completionTimer = null; runToken += 1;
     if (artifactDialog.open) artifactDialog.close();
     task = null; taskLayer.replaceChildren(); taskPanel.hidden = true;
+    cleanupSiege();
     mistLayer.style.maskImage = ''; mistLayer.style.maskComposite = '';
     state.paused = false; state.currentLevel = -1; state.keys.clear(); resetJoystick();
     state.player = { x: .5, y: .54, speed: .42 }; state.spawnTimer = 0; state.cleanCount = 0; state.lastFrame = performance.now();
@@ -668,7 +881,7 @@
       updatePlayer(delta, width, height); state.spawnTimer += delta * 1000;
       if (state.spawnTimer >= state.spawnInterval) { state.spawnTimer = 0; spawnPollution(); }
       updateParticles(delta, width, height, previousPlayer);
-      updateTask();
+      updateTask(delta);
     }
     renderCore(width, height); requestAnimationFrame(gameLoop);
   }
@@ -713,7 +926,14 @@
     state.keys.add(key); field.focus({ preventScroll: true });
   });
   window.addEventListener('keyup', event => state.keys.delete(event.key.toLowerCase()));
-  field.addEventListener('pointerdown', event => { if (!event.target.closest('button, a')) field.focus({ preventScroll: true }); });
+  field.addEventListener('pointerdown', event => {
+    if (event.target.closest('button, a')) return;
+    field.focus({ preventScroll: true });
+    if (task && task.type === 'tower-defense' && state.mode === 'level' && !state.paused && !blockingDialog()) {
+      const rect = field.getBoundingClientRect();
+      fireBolt((event.clientX - rect.left) / rect.width, (event.clientY - rect.top) / rect.height);
+    }
+  });
   loadProgress();
   returnToMap();
   if (completedCount() === 0) startIntro(); else { introOverlay.classList.remove('visible'); introOverlay.setAttribute('aria-hidden', 'true'); }

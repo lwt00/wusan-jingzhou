@@ -81,6 +81,16 @@
           <div class="museum-placeholder" id="museumPlaceholder" hidden><strong>荆州博物馆素材待补充</strong><span>开发占位场景 · 可正常进行清雾探索</span></div>
           <div class="mist-layer" id="mistLayer" aria-hidden="true"></div>
           <div id="taskLayer" class="task-layer" aria-label="文化探索目标"></div>
+          <div id="siegeLayer" class="siege-layer" aria-label="烽火守城战场">
+            <div class="siege-objects" id="siegeObjects"></div>
+            <div class="siege-hud" aria-hidden="true"><span id="siegeWave">第 1 / 3 波</span><span class="siege-hpwrap"><i id="siegeHpBar"></i></span><span id="siegeHpLabel">城门耐久 100</span></div>
+            <div class="ballista" aria-hidden="true"><i class="ballista-base"></i><i class="ballista-arm"></i></div>
+            <div class="beacon-row" id="beaconRow" hidden role="group" aria-label="烽火台传讯">
+              <button class="beacon" type="button" data-beacon="0" aria-label="烽火台一"><i></i><span>烽火台</span></button>
+              <button class="beacon" type="button" data-beacon="1" aria-label="烽火台二"><i></i><span>烽火台</span></button>
+              <button class="beacon" type="button" data-beacon="2" aria-label="烽火台三"><i></i><span>烽火台</span></button>
+            </div>
+          </div>
           <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
           <div class="core" id="core" aria-label="清雾吸附核">
             <div class="core-ring ring-outer"></div>
