@@ -1,6 +1,6 @@
 # 雾散荆州｜荆州文化探索网页游戏
 
-以荆州历史文化探索为主题的虚构清雾游戏，使用原生 HTML、CSS、JavaScript 开发。本仓库同时包含**可玩的正式游戏**和**独立的四站动态全景 Demo**，两者暂未接通。
+以荆州历史文化探索为主题的虚构清雾游戏，使用原生 HTML、CSS、JavaScript 开发。当前开发入口是 **demo/journey/journey-demo.html**。旧版完整清雾游戏及素材已集中到 **gameooo/**，两者暂未接通。
 
 > 本游戏中的迷雾为虚构冒险设定，不代表荆州真实空气质量状况。迷雾浓度是游戏机制数值，不是真实 AQI。
 
@@ -10,7 +10,7 @@
 
 | 入口 | 用途 | 进度规则 |
 | --- | --- | --- |
-| [正式游戏 index.html](index.html) | 四关清雾、文化任务、文化发现、荆州印象册 | 四关自由选择，浏览器本地自动保存 |
+| [旧版完整游戏](gameooo/index.html) | 四关清雾、文化任务、文化发现、荆州印象册 | 四关自由选择，浏览器本地自动保存 |
 | [最新全景 Demo](demo/journey/journey-demo.html) | 四个独立建筑图层、人物行进、完成印章与金色路线 | 按四站顺序模拟通关，刷新后归零 |
 
 GitHub 文件页面只展示源码，不会直接运行游戏。队友可克隆或下载本分支后本地运行；本次没有部署公开试玩网站。
@@ -25,12 +25,12 @@ python3 -m http.server 4173
 
 保持终端运行，用 Chrome 打开：
 
-- 正式游戏：<http://127.0.0.1:4173/>
+- 旧版游戏：<http://127.0.0.1:4173/gameooo/index.html>
 - 最新全景 Demo：<http://127.0.0.1:4173/demo/journey/journey-demo.html>
 
 Windows 可将启动命令替换为 `py -m http.server 4173`。这是本地静态文件服务，无需后端、数据库、账号或 npm 安装。端口被占用时换一个端口，并同步修改网址。
 
-**IDEA 用户**：打开项目文件夹，右键 `index.html` 或 `demo/journey/journey-demo.html`，选择 Open in Browser → Chrome。正式游戏如需保持存档，请固定使用相同浏览器及访问地址，包括端口。
+**IDEA 用户**：打开项目文件夹，右键 `gameooo/index.html` 或 `demo/journey/journey-demo.html`，选择 Open in Browser → Chrome。正式游戏如需保持存档，请固定使用相同浏览器及访问地址，包括端口。
 
 ## 最新全景 Demo 怎么体验
 
@@ -61,7 +61,7 @@ Demo 使用本地 **PixiJS 8.6.6**，依赖与 MIT 许可证已放在 `demo/jour
 
 使用 WASD、方向键或移动端摇杆移动。各关可独立进入、随时返回地图、重复挑战。首次完成即保存文化印记并解锁对应印象册页面；重复通关不重复计数。中途退出不保存关卡内部清雾进度。全收集后仍可重访。
 
-文化发现与印象册共用 `game.js` 中 `levelConfigs` 的简介、主题与阅读链接。外部文化网页使用新标签页打开，与本地视频入口独立；视频支持跳过。部分阅读链接是综合文化介绍，并非景点专属资料。
+文化发现与印象册共用 `gameooo/game.js` 中 `levelConfigs` 的简介、主题与阅读链接。外部文化网页使用新标签页打开，与本地视频入口独立；视频支持跳过。部分阅读链接是综合文化介绍，并非景点专属资料。
 
 ## 存档与隔离
 
@@ -78,9 +78,10 @@ Demo 使用本地 **PixiJS 8.6.6**，依赖与 MIT 许可证已放在 `demo/jour
 ## 项目结构
 
 ```text
-index.html / styles.css / game.js   正式游戏页面、样式与逻辑
-map-visual.js                       正式地图装饰动画，读取现有状态
-jingzhou-map.png                    既有地图风格参考与正式地图底图
+gameooo/                           旧版完整游戏归档（可独立运行）
+  index.html / styles.css / game.js 旧版页面、样式与玩法
+  map-visual.js                    旧地图装饰动画
+  图片、音视频                     旧版运行资源（历史 ZIP 仅本地保留）
 demo/journey/
   journey-demo.html/.css/.js        独立全景 Demo
   assets/                          地形、四张透明建筑及生成说明
@@ -107,3 +108,11 @@ Chrome 自动化已验证 Demo 四站推进、跳过、途中重置、完成印�
 正式游戏此前已验证自由选关、独立任务、4→2→1→3 通关、存档恢复、印象册、防重复奖励、键盘与模拟触摸操作。本次没有改动清雾核心。
 
 限制：尚未做真机手机全面测试、Safari/Firefox 验收与最新 GPU 性能基准。详细记录见 [Demo 测试报告](demo/journey/TEST-REPORT.md)。
+
+## 本地目录整理（2026-10-12）
+
+根目录的 19 个旧版源码、资源及压缩包已移入 gameooo/，文件内容未改动；目录内部相对引用保持有效。目录移动本身未改动 Demo 依赖；同次发布另包含当前已完成的逐站雾散效果。IDEA 压缩包引用已同步到 gameooo/game.ooo.zip。项目根目录不再有 index.html，请使用上方明确的两个入口。旧版 localStorage 按浏览器来源保存，在相同协议、域名和端口下仅改变路径不会改变存档来源。本次发布包含这套目录结构；旧版历史压缩包仅本地保留，不进入源码仓库。
+
+## 逐站雾散效果
+
+新版增加 fog-dense-1.png 与 fog-band-1.png：当前挑战和已完成站点的局部雾层散开，其余站点保留雾层；抵达下一站后自动更新。素材来源与规格见 demo/journey/assets/FOG-LAYER.md。
