@@ -45,7 +45,11 @@
     <section id="taskPanel" class="task-panel" hidden aria-label="当前文化任务"><strong id="taskName"></strong><span id="taskProgress" role="status"></span><p id="taskHelp"></p><p id="taskFeedback" role="status"></p><button id="artifactOpen" class="secondary-button" hidden>打开文物观察卡</button></section>
     <section class="playfield-wrap">
       <div class="playfield" id="playfield" tabindex="0" aria-label="荆州四站清雾地图">
-        <div class="map-scene active" id="mapScene" aria-label="荆州地图总览">
+        <div class="map-scene active map-motion-paused" id="mapScene" aria-label="荆州地图总览">
+          <div class="map-atmosphere" aria-hidden="true"><div class="map-cloud-depth"><i class="map-cloud cloud-far"></i><i class="map-cloud cloud-near"></i></div></div>
+          <svg class="map-route-art" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><path d="M180 72 C225 140 310 200 480 264 S710 295 820 270 M480 264 C510 230 590 175 530 72"/></svg>
+          <div class="map-scroll-frame" aria-hidden="true"><span class="map-scroll-title">荆楚 · 寻迹绘卷</span><span class="map-scroll-seal">荆州</span></div>
+          <div class="map-foreground-depth" aria-hidden="true"><svg class="map-branch branch-left" viewBox="0 0 180 180"><g fill="none" stroke="currentColor" stroke-width="2"><path d="M0 175 Q40 120 70 45 M25 145 Q45 85 130 60 M47 105 Q95 100 148 120"/></g><g fill="currentColor" opacity=".7"><path d="M68 50 Q40 45 47 20 Q72 25 68 50 M83 76 Q90 44 122 46 Q116 75 83 76 M51 109 Q25 83 21 64 Q50 66 51 109 M105 110 Q120 90 150 93 Q140 116 105 110"/></g></svg><svg class="map-branch branch-right" viewBox="0 0 160 160"><path d="M160 160 Q108 106 78 20 M121 114 Q63 104 30 65 M102 75 Q120 51 148 40" fill="none" stroke="currentColor" stroke-width="2"/><g fill="currentColor" opacity=".65"><path d="M78 30 Q45 20 49 0 Q78 0 78 30 M109 68 Q103 40 127 23 Q137 53 109 68 M66 93 Q33 105 14 85 Q41 70 66 93"/></g></svg></div>
           <div class="map-mist" aria-hidden="true"></div>
           <div class="cleared-zone" data-level="0" style="--x:25%;--y:25%;--w:52%;--h:52%;" aria-hidden="true"></div>
           <div class="cleared-zone" data-level="1" style="--x:25%;--y:75%;--w:52%;--h:52%;" aria-hidden="true"></div>
@@ -57,16 +61,16 @@
           <div class="cleared-seam" data-level-a="2" data-level-b="3" data-seam="right-horizontal" aria-hidden="true"></div>
           <div class="museum-map-placeholder" aria-label="博物馆地图开发占位">荆州博物馆素材待补充</div>
           <button class="map-marker available" data-level="0" style="--x:18%;--y:12%;" aria-label="进入关羽祠">
-            <span class="marker-pin">●</span><span class="marker-label">关羽祠</span><span class="marker-status">可探索</span>
+            <span class="marker-pin">●</span><span class="marker-label">关羽祠</span><span class="map-stamp" aria-hidden="true">忠义</span><span class="marker-status">可探索</span>
           </button>
           <button class="map-marker available" data-level="1" style="--x:48%;--y:44%;" aria-label="宾阳楼，可探索">
-            <span class="marker-pin">●</span><span class="marker-label">宾阳楼</span><span class="marker-status">可探索</span>
+            <span class="marker-pin">●</span><span class="marker-label">宾阳楼</span><span class="map-stamp" aria-hidden="true">古城</span><span class="marker-status">可探索</span>
           </button>
           <button class="map-marker available" data-level="2" style="--x:82%;--y:45%;" aria-label="张居正故居，可探索">
-            <span class="marker-pin">●</span><span class="marker-label">张居正故居</span><span class="marker-status">可探索</span>
+            <span class="marker-pin">●</span><span class="marker-label">张居正故居</span><span class="map-stamp" aria-hidden="true">革新</span><span class="marker-status">可探索</span>
           </button>
           <button class="map-marker available" data-level="3" style="--x:53%;--y:12%;" aria-label="荆州博物馆，可探索">
-            <span class="marker-pin">●</span><span class="marker-label">荆州博物馆</span><span class="marker-status">可探索</span>
+            <span class="marker-pin">●</span><span class="marker-label">荆州博物馆</span><span class="map-stamp" aria-hidden="true">传承</span><span class="marker-status">可探索</span>
           </button>
           <div class="map-instruction">任选文化地标探索 · 已完成地点可重访</div>
         </div>
@@ -163,5 +167,6 @@
     <div class="dialog-actions"><button id="artifactResume" class="secondary-button">回到场景（可再打开）</button><button id="artifactExit" class="secondary-button">返回地图</button></div>
   </dialog>
   <script src="game.js"></script>
+  <script src="map-visual.js"></script>
 </body>
 </html>
