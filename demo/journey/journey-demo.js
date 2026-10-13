@@ -100,7 +100,7 @@
 let walking=mode==='walking';const phase=(x-START)/32;legs.clear();for(let i=0;i<2;i++){let p=(phase+i*.5)%1,foot=walking?(p<.5?8-32*p:-8+(p-.5)*32):(i?3:-3),lift=walking&&p>=.5?-Math.sin((p-.5)*Math.PI*2)*4:0;legs.moveTo(i?2:-2,-13).lineTo(foot,lift);}legs.stroke({color:0x4e594c,width:3});body.y=walking?-Math.abs(Math.sin(phase*Math.PI*2))*.7:0;arm.rotation=walking?Math.sin(phase*Math.PI*2)*.13:0;layers.forEach(({c,speed})=>c.x=-camera*speed);}
   function controls(){
     go.disabled=mode!=='waiting';skip.disabled=mode!=='walking'&&mode!=='settling';replay.disabled=false;
-    go.textContent=mode==='complete'?'四站探索已完成':`模拟通关：${stations[stationIndex].name}`;
+    go.textContent=mode==='complete'?'四站探索已完成':stationIndex===1&&!completed[1]?'挑战关卡：烽火守城':`模拟通关：${stations[stationIndex].name}`;
     host.dataset.mode=mode;host.dataset.station=stations[stationIndex].id;
     document.getElementById('count').textContent=`已模拟通关 ${completed.filter(Boolean).length}/4`;
     labels.forEach(({label},i)=>{
@@ -127,7 +127,53 @@ let walking=mode==='walking';const phase=(x-START)/32;legs.clear();for(let i=0;i
     status.textContent=`已抵达${stations[stationIndex].name} · 等待本关通关`;
     renderPose();controls();recordPosition();if(reduced.matches)app.stop();app.render();
   }
+  const defenseGame=(()=>{
+    const shell=document.getElementById('defense-game'),boats=document.getElementById('boats'),beacons=document.getElementById('beacon-zone');
+    const startButton=document.getElementById('game-start'),retryButton=document.getElementById('game-retry'),closeButton=document.getElementById('game-close');
+    const waveValue=document.getElementById('wave-value'),wallValue=document.getElementById('wall-value'),scoreValue=document.getElementById('score-value');
+    const instruction=document.getElementById('game-instruction'),message=document.getElementById('battle-message');
+    const waves=[{boats:4,gap:900,duration:5.4,signal:[0,1,2]},{boats:5,gap:760,duration:4.8,signal:[1,3,0,2]},{boats:6,gap:620,duration:4.2,signal:[2,0,3,1]}];
+    const beaconPositions=[[8,26],[35,10],[61,26],[82,8]];
+    let wave=0,wall=3,score=0,spawned=0,resolved=0,signalStep=0,spawnTimer=null,running=false,won=false,lastFocus=null;
+    function announce(copy,hold=900){message.textContent=copy;message.classList.add('show');clearTimeout(announce.timer);announce.timer=setTimeout(()=>message.classList.remove('show'),hold);}
+    function update(){waveValue.textContent=`${Math.min(wave+1,3)}/3`;wallValue.textContent=wall;scoreValue.textContent=score;}
+    function clearRound(){clearInterval(spawnTimer);spawnTimer=null;boats.replaceChildren();beacons.replaceChildren();}
+    function fail(){running=false;clearRound();instruction.textContent='城防已破，重新整备后再战。';retryButton.hidden=false;startButton.hidden=true;announce('城门告急 · 守城失败',1600);}
+    function boatResolved(hit){resolved++;if(hit){score+=100;update();}if(spawned===waves[wave].boats&&resolved===spawned&&running){clearInterval(spawnTimer);spawnTimer=null;setTimeout(beginSignal,350);}}
+    function spawnBoat(){
+      if(!running)return;if(spawned>=waves[wave].boats){clearInterval(spawnTimer);spawnTimer=null;return;}
+      const boat=document.createElement('button');const lane=spawned%3;boat.className='enemy-boat';boat.type='button';boat.setAttribute('aria-label',`第 ${spawned+1} 艘敌船，点击拦截`);boat.style.cssText=`top:${8+lane*28}%;--duration:${waves[wave].duration}s`;spawned++;boats.appendChild(boat);
+      let done=false;boat.addEventListener('click',()=>{if(done||!running)return;done=true;boat.classList.add('hit');boat.disabled=true;setTimeout(()=>boat.remove(),300);boatResolved(true);});
+      boat.addEventListener('animationend',()=>{if(done||!running)return;done=true;boat.remove();wall--;update();announce('敌船逼近，城防 -1');if(wall<=0)fail();else boatResolved(false);},{once:true});
+    }
+    function beginSignal(){
+      if(!running)return;boats.replaceChildren();signalStep=0;instruction.textContent='敌船已退，按数字顺序点燃烽火传讯。';announce('水路已守住 · 立即传递烽火',1200);
+      const sequence=waves[wave].signal;sequence.forEach((positionIndex,order)=>{const beacon=document.createElement('button');const [left,top]=beaconPositions[positionIndex];beacon.type='button';beacon.className='beacon';beacon.dataset.order=String(order+1);beacon.style.left=`${left}%`;beacon.style.top=`${top}%`;beacon.setAttribute('aria-label',`第 ${order+1} 座烽火台`);beacon.addEventListener('click',()=>lightBeacon(beacon,order,sequence.length));beacons.appendChild(beacon);});
+    }
+    function lightBeacon(beacon,order,total){
+      if(!running||beacon.classList.contains('active'))return;
+      if(order!==signalStep){beacon.classList.remove('wrong');void beacon.offsetWidth;beacon.classList.add('wrong');announce(`传讯顺序有误，请点燃第 ${signalStep+1} 座`);return;}
+      beacon.classList.add('active');beacon.disabled=true;signalStep++;score+=50;update();
+      if(signalStep===total)setTimeout(finishWave,650);
+    }
+    function finishWave(){
+      if(!running)return;if(wave===waves.length-1){won=true;running=false;shell.classList.add('victory');instruction.textContent='三道烽火传讯完成，宾阳楼守城成功。';announce('烽火连城 · 宾阳楼守卫成功',2200);startButton.hidden=false;startButton.textContent='领取印记，继续旅程';startButton.focus();return;}
+      wave++;spawned=0;resolved=0;beacons.replaceChildren();update();instruction.textContent=`第 ${wave+1} 波敌船来袭，拦截速度将加快。`;announce(`第 ${wave+1} 波来袭`,1000);setTimeout(startWave,800);
+    }
+    function startWave(){if(!running)return;spawned=0;resolved=0;spawnBoat();spawnTimer=setInterval(spawnBoat,waves[wave].gap);}
+    function resetGame(){clearRound();wave=0;wall=3;score=0;spawned=0;resolved=0;signalStep=0;won=false;running=true;shell.classList.remove('victory');startButton.hidden=true;retryButton.hidden=true;instruction.textContent='拦截护城河上的敌船，别让它们抵达城门。';update();announce('第 1 波来袭',900);setTimeout(startWave,500);}
+    function open(){lastFocus=document.activeElement;shell.classList.add('open');shell.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';startButton.hidden=false;startButton.textContent='开始守城';retryButton.hidden=true;instruction.textContent='拦截护城河上的敌船，别让它们抵达城门。';clearRound();wave=0;wall=3;score=0;won=false;running=false;update();setTimeout(()=>startButton.focus(),50);}
+    function close(){running=false;clearRound();clearTimeout(announce.timer);shell.classList.remove('open','victory');shell.setAttribute('aria-hidden','true');document.body.style.overflow='';if(lastFocus)lastFocus.focus();}
+    startButton.addEventListener('click',()=>{if(won){close();completeCurrentStation();}else resetGame();});retryButton.addEventListener('click',resetGame);closeButton.addEventListener('click',close);
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&shell.classList.contains('open'))close();});
+    return {open,reset:()=>{running=false;won=false;clearRound();shell.classList.remove('open','victory');shell.setAttribute('aria-hidden','true');document.body.style.overflow='';}};
+  })();
   function finishStation(){
+    if(mode!=='waiting'||completed[stationIndex])return;
+    if(stationIndex===1){defenseGame.open();return;}
+    completeCurrentStation();
+  }
+  function completeCurrentStation(){
     if(mode!=='waiting'||completed[stationIndex])return;
     completed[stationIndex]=true;
     if(!reduced.matches)labels[stationIndex].label.querySelector('.completion-stamp').animate([{opacity:0,transform:'rotate(-12deg) scale(1.7)'},{opacity:1,transform:'rotate(-12deg) scale(1)'}],{duration:500,easing:'ease-out'});
@@ -139,6 +185,7 @@ let walking=mode==='walking';const phase=(x-START)/32;legs.clear();for(let i=0;i
     controls();renderPose();recordPosition();if(reduced.matches)arrive();else if(!document.hidden)app.start();
   }
   function reset(){
+    defenseGame.reset();
     completed.fill(false);stationIndex=0;targetIndex=null;elapsed=0;x=START;mode='waiting';camera=cameraTarget();
     status.textContent='关羽祠 · 等待本关通关';controls();renderPose();recordPosition();app.render();
   }
