@@ -1,0 +1,150 @@
+{
+  "sourceSize": [
+    1536,
+    1024
+  ],
+  "mode": "RGBA",
+  "alphaRange": [
+    0,
+    254
+  ],
+  "sourceSHA256": "6d28a1e7445fa59dfb059f652d0b2146f991f10a597d990b74d35a88bf5c864e",
+  "exportCount": 8,
+  "canvas": [
+    512,
+    576
+  ],
+  "groundY": 548,
+  "motionApproved": false,
+  "method": "separate alpha>8 silhouettes, preserve2px soft edges; no stretching; common ground reference",
+  "frames": [
+    {
+      "id": 1,
+      "sourceBounds": [
+        29,
+        38,
+        351,
+        506
+      ],
+      "translation": [
+        40,
+        42
+      ],
+      "scale": 1,
+      "heightCore": 468,
+      "groundReference": 548
+    },
+    {
+      "id": 2,
+      "sourceBounds": [
+        359,
+        37,
+        707,
+        507
+      ],
+      "translation": [
+        -335,
+        41
+      ],
+      "scale": 1,
+      "heightCore": 470,
+      "groundReference": 548
+    },
+    {
+      "id": 3,
+      "sourceBounds": [
+        735,
+        33,
+        1116,
+        504
+      ],
+      "translation": [
+        -725,
+        44
+      ],
+      "scale": 1,
+      "heightCore": 471,
+      "groundReference": 548
+    },
+    {
+      "id": 4,
+      "sourceBounds": [
+        1127,
+        33,
+        1490,
+        506
+      ],
+      "translation": [
+        -1105,
+        42
+      ],
+      "scale": 1,
+      "heightCore": 473,
+      "groundReference": 548
+    },
+    {
+      "id": 5,
+      "sourceBounds": [
+        10,
+        532,
+        348,
+        982
+      ],
+      "translation": [
+        40,
+        -434
+      ],
+      "scale": 1,
+      "heightCore": 450,
+      "groundReference": 548
+    },
+    {
+      "id": 6,
+      "sourceBounds": [
+        376,
+        534,
+        727,
+        981
+      ],
+      "translation": [
+        -335,
+        -433
+      ],
+      "scale": 1,
+      "heightCore": 447,
+      "groundReference": 548
+    },
+    {
+      "id": 7,
+      "sourceBounds": [
+        752,
+        533,
+        1117,
+        987
+      ],
+      "translation": [
+        -719,
+        -439
+      ],
+      "scale": 1,
+      "heightCore": 454,
+      "groundReference": 548
+    },
+    {
+      "id": 8,
+      "sourceBounds": [
+        1142,
+        536,
+        1507,
+        986
+      ],
+      "translation": [
+        -1105,
+        -438
+      ],
+      "scale": 1,
+      "heightCore": 450,
+      "groundReference": 548
+    }
+  ]
+}

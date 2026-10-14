@@ -1,0 +1,177 @@
+{
+  "sources": [
+    {
+      "file": "scenery-01.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        253
+      ],
+      "fullyTransparentPixels": 348730,
+      "sha256": "2bfd769c15e2307332d026b9d88e6eb73f23aad2947a3cded78f8301f5e405b1"
+    },
+    {
+      "file": "scenery-02.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        253
+      ],
+      "fullyTransparentPixels": 240933,
+      "sha256": "bf4cf34f5c0d05bec852db334b1968dd713b1af51ce628930f35ba0ca1e2bcf9"
+    }
+  ],
+  "exports": [
+    {
+      "file": "stone-bridge.png",
+      "source": "scenery-02.png",
+      "threshold": 8,
+      "coreBounds": [
+        785,
+        13,
+        1234,
+        232
+      ],
+      "cropBounds": [
+        781,
+        8,
+        1239,
+        237
+      ],
+      "padding": 6,
+      "size": [
+        470,
+        241
+      ],
+      "note": "original composite scenery retained; no inpainting or stretching"
+    },
+    {
+      "file": "pavilion.png",
+      "source": "scenery-02.png",
+      "threshold": 8,
+      "coreBounds": [
+        1219,
+        5,
+        1526,
+        230
+      ],
+      "cropBounds": [
+        1215,
+        0,
+        1531,
+        235
+      ],
+      "padding": 6,
+      "size": [
+        328,
+        247
+      ],
+      "note": "original composite scenery retained; no inpainting or stretching"
+    },
+    {
+      "file": "waterfall.png",
+      "source": "scenery-02.png",
+      "threshold": 32,
+      "coreBounds": [
+        306,
+        256,
+        779,
+        474
+      ],
+      "cropBounds": [
+        301,
+        251,
+        784,
+        479
+      ],
+      "padding": 6,
+      "size": [
+        495,
+        240
+      ],
+      "note": "original composite scenery retained; no inpainting or stretching"
+    },
+    {
+      "file": "willow.png",
+      "source": "scenery-02.png",
+      "threshold": 32,
+      "coreBounds": [
+        781,
+        464,
+        1020,
+        704
+      ],
+      "cropBounds": [
+        776,
+        458,
+        1025,
+        708
+      ],
+      "padding": 6,
+      "size": [
+        261,
+        262
+      ],
+      "note": "original composite scenery retained; no inpainting or stretching"
+    },
+    {
+      "file": "rocks.png",
+      "source": "scenery-02.png",
+      "threshold": 8,
+      "coreBounds": [
+        401,
+        866,
+        587,
+        986
+      ],
+      "cropBounds": [
+        396,
+        861,
+        592,
+        991
+      ],
+      "padding": 6,
+      "size": [
+        208,
+        142
+      ],
+      "note": "original composite scenery retained; no inpainting or stretching"
+    },
+    {
+      "file": "grass.png",
+      "source": "scenery-01.png",
+      "threshold": 8,
+      "coreBounds": [
+        826,
+        603,
+        1043,
+        787
+      ],
+      "cropBounds": [
+        821,
+        598,
+        1048,
+        792
+      ],
+      "padding": 6,
+      "size": [
+        239,
+        206
+      ],
+      "note": "original composite scenery retained; no inpainting or stretching"
+    }
+  ],
+  "unseparated": [
+    "scenery-01 上左瀑布/柳树/石径低透明雾边相连，不硬拆",
+    "亭台与山石、桥与倒影保留为完整景物组合，不去除它们内部底景",
+    "台阶、码头、灯龛等复合区域本轮不使用"
+  ]
+}

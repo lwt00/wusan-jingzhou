@@ -76,3 +76,53 @@ header{top:10px}header h1{font-size:32px;margin:5px 0}header p:not(.eyebrow){dis
 }
 #completion-message{position:fixed;top:88px;left:50%;transform:translateX(-50%);margin:0;padding:10px 20px;border-bottom:1px solid #aa866055;background:#f6efdecc;color:#79513b;white-space:nowrap;font:22px "Songti SC",serif;letter-spacing:.12em;pointer-events:none}
 @media(max-width:600px){#completion-message{top:105px;font-size:17px;padding:8px 12px}}
+#travel-transition{position:fixed;inset:0;z-index:12;opacity:var(--travel-transition-alpha,0);pointer-events:none;background:#eeeee3;background-image:radial-gradient(ellipse at 30% 45%,#d8e1d755,transparent 60%),repeating-linear-gradient(9deg,#bdb69a08 0 1px,transparent 1px 5px)}
+#travel-transition::before,#travel-transition::after{content:'';position:absolute;inset:-20% -30%;background-image:var(--travel-cloud-image);background-repeat:no-repeat;background-size:100% 100%;opacity:.7;transform:translateX(var(--travel-cloud-shift,0%))}
+#travel-transition::after{transform:translateX(calc(-1 * var(--travel-cloud-shift,0%))) rotate(180deg);opacity:.45}
+#travel-scene-note{position:fixed;top:88px;left:4vw;margin:0;font:13px "Songti SC",serif;letter-spacing:.1em;color:#5d7064;background:#f0eee5cc;padding:7px 12px;pointer-events:none}
+@media(max-width:600px){#travel-scene-note{top:85px;font-size:11px}}
+body[data-phase^="travel-"] footer{z-index:13}
+
+/* 独立地标近景：不放大画卷，图片按原生像素上限呈现。 */
+#landmark-scene{position:fixed;inset:0;z-index:8;overflow:hidden;background:#e9eee5;color:#25453f;--landmark-image-width:680px;--landmark-image-height:680px}
+#landmark-scene[hidden],#landmark-game-host[hidden],#landmark-image[hidden],#landmark-image-fallback[hidden]{display:none}
+.landmark-paper{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 28%,#fafaf1aa,transparent 64%),repeating-linear-gradient(12deg,#a9a4880a 0 1px,transparent 1px 4px);opacity:.8}
+.landmark-building{position:absolute;left:50%;top:39%;width:min(90vw,var(--landmark-image-width));height:min(58svh,var(--landmark-image-height));transform:translate(-50%,-50%);display:grid;place-items:center}
+#landmark-image{width:100%;height:100%;object-fit:contain;animation:landmark-push 10s ease-out both}
+.landmark-cloud{position:absolute;inset:0;pointer-events:none;background-image:var(--landmark-cloud);background-size:cover;background-position:center;opacity:.25;animation:landmark-drift 28s ease-in-out infinite alternate}
+.landmark-cloud-left{width:65%;left:-25%;transform:rotate(7deg)}
+.landmark-cloud-right{left:60%;width:65%;animation-delay:-14s;opacity:.2}
+.landmark-copy{position:absolute;z-index:2;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(90%,760px);text-align:center;animation:landmark-copy-in 1.8s ease-out both}
+.landmark-copy h2{font-size:clamp(26px,3vw,40px);letter-spacing:.15em;margin:8px 0}
+.landmark-copy p{margin:6px 0;line-height:1.6}.landmark-copy small{opacity:.7;font-size:12px}
+.landmark-copy nav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:16px}
+#landmark-poem{font-size:13px;opacity:.7}
+#landmark-game-host{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;background:#f2f2e9f5;text-align:center}
+#landmark-game-host p{max-width:520px;line-height:1.8}#landmark-game-host h2{font-size:24px}
+#landmark-story{width:min(86vw,520px);border:1px solid #9aa99b;border-radius:12px;padding:28px;background:#f5f4e9;color:#25453f}
+#landmark-story p{line-height:1.9;white-space:pre-line}#landmark-story::backdrop{background:#29423b80;backdrop-filter:blur(5px)}
+body[data-landmark-active=true] footer,body[data-landmark-active=true] header,body[data-landmark-active=true] .demo-note{visibility:hidden}
+@keyframes landmark-push{from{transform:scale(1)}to{transform:scale(var(--landmark-push))}}
+@keyframes landmark-drift{from{translate:-15px 0}to{translate:28px 9px}}
+@keyframes landmark-copy-in{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
+@media(max-width:600px){.landmark-building{top:31%;height:43svh}.landmark-copy{bottom:24px}.landmark-copy p{font-size:13px}.landmark-copy nav{gap:7px}.landmark-copy button{font-size:13px;padding:10px 14px}}
+@media(prefers-reduced-motion:reduce){#landmark-image,.landmark-cloud,.landmark-copy{animation:none}}
+#landmark-image{position:absolute;inset:0;min-width:0;min-height:0}
+#landmark-scene[data-state=game] .landmark-copy{visibility:hidden}
+@media(max-height:600px) and (min-width:601px){.landmark-building{left:30%;top:50%;width:min(50vw,var(--landmark-image-width));height:86svh}.landmark-copy{left:75%;bottom:15%;width:44%}.landmark-copy p{font-size:12px}.landmark-copy h2{font-size:26px}}
+/* 点击探索只临时拨云，完成记录决定永久清晰；占位页透出建筑与雾散反馈。 */
+.landmark-cloud{transition:opacity 1.4s ease,left 1.8s ease}
+#landmark-scene[data-fog=arrived] .landmark-cloud-left{left:-8%;opacity:.62}
+#landmark-scene[data-fog=arrived] .landmark-cloud-right{left:43%;opacity:.54}
+#landmark-scene[data-fog=exploring] .landmark-cloud-left{left:-30%;opacity:.25}
+#landmark-scene[data-fog=exploring] .landmark-cloud-right{left:68%;opacity:.2}
+#landmark-scene[data-fog=complete] .landmark-cloud{opacity:.06}
+#landmark-game-host{inset:auto;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(90%,650px);max-height:45svh;overflow:auto;gap:8px;padding:18px 24px;background:#f2f2e9ed;border:1px solid #9aa99b70;border-radius:8px}
+#landmark-game-host h2{margin:0;font-size:20px}#landmark-game-host p{margin:0;font-size:14px}
+@media(prefers-reduced-motion:reduce){.landmark-cloud{transition:none}}
+.mock-exploration{display:flex;flex-direction:column;align-items:center;gap:12px}
+.mock-exploration button[data-mock-complete]{background:#7b493b;color:#fff4de}
+
+/* 独立完整近景原图；按比例完整展示，不放大全局地图。 */
+#landmark-scene[data-full-scene=true] .landmark-building{left:50%;top:50%;width:min(100vw,var(--landmark-image-width));height:100svh;transform:translate(-50%,-50%)}
+#landmark-scene[data-full-scene=true] .landmark-copy{background:linear-gradient(transparent,#f4f2e4dc 20%);padding:18px 20px 12px;border-radius:12px}

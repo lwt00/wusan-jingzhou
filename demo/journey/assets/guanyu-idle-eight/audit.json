@@ -1,0 +1,292 @@
+{
+  "grid": [
+    4,
+    2
+  ],
+  "cell": [
+    384,
+    512
+  ],
+  "frames": [
+    {
+      "index": 1,
+      "row": 0,
+      "col": 0,
+      "components": 7,
+      "component_sizes": [
+        89823,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "dropped_pixels": 6,
+      "bbox_in_cell": [
+        9,
+        38,
+        375,
+        454
+      ],
+      "foot_in_cell": 491,
+      "top_in_cell": 38,
+      "axis_x": 251.1,
+      "body_height": 454,
+      "placed": {
+        "x": 10,
+        "y": 11,
+        "canvas": [
+          392,
+          470
+        ],
+        "foot_y": 465
+      }
+    },
+    {
+      "index": 2,
+      "row": 0,
+      "col": 1,
+      "components": 11,
+      "component_sizes": [
+        84599,
+        44,
+        3,
+        3,
+        2,
+        1
+      ],
+      "dropped_pixels": 58,
+      "bbox_in_cell": [
+        29,
+        38,
+        355,
+        455
+      ],
+      "foot_in_cell": 492,
+      "top_in_cell": 38,
+      "axis_x": 275.1,
+      "body_height": 455,
+      "placed": {
+        "x": 6,
+        "y": 10,
+        "canvas": [
+          392,
+          470
+        ],
+        "foot_y": 465
+      }
+    },
+    {
+      "index": 3,
+      "row": 0,
+      "col": 2,
+      "components": 12,
+      "component_sizes": [
+        85131,
+        365,
+        16,
+        2,
+        2,
+        1
+      ],
+      "dropped_pixels": 392,
+      "bbox_in_cell": [
+        41,
+        38,
+        343,
+        455
+      ],
+      "foot_in_cell": 492,
+      "top_in_cell": 38,
+      "axis_x": 271.4,
+      "body_height": 455,
+      "placed": {
+        "x": 22,
+        "y": 10,
+        "canvas": [
+          392,
+          470
+        ],
+        "foot_y": 465
+      }
+    },
+    {
+      "index": 4,
+      "row": 0,
+      "col": 3,
+      "components": 20,
+      "component_sizes": [
+        79915,
+        245,
+        204,
+        23,
+        4,
+        2
+      ],
+      "dropped_pixels": 493,
+      "bbox_in_cell": [
+        39,
+        36,
+        335,
+        458
+      ],
+      "foot_in_cell": 493,
+      "top_in_cell": 36,
+      "axis_x": 260.7,
+      "body_height": 458,
+      "placed": {
+        "x": 31,
+        "y": 7,
+        "canvas": [
+          392,
+          470
+        ],
+        "foot_y": 465
+      }
+    },
+    {
+      "index": 5,
+      "row": 1,
+      "col": 0,
+      "components": 9,
+      "component_sizes": [
+        84952,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "dropped_pixels": 8,
+      "bbox_in_cell": [
+        26,
+        11,
+        358,
+        462
+      ],
+      "foot_in_cell": 472,
+      "top_in_cell": 11,
+      "axis_x": 249.9,
+      "body_height": 462,
+      "placed": {
+        "x": 29,
+        "y": 3,
+        "canvas": [
+          392,
+          470
+        ],
+        "foot_y": 465
+      }
+    },
+    {
+      "index": 6,
+      "row": 1,
+      "col": 1,
+      "components": 8,
+      "component_sizes": [
+        85712,
+        6,
+        1,
+        1,
+        1,
+        1
+      ],
+      "dropped_pixels": 12,
+      "bbox_in_cell": [
+        22,
+        15,
+        362,
+        456
+      ],
+      "foot_in_cell": 470,
+      "top_in_cell": 15,
+      "axis_x": 257.4,
+      "body_height": 456,
+      "placed": {
+        "x": 17,
+        "y": 9,
+        "canvas": [
+          392,
+          470
+        ],
+        "foot_y": 465
+      }
+    },
+    {
+      "index": 7,
+      "row": 1,
+      "col": 2,
+      "components": 12,
+      "component_sizes": [
+        80323,
+        188,
+        25,
+        1,
+        1,
+        1
+      ],
+      "dropped_pixels": 222,
+      "bbox_in_cell": [
+        32,
+        14,
+        343,
+        457
+      ],
+      "foot_in_cell": 470,
+      "top_in_cell": 14,
+      "axis_x": 259.6,
+      "body_height": 457,
+      "placed": {
+        "x": 25,
+        "y": 8,
+        "canvas": [
+          392,
+          470
+        ],
+        "foot_y": 465
+      }
+    },
+    {
+      "index": 8,
+      "row": 1,
+      "col": 3,
+      "components": 11,
+      "component_sizes": [
+        81310,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "dropped_pixels": 10,
+      "bbox_in_cell": [
+        26,
+        15,
+        346,
+        456
+      ],
+      "foot_in_cell": 470,
+      "top_in_cell": 15,
+      "axis_x": 255.5,
+      "body_height": 456,
+      "placed": {
+        "x": 23,
+        "y": 9,
+        "canvas": [
+          392,
+          470
+        ],
+        "foot_y": 465
+      }
+    }
+  ],
+  "canvas": [
+    392,
+    470
+  ],
+  "alignment": {
+    "vertical": "脚底对齐（消除上下排 22px 高度差）",
+    "horizontal": "头肩部重心对齐（躯干稳定，披风自由飘动）"
+  }
+}

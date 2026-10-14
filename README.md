@@ -6,7 +6,7 @@
 
 ## 队友先看这里
 
-当前版本通过 **`codex/dynamic-jingchu-map`** 分支开发并合并到 **`main`**。队友下载 main 即可运行最新已合并版本；继续视觉开发时使用 map 分支。
+当前最新开发版本位于 **`codex/dynamic-jingchu-map`** 分支。本轮更新仅推送 map，未合并 main；队友请下载或切换到 map 分支。main 保留此前已合并版本。
 
 | 入口 | 用途 | 进度规则 |
 | --- | --- | --- |
@@ -15,10 +15,18 @@
 
 GitHub 文件页面只展示源码，不会直接运行游戏。队友可克隆或下载本分支后本地运行；本次没有部署公开试玩网站。
 
+## 当前开发更新（2026-10-14）
+
+- 独立电影式赶路：原浅黄色道路、连续水墨景物和多层视差。
+- 出发站决定角色：关羽祠为六帧8 FPS骑马；宾阳楼为完整守将十二帧8 FPS；博物馆保持探索者；张居正行走暂限 walkingTest=1 诊断，正常入口仍为探索者。
+- 三座透明建筑新素材、张居正庭院雕像及独立第一人称地标展示；完整原图和旧素材均保留。
+- 自由选站、区域雾散、文化印章和独立存档继续可用；探索任务目前仍为明确标注的模拟接口，正式小游戏尚未接入。
+- 素材存在艺术化与动作细节限制，详见 demo/journey/README.md、TEST-REPORT.md 及各素材目录说明。
+
 ## 三分钟本地试玩
 
 ```sh
-git clone --branch main https://github.com/lwt00/wusan-jingzhou.git
+git clone --branch codex/dynamic-jingchu-map https://github.com/lwt00/wusan-jingzhou.git
 cd wusan-jingzhou
 python3 -m http.server 4173
 ```

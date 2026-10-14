@@ -1,0 +1,214 @@
+{
+  "sourceSize": [
+    1536,
+    1024
+  ],
+  "sourceMode": "RGBA",
+  "alphaRange": [
+    0,
+    254
+  ],
+  "sourceSHA256": "e0187a0c7e69d043c88546a8f6357bca9dbf80f9cfb840691b8d8ed527060c1d",
+  "method": "12 alpha>128 solid silhouettes with nearest 4px original edge; connected external gray halo/shadow excluded; no repaint/stretch",
+  "motionApproved": false,
+  "exportCount": 12,
+  "canvas": [
+    420,
+    448
+  ],
+  "groundY": 420,
+  "frames": [
+    {
+      "id": 1,
+      "coreBounds": [
+        32,
+        6,
+        306,
+        334
+      ],
+      "translation": [
+        16,
+        86
+      ],
+      "scale": 1,
+      "coreHeight": 328,
+      "groundReference": 420
+    },
+    {
+      "id": 2,
+      "coreBounds": [
+        433,
+        8,
+        701,
+        337
+      ],
+      "translation": [
+        -375,
+        83
+      ],
+      "scale": 1,
+      "coreHeight": 329,
+      "groundReference": 420
+    },
+    {
+      "id": 3,
+      "coreBounds": [
+        810,
+        7,
+        1088,
+        339
+      ],
+      "translation": [
+        -768,
+        81
+      ],
+      "scale": 1,
+      "coreHeight": 332,
+      "groundReference": 420
+    },
+    {
+      "id": 4,
+      "coreBounds": [
+        1203,
+        6,
+        1468,
+        341
+      ],
+      "translation": [
+        -1156,
+        79
+      ],
+      "scale": 1,
+      "coreHeight": 335,
+      "groundReference": 420
+    },
+    {
+      "id": 5,
+      "coreBounds": [
+        28,
+        342,
+        305,
+        666
+      ],
+      "translation": [
+        45,
+        -246
+      ],
+      "scale": 1,
+      "coreHeight": 324,
+      "groundReference": 420
+    },
+    {
+      "id": 6,
+      "coreBounds": [
+        410,
+        346,
+        694,
+        667
+      ],
+      "translation": [
+        -353,
+        -247
+      ],
+      "scale": 1,
+      "coreHeight": 321,
+      "groundReference": 420
+    },
+    {
+      "id": 7,
+      "coreBounds": [
+        809,
+        347,
+        1084,
+        668
+      ],
+      "translation": [
+        -757,
+        -248
+      ],
+      "scale": 1,
+      "coreHeight": 321,
+      "groundReference": 420
+    },
+    {
+      "id": 8,
+      "coreBounds": [
+        1208,
+        347,
+        1481,
+        667
+      ],
+      "translation": [
+        -1153,
+        -247
+      ],
+      "scale": 1,
+      "coreHeight": 320,
+      "groundReference": 420
+    },
+    {
+      "id": 9,
+      "coreBounds": [
+        17,
+        669,
+        305,
+        1004
+      ],
+      "translation": [
+        30,
+        -584
+      ],
+      "scale": 1,
+      "coreHeight": 335,
+      "groundReference": 420
+    },
+    {
+      "id": 10,
+      "coreBounds": [
+        415,
+        671,
+        690,
+        1001
+      ],
+      "translation": [
+        -373,
+        -581
+      ],
+      "scale": 1,
+      "coreHeight": 330,
+      "groundReference": 420
+    },
+    {
+      "id": 11,
+      "coreBounds": [
+        797,
+        672,
+        1086,
+        998
+      ],
+      "translation": [
+        -767,
+        -578
+      ],
+      "scale": 1,
+      "coreHeight": 326,
+      "groundReference": 420
+    },
+    {
+      "id": 12,
+      "coreBounds": [
+        1187,
+        671,
+        1475,
+        1002
+      ],
+      "translation": [
+        -1159,
+        -582
+      ],
+      "scale": 1,
+      "coreHeight": 331,
+      "groundReference": 420
+    }
+  ]
+}

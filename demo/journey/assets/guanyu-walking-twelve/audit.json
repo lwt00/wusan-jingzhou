@@ -1,0 +1,746 @@
+{
+  "source": {
+    "path": "/Users/xiongmengyao/.workbuddy/clipboard-images/clipboard-2026-10-13T15-12-30-135Z-b91c506d.jpg",
+    "size": [
+      1774,
+      887
+    ]
+  },
+  "grid": [
+    6,
+    2
+  ],
+  "equal_split_x": [
+    296,
+    591,
+    887,
+    1183,
+    1478
+  ],
+  "real_cuts_x": {
+    "0": [
+      345,
+      635,
+      923,
+      1219,
+      1495
+    ],
+    "1": [
+      339,
+      641,
+      920,
+      1220,
+      1509
+    ]
+  },
+  "y_bounds": [
+    0,
+    444,
+    887
+  ],
+  "frames": [
+    {
+      "index": 1,
+      "row": 0,
+      "col": 0,
+      "cell_abs": [
+        0,
+        0,
+        345,
+        444
+      ],
+      "components": 37,
+      "component_sizes": [
+        69609,
+        2,
+        2,
+        1,
+        1
+      ],
+      "dropped_pixels": 38,
+      "bbox_in_cell": [
+        13,
+        31,
+        332,
+        404
+      ],
+      "foot_in_cell": 434,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 9,
+      "top_in_cell": 31,
+      "axis_x": 225.9,
+      "body_height": 404,
+      "contact_runs": [
+        [
+          147,
+          172
+        ],
+        [
+          286,
+          307
+        ]
+      ],
+      "contact_cx": [
+        159.5,
+        296.5
+      ],
+      "contact_widths": [
+        26,
+        22
+      ],
+      "placed": {
+        "x": 9,
+        "y": 5,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 2,
+      "row": 0,
+      "col": 1,
+      "cell_abs": [
+        345,
+        0,
+        635,
+        444
+      ],
+      "components": 34,
+      "component_sizes": [
+        59972,
+        2,
+        1,
+        1,
+        1
+      ],
+      "dropped_pixels": 34,
+      "bbox_in_cell": [
+        9,
+        32,
+        281,
+        402
+      ],
+      "foot_in_cell": 433,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 10,
+      "top_in_cell": 32,
+      "axis_x": 190.1,
+      "body_height": 402,
+      "contact_runs": [
+        [
+          129,
+          143
+        ],
+        [
+          217,
+          273
+        ]
+      ],
+      "contact_cx": [
+        136.0,
+        245.0
+      ],
+      "contact_widths": [
+        15,
+        57
+      ],
+      "placed": {
+        "x": 41,
+        "y": 7,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 3,
+      "row": 0,
+      "col": 2,
+      "cell_abs": [
+        635,
+        0,
+        923,
+        444
+      ],
+      "components": 31,
+      "component_sizes": [
+        58576,
+        2,
+        1,
+        1,
+        1
+      ],
+      "dropped_pixels": 31,
+      "bbox_in_cell": [
+        20,
+        34,
+        268,
+        400
+      ],
+      "foot_in_cell": 433,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 10,
+      "top_in_cell": 34,
+      "axis_x": 187.4,
+      "body_height": 400,
+      "contact_runs": [
+        [
+          127,
+          146
+        ],
+        [
+          207,
+          264
+        ]
+      ],
+      "contact_cx": [
+        136.5,
+        235.5
+      ],
+      "contact_widths": [
+        20,
+        58
+      ],
+      "placed": {
+        "x": 55,
+        "y": 9,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 4,
+      "row": 0,
+      "col": 3,
+      "cell_abs": [
+        923,
+        0,
+        1219,
+        444
+      ],
+      "components": 30,
+      "component_sizes": [
+        59328,
+        3,
+        3,
+        2,
+        1
+      ],
+      "dropped_pixels": 34,
+      "bbox_in_cell": [
+        15,
+        33,
+        281,
+        402
+      ],
+      "foot_in_cell": 434,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 9,
+      "top_in_cell": 33,
+      "axis_x": 181.3,
+      "body_height": 402,
+      "contact_runs": [
+        [
+          115,
+          141
+        ],
+        [
+          235,
+          274
+        ]
+      ],
+      "contact_cx": [
+        128.0,
+        254.5
+      ],
+      "contact_widths": [
+        27,
+        40
+      ],
+      "placed": {
+        "x": 56,
+        "y": 7,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 5,
+      "row": 0,
+      "col": 4,
+      "cell_abs": [
+        1219,
+        0,
+        1495,
+        444
+      ],
+      "components": 26,
+      "component_sizes": [
+        56088,
+        2,
+        2,
+        2,
+        2
+      ],
+      "dropped_pixels": 29,
+      "bbox_in_cell": [
+        20,
+        36,
+        256,
+        399
+      ],
+      "foot_in_cell": 434,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 9,
+      "top_in_cell": 36,
+      "axis_x": 181.6,
+      "body_height": 399,
+      "contact_runs": [
+        [
+          122,
+          137
+        ],
+        [
+          205,
+          261
+        ]
+      ],
+      "contact_cx": [
+        129.5,
+        233.0
+      ],
+      "contact_widths": [
+        16,
+        57
+      ],
+      "placed": {
+        "x": 60,
+        "y": 10,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 6,
+      "row": 0,
+      "col": 5,
+      "cell_abs": [
+        1495,
+        0,
+        1774,
+        444
+      ],
+      "components": 40,
+      "component_sizes": [
+        56744,
+        1,
+        1,
+        1,
+        1
+      ],
+      "dropped_pixels": 39,
+      "bbox_in_cell": [
+        9,
+        36,
+        270,
+        398
+      ],
+      "foot_in_cell": 433,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 10,
+      "top_in_cell": 36,
+      "axis_x": 190.2,
+      "body_height": 398,
+      "contact_runs": [
+        [
+          126,
+          149
+        ],
+        [
+          195,
+          252
+        ]
+      ],
+      "contact_cx": [
+        137.5,
+        223.5
+      ],
+      "contact_widths": [
+        24,
+        58
+      ],
+      "placed": {
+        "x": 41,
+        "y": 11,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 7,
+      "row": 1,
+      "col": 0,
+      "cell_abs": [
+        0,
+        444,
+        339,
+        887
+      ],
+      "components": 41,
+      "component_sizes": [
+        68502,
+        2,
+        2,
+        1,
+        1
+      ],
+      "dropped_pixels": 42,
+      "bbox_in_cell": [
+        9,
+        22,
+        330,
+        402
+      ],
+      "foot_in_cell": 423,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 19,
+      "top_in_cell": 22,
+      "axis_x": 215.2,
+      "body_height": 402,
+      "contact_runs": [
+        [
+          138,
+          165
+        ],
+        [
+          284,
+          303
+        ]
+      ],
+      "contact_cx": [
+        151.5,
+        293.5
+      ],
+      "contact_widths": [
+        28,
+        20
+      ],
+      "placed": {
+        "x": 16,
+        "y": 7,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 8,
+      "row": 1,
+      "col": 1,
+      "cell_abs": [
+        339,
+        444,
+        641,
+        887
+      ],
+      "components": 48,
+      "component_sizes": [
+        63735,
+        13,
+        2,
+        2,
+        2
+      ],
+      "dropped_pixels": 62,
+      "bbox_in_cell": [
+        1,
+        25,
+        301,
+        398
+      ],
+      "foot_in_cell": 422,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 20,
+      "top_in_cell": 25,
+      "axis_x": 187.0,
+      "body_height": 398,
+      "contact_runs": [
+        [
+          111,
+          136
+        ],
+        [
+          239,
+          285
+        ]
+      ],
+      "contact_cx": [
+        123.5,
+        262.0
+      ],
+      "contact_widths": [
+        26,
+        47
+      ],
+      "placed": {
+        "x": 36,
+        "y": 11,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 9,
+      "row": 1,
+      "col": 2,
+      "cell_abs": [
+        641,
+        444,
+        920,
+        887
+      ],
+      "components": 46,
+      "component_sizes": [
+        58172,
+        3,
+        2,
+        2,
+        2
+      ],
+      "dropped_pixels": 50,
+      "bbox_in_cell": [
+        7,
+        24,
+        272,
+        398
+      ],
+      "foot_in_cell": 421,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 21,
+      "top_in_cell": 24,
+      "axis_x": 170.0,
+      "body_height": 398,
+      "contact_runs": [
+        [
+          101,
+          120
+        ],
+        [
+          211,
+          261
+        ]
+      ],
+      "contact_cx": [
+        110.5,
+        236.0
+      ],
+      "contact_widths": [
+        20,
+        51
+      ],
+      "placed": {
+        "x": 59,
+        "y": 11,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 10,
+      "row": 1,
+      "col": 3,
+      "cell_abs": [
+        920,
+        444,
+        1220,
+        887
+      ],
+      "components": 43,
+      "component_sizes": [
+        60036,
+        5,
+        2,
+        1,
+        1
+      ],
+      "dropped_pixels": 47,
+      "bbox_in_cell": [
+        10,
+        23,
+        290,
+        399
+      ],
+      "foot_in_cell": 421,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 21,
+      "top_in_cell": 23,
+      "axis_x": 186.4,
+      "body_height": 399,
+      "contact_runs": [
+        [
+          122,
+          137
+        ],
+        [
+          216,
+          273
+        ]
+      ],
+      "contact_cx": [
+        129.5,
+        244.5
+      ],
+      "contact_widths": [
+        16,
+        58
+      ],
+      "placed": {
+        "x": 46,
+        "y": 10,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 11,
+      "row": 1,
+      "col": 4,
+      "cell_abs": [
+        1220,
+        444,
+        1509,
+        887
+      ],
+      "components": 60,
+      "component_sizes": [
+        59805,
+        4,
+        2,
+        2,
+        2
+      ],
+      "dropped_pixels": 65,
+      "bbox_in_cell": [
+        10,
+        23,
+        279,
+        398
+      ],
+      "foot_in_cell": 420,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 22,
+      "top_in_cell": 23,
+      "axis_x": 182.8,
+      "body_height": 398,
+      "contact_runs": [
+        [
+          112,
+          129
+        ],
+        [
+          228,
+          280
+        ]
+      ],
+      "contact_cx": [
+        120.5,
+        254.0
+      ],
+      "contact_widths": [
+        18,
+        53
+      ],
+      "placed": {
+        "x": 49,
+        "y": 11,
+        "foot_y": 409
+      }
+    },
+    {
+      "index": 12,
+      "row": 1,
+      "col": 5,
+      "cell_abs": [
+        1509,
+        444,
+        1774,
+        887
+      ],
+      "components": 39,
+      "component_sizes": [
+        58484,
+        6,
+        4,
+        2,
+        2
+      ],
+      "dropped_pixels": 49,
+      "bbox_in_cell": [
+        1,
+        22,
+        257,
+        400
+      ],
+      "foot_in_cell": 421,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 21,
+      "top_in_cell": 22,
+      "axis_x": 160.2,
+      "body_height": 400,
+      "contact_runs": [
+        [
+          96,
+          112
+        ],
+        [
+          183,
+          237
+        ]
+      ],
+      "contact_cx": [
+        104.0,
+        210.0
+      ],
+      "contact_widths": [
+        17,
+        55
+      ],
+      "placed": {
+        "x": 63,
+        "y": 9,
+        "foot_y": 409
+      }
+    }
+  ],
+  "canvas": [
+    355,
+    416
+  ],
+  "foot_baseline_y": 409,
+  "alignment": {
+    "vertical": "脚底基线对齐",
+    "horizontal": "头肩带重心对齐"
+  },
+  "row_foot_delta": {
+    "row0": [
+      434,
+      433,
+      433,
+      434,
+      434,
+      433
+    ],
+    "row1": [
+      423,
+      422,
+      421,
+      421,
+      420,
+      421
+    ],
+    "note": "下排脚底相对格底更靠上，故必须按脚底对齐"
+  },
+  "adjacent_diff": [
+    0.1276,
+    0.0685,
+    0.0911,
+    0.1018,
+    0.0876,
+    0.1552,
+    0.0815,
+    0.0883,
+    0.0577,
+    0.0631,
+    0.0834,
+    0.1437
+  ],
+  "loop_closure": 0.1437
+}

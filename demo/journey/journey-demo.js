@@ -3,7 +3,7 @@
   const host = document.getElementById('stage');
   const status = document.getElementById('status');
   const resetButton=document.getElementById('reset-progress'), skip=document.getElementById('skip');
-  const panel=document.getElementById('explore-panel'), begin=document.getElementById('begin-explore'), finish=document.getElementById('finish-explore');
+  const begin=document.getElementById('begin-explore');
   const back=document.getElementById('back-map'), intro=document.getElementById('intro'), video=document.getElementById('prologue');
   let introActive=true;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -20,6 +20,13 @@
     {id:'zhangjuzheng',name:'张居正故居',x:1000,theme:'历史人物与改革精神',mark:'革新印记',guide:'在庭院间开启一段关于责任与革新的文化探索。',focusY:335},
     {id:'museum',name:'荆州博物馆',x:1360,theme:'荆楚文化与文明传承',mark:'传承印记',guide:'从文化传承出发，思考文物保护与城市记忆。',focusY:460}
   ];
+  // u/v 是建筑透明图层内的入口台阶锚点；换建筑素材后仅需校准这里。
+  const standPoints={
+    guanyu:{u:.5,v:.88,scale:.92,face:1,footSpread:3,stepSlope:0},
+    binyang:{u:.452,v:.91,scale:.86,face:1,footSpread:2.8,stepSlope:-.06},
+    zhangjuzheng:{u:.49,v:.834,scale:.86,face:-1,footSpread:3,stepSlope:0},
+    museum:{u:.58,v:.695,scale:1,face:-1,footSpread:3.2,stepSlope:-.12}
+  };
   const W=1600,H=820,START=stations[0].x;
   const SAVE_KEY='wusan-journey-demo-progress-v1';
   let storageNotice='';
@@ -37,13 +44,14 @@
     catch(error){storageNotice='浏览器无法保存演示进度；本页仍可继续探索。';}
     document.getElementById('storage-note').textContent=storageNotice;
   }
-  let stationIndex=0,targetIndex=null,legStart=START,legEnd=START,direction=1,distanceWalked=0;
+  let stationIndex=0,targetIndex=null,legStart=START,legEnd=START,direction=1;
   const layers=[];
   let seed=211,ambient=0,x=START,mode='idle',stopped=false,elapsed=0,legDuration=4;
   let revealProgress=0,phaseFrom=null,pendingStamp=null;
   const camera={x:W/2,y:H/2,zoom:1};
   let viewScale=1;
-  const traveled=[];
+  const travelModes=['travel-depart','traveling','travel-arrive','travel-cancel'];
+  let travelReady=false,travelError='',travelSwitchDone=false,travelRequest=0;
   function random(){seed=(seed*16807)%2147483647;return(seed-1)/2147483646;}
   function layer(speed){const c=new Container();world.addChild(c);layers.push({c,speed});return c;}
   function rect(c,x,y,w,h,color,alpha=1){const g=new Graphics().rect(x,y,w,h).fill({color,alpha});c.addChild(g);return g;}
@@ -64,11 +72,23 @@
   const colorFilters=stations.map(()=>{const filter=new PIXI.ColorMatrixFilter();filter.desaturate();return filter;});
   try {
     for(const [i,station] of stations.entries()){
-      const image=new Image();image.src=`assets/${station.id}-layer.png`;await image.decode();
+      const mapArt=window.WusanLandmarkConfig.landmarks[station.id].map;
+      const image=new Image();image.src=mapArt?.image||`assets/${station.id}-layer.png`;await image.decode();
       const sprite=new Sprite(Texture.from(image));sprite.anchor.set(.5,1);
-      const size=[345,315,355,350][i];sprite.width=size;sprite.height=size;
+      const size=mapArt?.width||[345,315,355,350][i];sprite.width=size;sprite.height=mapArt?.image?size*image.naturalHeight/image.naturalWidth:size;
+      if(mapArt?.stand)Object.assign(standPoints[station.id],mapArt.stand);
       sprite.position.set(station.x,[434,580,475,610][i]);
       architecture.addChild(sprite);buildingSprites.push(sprite);
+      if(mapArt?.statue){
+        try{
+          const art=mapArt.statue,source=new Image();source.src=art.image;await source.decode();
+          const statue=new Sprite(Texture.from(source));statue.anchor.set(.5,1);
+          statue.eventMode='none';sprite.addChild(statue);
+          // Sprite children use texture units; compensate parent sprite scale to keep world position/size.
+          statue.position.set((art.u-.5)*image.naturalWidth,(art.v-1)*image.naturalHeight);
+          statue.scale.set(art.height/source.naturalHeight/sprite.scale.y);
+        }catch(error){console.warn('庭院雕像暂未加载，保留原建筑');}
+      }
     }
   } catch(error){status.textContent='建筑图层加载失败，请刷新检查素材';app.destroy(true,{children:true,texture:true,textureSource:true});return;}
   // 全场景进度雾共用一个世界坐标羽化遮罩，四个连续文化区域完整覆盖画幅。
@@ -150,23 +170,8 @@
     }
   }catch(error){status.textContent='部分雾纹理加载失败，请检查素材并刷新';console.error(error);}
   const ground=layer(1);
-  const trail=new Graphics();ground.addChild(trail);
-  let lastTrailX=-1;
   const marker=document.createElement('div');marker.className='traveller-marker';marker.textContent='你在这里';host.appendChild(marker);
 
-  // 按插画道路校准的行走中心线，避免人物穿过建筑。
-  const roadPoints=[[250,414],[340,444],[440,505],[540,548],[620,560],[710,550],[805,498],[900,461],[1000,455],[1100,480],[1200,540],[1280,570],[1360,590]];
-  function roadY(px){
-    for(let i=1;i<roadPoints.length;i++)if(px<=roadPoints[i][0]){
-      const [ax,ay]=roadPoints[i-1],[bx,by]=roadPoints[i];const u=Math.max(0,(px-ax)/(bx-ax));
-      return ay+(by-ay)*(u*u*(3-2*u));
-    }
-    return roadPoints[roadPoints.length-1][1];
-  }
-  const seals=stations.map(station=>{
-    const seal=new Graphics().circle(0,0,15).fill({color:0xf0eee5,alpha:.9}).stroke({color:0x92764a,width:1});
-    seal.position.set(station.x,roadY(station.x));ground.addChild(seal);return seal;
-  });
   const labels=stations.map((station,i)=>{
     const label=document.createElement('button');label.type='button';label.className='landmark-label';label.dataset.stationId=station.id;label.addEventListener('click',()=>chooseStation(i));
     label.innerHTML=`<span class="chapter">第${['一','二','三','四'][i]}境</span><strong>${station.name}</strong><small>尚未抵达</small><span class="completion-stamp" aria-hidden="true">${station.mark.slice(0,2)}<br>印记</span>`;
@@ -174,10 +179,26 @@
     host.appendChild(label);return {label,x:station.x,y:[135,290,180,320][i]};
   });
   const personLayer=layer(1);world.setChildIndex(ground,world.getChildIndex(fogLayer));
-  const person=new Container();person.scale.set(1.35);personLayer.addChild(person);const legs=new Graphics();person.addChild(legs);
+  const contactShadow=new Graphics().ellipse(0,0,6.5,1.5).fill({color:0x405144,alpha:.18});personLayer.addChild(contactShadow);
+  const person=new Container();personLayer.addChild(person);const legs=new Graphics();person.addChild(legs);
+  const footClip=new Graphics();person.addChild(footClip);person.mask=footClip;let clippedStation=null;
   const body=new Container();person.addChild(body);polygon(body,[-6,-29,6,-29,8,-12,-7,-12],0x466e65);rect(body,-4,-34,8,8,0xc5b597);body.addChild(new Graphics().circle(0,-36,5).fill(0x566250));const arm=new Graphics().moveTo(4,-27).lineTo(10,-19).stroke({color:0x566250,width:3});body.addChild(arm);rect(body,-11,-27,6,10,0x92764a);
-  // 当前美术为完整插画，不假装整图缩放就是分层动画。
-  const branches=[];
+  const travelScene=new WusanTravelScene(PIXI,app,window.WusanTravelConfig);
+  const landmarkView=new WusanLandmarkView(window.WusanLandmarkConfig,{
+    onExplore(){if(mode!=='awaiting-explore')return;setPhase('exploring-demo',window.WusanLandmarkConfig.landmarks[stations[stationIndex].id].game?.mode==='mock'?'开发模拟探索 · 可验证区域雾散与盖章':'小游戏入口占位 · 不计入通关');landmarkView.openGame();},
+    onBack:returnToOverview,
+    onDisplay(){landmarkView.displayAgain();setPhase('awaiting-explore','请选择开始探索，或返回长卷');begin.focus({preventScroll:true});},
+    onComplete(id){if(mode!=='exploring-demo'||id!==stations[stationIndex].id)return;landmarkView.closeGame();travelSwitchDone=false;setPhase('landmark-reveal-return','探索完成 · 返回长卷揭晓文化印记');if(reduced.matches)endLandmarkTransition();}
+  });
+  const travelTransition=document.getElementById('travel-transition'),travelNote=document.getElementById('travel-scene-note');
+  const transitionDuration=Math.max(.6,window.WusanTravelConfig?.transition?.duration||1.15);
+  if(window.WusanTravelConfig?.transition?.cloudSrc)travelTransition.style.setProperty('--travel-cloud-image',`url("${new URL(window.WusanTravelConfig.transition.cloudSrc,document.baseURI).href}")`);
+  function transitionPose(u){
+    const opacity=Math.sin(Math.PI*Math.max(0,Math.min(1,u)));
+    travelTransition.style.setProperty('--travel-transition-alpha',String(opacity));
+    travelTransition.style.setProperty('--travel-cloud-shift',`${u*30-15}%`);
+  }
+  function stopTravelScene(){travelRequest++;travelScene.cancel();world.visible=true;travelNote.hidden=true;transitionPose(0);}
   const mist=layer(.68), clouds=[];
   // 一张 512×128 透明程序纹理复用于所有云雾，不加载或裁切旧图片。
   const cloudCanvas=document.createElement('canvas');cloudCanvas.width=512;cloudCanvas.height=128;
@@ -195,44 +216,48 @@
     world.x=drawW<=width?(width-drawW)/2:clamp(width*.5-camera.x*scale,width-drawW,0);
     world.y=drawH<=height?(height-drawH)/2:clamp(height*.43-camera.y*scale,height-drawH,0);
     // 真实建筑和地形严格对齐；云雾前景有微量视差，不移动整幅背景冒充景深。
-    layers.forEach(({c,speed})=>{c.x=(speed===.68?(camera.x-W/2)*.04:0);});
+    layers.forEach(({c,speed})=>{c.x=speed===.68?(camera.x-W/2)*.04:0;});
+    host.dataset.view=landmarkView.active?'first-person-landmark':travelScene.root.visible?'independent-travel':mode==='idle'?'overview':'landmark';
+    host.dataset.travelPhase=travelModes.includes(mode)?mode:'';
     labels.forEach(({label,x:lx,y:ly},i)=>{
       const px=world.x+lx*scale,py=world.y+ly*scale;
       label.style.transform=`translate(${px}px,${py}px) translate(-50%,-100%)`;
       label.hidden=mode!=='idle'||introActive;
     });
-    marker.style.transform=`translate(${world.x+x*scale}px,${world.y+(roadY(x)-63)*scale}px) translate(-50%,-100%)`;
-    marker.hidden=introActive||['focusing','awaiting-explore','exploring-demo','revealing'].includes(mode);
+    const landing=landmarkLanding();
+    marker.style.transform=`translate(${world.x+landing.x*scale}px,${world.y+(landing.y-42*landing.scale-9)*scale}px) translate(-50%,-100%)`;
+    marker.hidden=introActive||travelModes.includes(mode)||['focusing','awaiting-explore','exploring-demo','revealing'].includes(mode);
     host.dataset.mode=mode;host.dataset.station=stations[stationIndex].id;
     host.dataset.target=targetIndex===null?'':stations[targetIndex].id;
     host.dataset.character=x.toFixed(2);host.dataset.direction=String(direction);
     host.dataset.camera=JSON.stringify(camera);
   }
+  function landmarkLanding(){
+    const index=mode==='travel-arrive'&&travelSwitchDone&&targetIndex!==null?targetIndex:stationIndex;
+    const station=stations[index],sprite=buildingSprites[index],pose=standPoints[station.id];
+    return {...pose,id:station.id,x:sprite.x+(pose.u-sprite.anchor.x)*sprite.width,y:sprite.y+(pose.v-sprite.anchor.y)*sprite.height};
+  }
   function renderPose(){
-    person.position.set(x,roadY(x));person.scale.set(1.35*direction,1.35);
-    const walking=mode==='traveling'||(mode==='returning'&&Math.abs(legEnd-legStart)>.5),phase=distanceWalked/43.2;
-    legs.clear();for(let i=0;i<2;i++){
-      const p=(phase+i*.5)%1,foot=walking?(p<.5?8-32*p:-8+(p-.5)*32):(i?3:-3);
-      const lift=walking&&p>=.5?-Math.sin((p-.5)*Math.PI*2)*4:0;
-      legs.moveTo(i?2:-2,-13).lineTo(foot,lift);
+    const landing=landmarkLanding();
+    // 地图人物只有入口待机；位置不从路线上插值，左右赶路完全由独立模块承担。
+    person.position.set(landing.x,landing.y);person.scale.set(landing.scale*landing.face,landing.scale);
+    contactShadow.position.set(landing.x,landing.y);contactShadow.scale.set(landing.scale);contactShadow.rotation=Math.atan(landing.stepSlope);
+    if(clippedStation!==landing.id){
+      const floor=px=>px*landing.stepSlope*landing.face-Math.abs(landing.footSpread*landing.stepSlope);
+      legs.clear();for(let i=0;i<2;i++){const foot=(i?1:-1)*landing.footSpread;legs.moveTo(i?2:-2,-13).lineTo(foot,floor(foot));}legs.stroke({color:0x4e594c,width:3});
+      // 台阶前沿截住脚底以下笔画，脚底不会穿入阶面；主体站在中央，避开两侧栏杆。
+      footClip.clear().poly([-24,-70,24,-70,24,floor(24),-24,floor(-24)]).fill(0xffffff);clippedStation=landing.id;
     }
-    legs.stroke({color:0x4e594c,width:3});body.y=walking?-Math.abs(Math.sin(phase*Math.PI*2))*.7:0;arm.rotation=walking?Math.sin(phase*Math.PI*2)*.13:0;
-    marker.textContent=mode==='traveling'?'正在前往 '+stations[targetIndex].name:walking?'返回地标':'你在这里';
-    if(lastTrailX!==x){
-      trail.clear();
-      function stroke(a,b,color,width){if(b-a<.1)return;trail.moveTo(a,roadY(a));for(let q=a+5;q<b;q+=5)trail.lineTo(q,roadY(q));trail.lineTo(b,roadY(b));trail.stroke({color,width,alpha:.85});}
-      stroke(START,stations[3].x,0xfaf1d9,7);
-      for(const [a,b] of traveled)stroke(a,b,0xb47e30,4);
-      if(walking)stroke(Math.min(legStart,x),Math.max(legStart,x),0xb47e30,4);
-      lastTrailX=x;
-    }
+    const breath=reduced.matches?0:Math.sin(ambient*1.4);
+    body.y=0;body.scale.y=1+breath*.007;arm.rotation=breath*.025;
+    marker.textContent='你在这里';host.dataset.landing=JSON.stringify({id:landing.id,x:landing.x,y:landing.y,scale:landing.scale});
     applyCamera();
   }
   function updateFog(dt=0){
     maskClock+=dt;
     fogPuffs.forEach((f,i)=>{
       const arriving=i===stationIndex&&['focusing','awaiting-explore','exploring-demo','revealing'].includes(mode);
-      const target=completed[i]?1:arriving?.62:0;
+      const target=completed[i]?1:arriving?(mode==='exploring-demo'?.76:.62):0;
       if(mode==='revealing'&&i===stationIndex)f.wave=revealProgress;
       else if(reduced.matches)f.wave=0;
       else f.wave*=Math.exp(-dt*4);
@@ -259,56 +284,62 @@
       label.dataset.state=completed[i]?'completed':'pending';
       label.querySelector('small').textContent=completed[i]?stations[i].mark+' · 可重访':'未探索 · 点击前往';
       label.setAttribute('aria-label',`${stations[i].name}，${completed[i]?'已获'+stations[i].mark:'未探索'}，点击前往`);
-      seals[i].tint=completed[i]?0xba6750:i===stationIndex?0xe1b663:0xffffff;
     });
-    skip.hidden=!['traveling','revealing'].includes(mode);skip.disabled=introActive;
+    skip.hidden=!['travel-depart','traveling','revealing'].includes(mode);skip.disabled=introActive;
     skip.textContent=mode==='revealing'?'跳过雾散演出':'跳过行进';
-    back.hidden=mode==='idle';back.disabled=mode==='returning'||introActive;
+    back.hidden=mode==='idle';back.disabled=mode==='returning'||mode==='travel-cancel'||introActive;
     resetButton.disabled=introActive;
     document.getElementById('watch-prologue').disabled=!active;
-    const panelVisible=['awaiting-explore','exploring-demo','revealing'].includes(mode)&&!introActive;
-    panel.hidden=!panelVisible;
-    if(panelVisible){
-      document.getElementById('place-name').textContent=selected.name;
-      document.getElementById('place-theme').textContent=selected.theme;
-      document.getElementById('place-guide').textContent=selected.guide;
-      document.getElementById('demo-description').hidden=mode==='awaiting-explore';
-      begin.hidden=mode!=='awaiting-explore';begin.textContent=completed[stationIndex]?'再次探索':'开始探索';
-      finish.hidden=mode!=='exploring-demo';
-      document.getElementById('reveal-note').hidden=mode!=='revealing';
-    }
+    if(landmarkView.active)landmarkView.setStage(mode,completed[stationIndex]);
     document.body.dataset.phase=mode;
     renderPose();updateFog();app.render();
   }
   function setPhase(next,message){mode=next;elapsed=0;if(message)status.textContent=message;controls();}
-  function focusDestination(){
-    // 基于每座建筑的独立锚点；缩放受建筑高度和当前可用空间约束。
-    const s=stations[stationIndex],portrait=host.clientWidth<600;
-    const cap=(host.clientHeight*(portrait?.43:.55))/(355*viewScale);
-    return {x:s.x,y:s.focusY,zoom:clamp(cap,1.12,portrait?2.25:1.65)};
-  }
   function cameraBlend(goal,t){for(const key of ['x','y','zoom'])camera[key]=phaseFrom[key]+(goal[key]-phaseFrom[key])*smooth(t);}
+  function showLandmark(index){world.visible=false;Object.assign(camera,{x:W/2,y:H/2,zoom:1});landmarkView.show(stations[index].id);}
   function focusStation(){
     stationIndex=targetIndex===null?stationIndex:targetIndex;targetIndex=null;x=stations[stationIndex].x;
-    phaseFrom={...camera};setPhase('focusing',`已抵达${stations[stationIndex].name} · 正在聚焦`);
-    if(reduced.matches){Object.assign(camera,focusDestination());setPhase('awaiting-explore','请选择开始探索，或返回画卷');begin.focus({preventScroll:true});}
+    showLandmark(stationIndex);setPhase('awaiting-explore','请选择开始探索，或返回长卷');begin.focus({preventScroll:true});
+  }
+  function endLandmarkTransition(){
+    const phase=mode;transitionPose(0);
+    if(phase==='landmark-enter'){focusStation();return;}
+    landmarkView.hide();world.visible=true;Object.assign(camera,{x:W/2,y:H/2,zoom:1});
+    if(phase==='landmark-reveal-return'){revealProgress=0;setPhase('revealing',`探索完成 · ${stations[stationIndex].mark}即将点亮`);if(reduced.matches){revealProgress=1;completeReveal();}}
+    else finishReturn();
   }
   function chooseStation(index){
     if(mode!=='idle'||introActive||!Number.isInteger(index)||index<0||index>=stations.length)return;
     targetIndex=index;
-    if(Math.abs(x-stations[index].x)<.5){focusStation();return;}
+    landmarkView.prepare(stations[index].id);
+    if(Math.abs(x-stations[index].x)<.5){travelSwitchDone=false;setPhase('landmark-enter','云雾渐开 · 走入文化地标');if(reduced.matches)endLandmarkTransition();return;}
     legStart=x;legEnd=stations[index].x;direction=Math.sign(legEnd-legStart);legDuration=clamp(Math.abs(legEnd-legStart)/145,2.5,9);
-    setPhase('traveling',`正在前往${stations[index].name} · 可跳过行进`);
-    if(reduced.matches)arrive();
+    if(reduced.matches){setPhase('traveling');arrive();return;}
+    travelReady=false;travelError='';travelSwitchDone=false;const request=++travelRequest;
+    setPhase('travel-depart',`云雾启程 · 前往${stations[index].name}`);
+    travelScene.prepare(stations[stationIndex].id,stations[index].id,direction).then(ready=>{
+      if(request!==travelRequest)return;
+      travelReady=ready;travelError=travelScene.warning;
+      if(ready&&Number.isFinite(travelScene.scene.duration))legDuration=Math.max(2,Math.min(30,travelScene.scene.duration));
+    }).catch(()=>{if(request===travelRequest){travelReady=true;travelError='赶路场景暂不可用，将直接抵达目标';}});
+  }
+  function startTravelArrival(){
+    if(!travelModes.includes(mode)||mode==='travel-arrive'||mode==='travel-cancel')return;
+    travelSwitchDone=false;setPhase('travel-arrive',`云雾渐开 · 即将抵达${stations[targetIndex].name}`);
   }
   function arrive(){
-    if(mode!=='traveling')return;
-    x=legEnd;traveled.push([Math.min(legStart,x),Math.max(legStart,x)]);lastTrailX=-1;focusStation();
+    if(!travelModes.includes(mode))return;
+    stopTravelScene();x=legEnd;focusStation();
   }
+
   function returnToOverview(){
     if(mode==='idle'||mode==='returning'||introActive)return;
-    // 中途返回只结束旅程，不授予印记；沿道路回到最近地标。
-    if(mode==='traveling')stationIndex=stations.reduce((best,s,i)=>Math.abs(s.x-x)<Math.abs(stations[best].x-x)?i:best,0);
+    // 独立赶路不改变地图位置，中途退出通过云雾返回出发地点，不授予印记。
+    if(travelModes.includes(mode)){
+      if(mode==='travel-cancel')return;travelSwitchDone=false;setPhase('travel-cancel','中止赶路 · 返回出发地');
+      if(reduced.matches){stopTravelScene();targetIndex=null;finishReturn();}return;
+    }
+    if(landmarkView.active||mode==='landmark-enter'){landmarkView.closeGame();travelSwitchDone=false;setPhase('landmark-return','云雾归卷 · 返回全景');if(reduced.matches)endLandmarkTransition();return;}
     targetIndex=null;phaseFrom={...camera};legStart=x;legEnd=stations[stationIndex].x;if(Math.abs(legEnd-legStart)>.5)direction=Math.sign(legEnd-legStart);
     setPhase('returning','返回画卷 · 可以继续任选地点');
     if(reduced.matches)finishReturn();
@@ -331,21 +362,12 @@
     pendingStamp=stationIndex;
     returnToOverview();
   }
-  begin.addEventListener('click',()=>{
-    if(mode!=='awaiting-explore')return;
-    setPhase('exploring-demo','开发演示功能，正式关卡尚未接入');finish.focus({preventScroll:true});
-  });
-  finish.addEventListener('click',()=>{
-    if(mode!=='exploring-demo')return;
-    revealProgress=0;setPhase('revealing',`驱散${stations[stationIndex].name}的迷雾 · ${stations[stationIndex].mark}即将点亮`);
-    if(reduced.matches){revealProgress=1;completeReveal();}
-  });
   back.addEventListener('click',returnToOverview);
-  skip.addEventListener('click',()=>{if(mode==='traveling')arrive();else if(mode==='revealing'){revealProgress=1;completeReveal();}});
+  skip.addEventListener('click',()=>{if(travelModes.includes(mode)){if(reduced.matches)arrive();else startTravelArrival();}else if(mode==='revealing'){revealProgress=1;completeReveal();}});
   resetButton.addEventListener('click',()=>{
     if(introActive||!confirm('清除四站的模拟探索记录？仅重置本 Demo，不影响旧版游戏存档。'))return;
     try{localStorage.removeItem(SAVE_KEY);storageNotice='';}catch(error){storageNotice='演示存档无法清除，本页已重置；刷新后可能恢复旧记录。';}
-    completed.fill(false);pendingStamp=null;stationIndex=0;targetIndex=null;x=START;direction=1;traveled.length=0;lastTrailX=-1;
+    stopTravelScene();landmarkView.hide();completed.fill(false);pendingStamp=null;stationIndex=0;targetIndex=null;x=START;direction=1;
     Object.assign(camera,{x:W/2,y:H/2,zoom:1});setPhase('idle','演示进度已重置 · 四处地标均可探索');
   });
   // 单一背景视频，通过云雾与透明度叠化连接到已渲染的长卷。
@@ -394,24 +416,43 @@
   app.ticker.add(ticker=>{
     if(stopped||document.hidden||introActive)return;
     const dt=Math.min(ticker.elapsedMS/1000,.08);ambient+=dt;elapsed+=dt;
-    if(mode==='traveling'){
-      const u=clamp(elapsed/legDuration,0,1),oldX=x;x=legStart+(legEnd-legStart)*smooth(u);distanceWalked+=Math.abs(x-oldX);
-      const factor=1-Math.exp(-6*dt);camera.x+=(x-camera.x)*factor;camera.y+=(roadY(x)-60-camera.y)*factor;camera.zoom+=(1.18-camera.zoom)*factor;
-      if(u===1)arrive();
-    }else if(mode==='focusing'){
-      const u=clamp(elapsed/1.3,0,1);cameraBlend(focusDestination(),u);
-      if(u===1){setPhase('awaiting-explore','请选择开始探索，或返回画卷');begin.focus({preventScroll:true});}
+    if(['landmark-enter','landmark-return','landmark-reveal-return'].includes(mode)){
+      const u=clamp(elapsed/transitionDuration,0,1);transitionPose(u);
+      if(u>=.5&&!travelSwitchDone){travelSwitchDone=true;if(mode==='landmark-enter')showLandmark(targetIndex??stationIndex);else{landmarkView.hide();world.visible=true;}}
+      if(u===1)endLandmarkTransition();
+    }else if(mode==='travel-depart'||mode==='travel-arrive'||mode==='travel-cancel'){
+      if(mode==='travel-depart'&&elapsed>=transitionDuration*.5&&!travelReady){elapsed=transitionDuration*.5;status.textContent='正在准备山水赶路场景 · 可跳过或返回';}
+      const u=clamp(elapsed/transitionDuration,0,1);transitionPose(u);
+      if(u>=.5&&!travelSwitchDone){
+        travelSwitchDone=true;
+        if(mode==='travel-depart'&&travelScene.actor){
+          world.visible=false;travelScene.show();travelNote.hidden=false;travelNote.textContent=travelScene.scene.title||'独立赶路 · 临时场景';
+        }else if(mode==='travel-arrive'){
+          travelScene.hide();travelNote.hidden=true;
+          if(targetIndex!==null)showLandmark(targetIndex);
+        }else if(mode==='travel-cancel'){x=legStart;travelScene.hide();world.visible=true;travelNote.hidden=true;Object.assign(camera,{x:W/2,y:H/2,zoom:1});}
+      }
+      if(u===1){
+        transitionPose(0);
+        if(mode==='travel-depart'){
+          if(!travelScene.actor){startTravelArrival();}
+          else setPhase('traveling',`${travelError?travelError+' · ':''}山水赶路 · 前往${stations[targetIndex].name} · 可跳过`);
+        }else if(mode==='travel-arrive')arrive();
+        else{stopTravelScene();targetIndex=null;finishReturn();}
+      }
+    }else if(mode==='traveling'){
+      const u=clamp(elapsed/legDuration,0,1);travelScene.update(dt,smooth(u),u<1);
+      if(u===1)startTravelArrival();
     }else if(mode==='revealing'){
       revealProgress=clamp(elapsed/3.5,0,1);if(revealProgress===1)completeReveal();
     }else if(mode==='returning'){
-      const u=clamp(elapsed/1,0,1);cameraBlend({x:W/2,y:H/2,zoom:1},u);const previousX=x;x=legStart+(legEnd-legStart)*smooth(u);distanceWalked+=Math.abs(x-previousX);if(u===1)finishReturn();
+      const u=clamp(elapsed/1,0,1);cameraBlend({x:W/2,y:H/2,zoom:1},u);if(u===1)finishReturn();
     }
     updateFog(dt);renderPose();
   });
   function resize(){
     app.renderer.resize(host.clientWidth,host.clientHeight);
-    viewScale=Math.min(host.clientWidth/W,host.clientHeight/H);
-    if(['awaiting-explore','exploring-demo','revealing'].includes(mode))Object.assign(camera,focusDestination());
+    viewScale=Math.min(host.clientWidth/W,host.clientHeight/H);travelScene.resize();landmarkView.resize();
     renderPose();app.render();
   }
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(host);resize();controls();
@@ -422,8 +463,8 @@
   }
   function reducedChange(){
     if(reduced.matches){
-      if(mode==='traveling')arrive();
-      if(mode==='focusing'){Object.assign(camera,focusDestination());setPhase('awaiting-explore','请选择开始探索，或返回画卷');}
+      if(travelModes.includes(mode)){if(mode==='travel-cancel'){stopTravelScene();targetIndex=null;finishReturn();}else arrive();}
+      if(['landmark-enter','landmark-return','landmark-reveal-return'].includes(mode))endLandmarkTransition();
       if(mode==='revealing'){revealProgress=1;completeReveal();}
       if(mode==='returning')finishReturn();
       updateFog();renderPose();app.render();
@@ -431,7 +472,7 @@
     visibility();
   }
   document.addEventListener('visibilitychange',visibility);reduced.addEventListener('change',reducedChange);
-  window.addEventListener('pagehide',event=>{app.stop();video.pause();if(!event.persisted){clearTimeout(introTimer);videoToken++;stopped=true;resizeObserver.disconnect();document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',reducedChange);app.destroy(true,{children:true,texture:true,textureSource:true});}});
+  window.addEventListener('pagehide',event=>{app.stop();video.pause();if(!event.persisted){clearTimeout(introTimer);videoToken++;travelScene.destroy();landmarkView.destroy();stopped=true;resizeObserver.disconnect();document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',reducedChange);app.destroy(true,{children:true,texture:true,textureSource:true});}});
   window.addEventListener('pageshow',event=>{if(event.persisted)visibility();});
   visibility();playPrologue(false);
 
