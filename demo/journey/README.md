@@ -230,3 +230,14 @@ WusanLandmarkGames.register('guanyu', {
 
 
 正常入口守将接入：从宾阳楼出发时自动播放荆州守将完整12帧，默认8 FPS。关羽祠仍使用原骑马；张居正诊断规则保持原状；博物馆仍用探索者。原 guard-walk-demo.html 保留用于独立对比，正常游戏无需诊断参数。
+
+
+## 正式赶路角色（当前版本）
+
+正常入口 journey-demo.html 已启用按出发景点选择角色：关羽祠→关羽骑马，宾阳楼→荆州守将，张居正故居→张居正，博物馆→普通探索者。全局画卷仍为普通探索者。
+
+- 关羽：assets/guanyu-riding-six，6张640×512 PNG，8 FPS，scale .44，原有稳定补偿不变。
+- 守将：assets/jingzhou-guard-diagnostic/whole-frames，12张360×440 PNG，8 FPS，scale .8，脚底anchor420/440，按每帧418～420/410～415地面参考作原补偿。只用完整人物，不使用旧拆腿占位。
+- 张居正：assets/zhang-walking-small-eight，8张400×448 PNG，第4帧使用walk_04-feet-v2.png；8 FPS，scale .5，anchorX252/400，anchorY420/448，顺序1→2→3→4→5→6→7→6→5→4→3→2→1。第8帧保留未参与当前循环。
+
+walkingTest=1继续提供张居正诊断，walkSet=old/twelve/v2供旧组对比。ridingTest=1继续保留关羽测试；守将独立guard-walk-demo.html保留。全部共用travel-scene.js播放器，没有新增播放器或修改图片。已有张居正上下排比例差异仍存在，本轮按用户确认版本集成，未以新生成或拉伸掩盖问题。

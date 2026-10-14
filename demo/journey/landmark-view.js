@@ -25,15 +25,15 @@
     }
     show(id){
       if(this.active&&this.id===id)return;
-      this.closeGame();const token=++this.token;this.id=id;this.started=false;this.ready=false;const c=this.current();this.root.hidden=false;this.root.dataset.state='display';this.root.dataset.fullScene=String(!!c.display?.fullScene);document.body.dataset.landmarkActive='true';
+      this.closeGame();const token=++this.token;this.id=id;this.started=false;this.ready=false;const c=this.current();this.root.hidden=false;this.root.dataset.state='display';this.root.dataset.fullScene=String(!!c.display?.fullScene);this.root.dataset.layout=c.display?.layout||'';this.root.style.setProperty('--landmark-push',String(Math.min(1.045,Math.max(1,c.display?.pushScale||this.config.visuals?.pushScale||1.025))));document.body.dataset.landmarkActive='true';
       document.getElementById('landmark-name').textContent=c.name||'文化地标';document.getElementById('landmark-title').textContent=c.culturalTitle||'文化主题待补充';
       document.getElementById('landmark-theme').textContent=c.theme||'';document.getElementById('landmark-poem').textContent=c.poem||'诗词与典故资料待补充（占位）';document.getElementById('landmark-credit').textContent=c.imageLabel||'近景素材占位';
-      this.image.hidden=true;document.getElementById('landmark-image-fallback').hidden=false;
+      this.image.style.objectPosition=c.display?.imagePosition||'50% 50%';this.image.hidden=true;document.getElementById('landmark-image-fallback').hidden=false;
       this.prepare(id).then(image=>{if(token!==this.token||!this.active)return;this.ready=true;if(image){this.natural=image;this.image.src=image.src;this.image.alt=`${c.name}近景艺术化占位`;this.image.hidden=false;document.getElementById('landmark-image-fallback').hidden=true;this.resize();}else document.getElementById('landmark-image-fallback').textContent='近景素材待补充 · 可继续查看文化主题';});
     }
     resize(){
       if(!this.natural||!this.active)return;
-      const push=Math.min(1.045,Math.max(1,this.config.visuals?.pushScale||1.025)),dpr=this.current().display?.fullScene?1:Math.max(1,devicePixelRatio);
+      const push=Math.min(1.045,Math.max(1,this.current().display?.pushScale||this.config.visuals?.pushScale||1.025)),dpr=this.current().display?.fullScene?1:Math.max(1,devicePixelRatio);
       this.root.style.setProperty('--landmark-image-width',`${Math.min(this.current().display?.maxWidth||680,this.natural.naturalWidth/dpr/push)}px`);
       this.root.style.setProperty('--landmark-image-height',`${this.natural.naturalHeight/dpr/push}px`);
     }

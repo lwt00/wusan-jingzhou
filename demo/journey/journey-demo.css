@@ -126,3 +126,16 @@ body[data-landmark-active=true] footer,body[data-landmark-active=true] header,bo
 /* 独立完整近景原图；按比例完整展示，不放大全局地图。 */
 #landmark-scene[data-full-scene=true] .landmark-building{left:50%;top:50%;width:min(100vw,var(--landmark-image-width));height:100svh;transform:translate(-50%,-50%)}
 #landmark-scene[data-full-scene=true] .landmark-copy{background:linear-gradient(transparent,#f4f2e4dc 20%);padding:18px 20px 12px;border-radius:12px}
+
+/* 仅完整庭院布局：文字留在侧边，中央雕像/石路无遮挡。 */
+#landmark-scene[data-layout=courtyard] #landmark-image{transform-origin:50% 82%;animation-duration:14s}
+#landmark-scene[data-layout=courtyard] .landmark-copy{left:4%;top:18%;bottom:auto;transform:none;width:26%;padding:16px;text-align:left;animation:none;background:linear-gradient(90deg,#f4f2e4c4,#f4f2e400);border-radius:0}
+#landmark-scene[data-layout=courtyard] .landmark-copy .eyebrow,
+#landmark-scene[data-layout=courtyard] #landmark-theme,
+#landmark-scene[data-layout=courtyard] #landmark-poem{display:none}
+#landmark-scene[data-layout=courtyard] #landmark-credit{position:fixed;right:18px;bottom:8px;font-size:10px}
+#landmark-scene[data-layout=courtyard] .landmark-copy nav{position:fixed;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:94vw;margin:0;padding:8px;background:#f4f2e4d9;border-radius:6px}
+@media(max-width:600px){#landmark-scene[data-layout=courtyard] .landmark-copy{top:12%;left:5%;width:90%;text-align:center;background:none}#landmark-scene[data-layout=courtyard] .landmark-copy h2{font-size:30px}#landmark-scene[data-layout=courtyard] #landmark-credit{right:10px;bottom:5px}}
+
+#landmark-scene[data-layout=courtyard] .landmark-copy h2,#landmark-scene[data-layout=courtyard] #landmark-title{animation:landmark-copy-in 1.8s ease-out both}
+@media(prefers-reduced-motion:reduce){#landmark-scene[data-layout=courtyard] .landmark-copy h2,#landmark-scene[data-layout=courtyard] #landmark-title{animation:none}}

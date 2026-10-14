@@ -49,7 +49,19 @@ window.WusanRidingTuning={fps:8,order:[0,1,2,3,4,5],align:true,
   }
 }
 
-// 八帧可完整分离，但步态/衣物形变尚未合格：只对显式walkingTest=1启用。
+// 最新确认版本：原画小步幅八帧、脚部v2、用户指定往返序列。
+{
+  const config=window.WusanTravelConfig;
+  config.scenes['zhang-walking']={
+    title:'山水驿道 · 张居正行走',
+    slots:{character:{src:null,x:0,y:0,scale:.5,opacity:1,parallax:1,anchorX:252/400,anchorY:420/448,
+      frames:{count:8,sources:Array.from({length:8},(_,i)=>i===3?'assets/zhang-walking-small-eight/walk_04-feet-v2.png':`assets/zhang-walking-small-eight/walk_${String(i+1).padStart(2,'0')}.png`),
+        fps:8,idle:0,order:[0,1,2,3,4,5,6,5,4,3,2,1,0],align:true,offsets:Array.from({length:8},()=>({x:0,y:0}))}}}
+  };
+  for(const target of ['guanyu','binyang','museum'])config.routes[`zhangjuzheng->${target}`]='zhang-walking';
+}
+
+// 保留旧素材诊断对比；默认诊断使用同一套正式张居正配置。
 if(new URLSearchParams(location.search).get('walkingTest')==='1'){
   const config=window.WusanTravelConfig;
   config.scenes['zhang-walking-diagnostic']={
@@ -58,7 +70,7 @@ if(new URLSearchParams(location.search).get('walkingTest')==='1'){
       frames:{count:8,sources:Array.from({length:8},(_,i)=>`assets/zhang-walking-eight/walk_${String(i+1).padStart(2,'0')}.png`),
         fps:8,idle:0,order:[0,1,2,3,4,5,6,7],align:true,offsets:Array.from({length:8},()=>({x:0,y:0}))}}}
   };
-  // 保留旧八/十二帧对比；默认检查 v2 八帧。步态未合格，正式入口不启用。
+  // 保留旧八/十二帧及v2对比，不影响正式默认版本。
   const useOld=new URLSearchParams(location.search).get('walkSet')==='old';
   if(!useOld){
     config.scenes['zhang-walking-twelve-diagnostic']={
@@ -76,7 +88,8 @@ if(new URLSearchParams(location.search).get('walkingTest')==='1'){
       frames:{count:8,sources:Array.from({length:8},(_,i)=>`assets/zhang-walking-eight-v2/walk_${String(i+1).padStart(2,'0')}.png`),
         fps:8,idle:0,order:[0,1,2,3,4,5,6,7],align:true,offsets:Array.from({length:8},()=>({x:0,y:0}))}}}
   };
-  const testScene=useOld?'zhang-walking-diagnostic':walkSet==='twelve'?'zhang-walking-twelve-diagnostic':'zhang-walking-v2-diagnostic';
+  config.scenes['zhang-walking-small-diagnostic']={...config.scenes['zhang-walking'],title:'张居正小步幅八帧 · 8 FPS诊断'};
+  const testScene=useOld?'zhang-walking-diagnostic':walkSet==='twelve'?'zhang-walking-twelve-diagnostic':walkSet==='v2'?'zhang-walking-v2-diagnostic':'zhang-walking-small-diagnostic';
   for(const target of ['guanyu','binyang','museum'])config.routes[`zhangjuzheng->${target}`]=testScene;
 }
 
