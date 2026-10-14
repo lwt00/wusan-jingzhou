@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+ <linearGradient id="bank" x2="0" y2="1"><stop stop-color="#d4ddc8" stop-opacity="0"/><stop offset=".24" stop-color="#ccd5bb" stop-opacity=".2"/><stop offset=".52" stop-color="#c1ccae" stop-opacity=".75"/><stop offset="1" stop-color="#a8b899"/></linearGradient>
+ <linearGradient id="path" x2="0" y2="1"><stop stop-color="#e0dac6"/><stop offset=".48" stop-color="#ede4cf"/><stop offset="1" stop-color="#ddd6bc"/></linearGradient>
+ <filter id="soft" x="-1%" y="-20%" width="102%" height="140%"><feGaussianBlur stdDeviation="0 4"/></filter>
+ <filter id="paper"><feTurbulence type="fractalNoise" baseFrequency=".04 .12" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+<linearGradient id="grain-fade" x2="0" y2="1"><stop stop-color="#000"/><stop offset=".3" stop-color="#fff"/></linearGradient>
+ <mask id="grain-mask" maskUnits="userSpaceOnUse" x="0" y="545" width="1600" height="355"><path d="M0 545H1600V900H0Z" fill="url(#grain-fade)"/></mask>
+</defs>
+<!-- 新路面中心仍为y=640，边缘约614～667；左右端点一致，适合连续平铺。 -->
+<path d="M0 545H1600V900H0Z" fill="url(#bank)"/>
+<path d="M0 614C100 611 160 612 250 618S410 626 510 617S700 608 800 614S970 625 1080 618S1250 609 1360 616S1510 618 1600 614L1600 667C1480 671 1370 663 1270 665S1080 674 980 667S790 660 680 666S470 676 360 668S150 662 0 667Z" fill="url(#path)" filter="url(#soft)"/>
+<path d="M0 545H1600V900H0Z" filter="url(#paper)" opacity=".075" mask="url(#grain-mask)"/>
+</svg>

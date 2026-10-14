@@ -1,0 +1,139 @@
+{
+  "sourceSize": [
+    1536,
+    1024
+  ],
+  "alphaRange": [
+    0,
+    254
+  ],
+  "separation": "alpha>8 connected silhouettes; retain soft edge within 2px, exclude all other silhouettes",
+  "frameSize": [
+    640,
+    512
+  ],
+  "fps": 8,
+  "productionApproved": false,
+  "frames": [
+    {
+      "id": 1,
+      "sourceBounds": [
+        2,
+        82,
+        522,
+        508
+      ],
+      "bodyReference": [
+        330,
+        351
+      ],
+      "translation": [
+        54,
+        -22
+      ],
+      "touchRightSourceEdge": false,
+      "scale": 1,
+      "canvasGroundReference": 486
+    },
+    {
+      "id": 2,
+      "sourceBounds": [
+        518,
+        83,
+        1015,
+        505
+      ],
+      "bodyReference": [
+        840,
+        351
+      ],
+      "translation": [
+        -456,
+        -22
+      ],
+      "touchRightSourceEdge": false,
+      "scale": 1,
+      "canvasGroundReference": 486
+    },
+    {
+      "id": 3,
+      "sourceBounds": [
+        1005,
+        72,
+        1517,
+        499
+      ],
+      "bodyReference": [
+        1345,
+        341
+      ],
+      "translation": [
+        -961,
+        -12
+      ],
+      "touchRightSourceEdge": false,
+      "scale": 1,
+      "canvasGroundReference": 486
+    },
+    {
+      "id": 4,
+      "sourceBounds": [
+        13,
+        558,
+        508,
+        977
+      ],
+      "bodyReference": [
+        330,
+        834
+      ],
+      "translation": [
+        54,
+        -505
+      ],
+      "touchRightSourceEdge": false,
+      "scale": 1,
+      "canvasGroundReference": 486
+    },
+    {
+      "id": 5,
+      "sourceBounds": [
+        511,
+        560,
+        1015,
+        960
+      ],
+      "bodyReference": [
+        840,
+        830
+      ],
+      "translation": [
+        -456,
+        -501
+      ],
+      "touchRightSourceEdge": false,
+      "scale": 1,
+      "canvasGroundReference": 486
+    },
+    {
+      "id": 6,
+      "sourceBounds": [
+        1025,
+        551,
+        1536,
+        968
+      ],
+      "bodyReference": [
+        1345,
+        825
+      ],
+      "translation": [
+        -961,
+        -496
+      ],
+      "touchRightSourceEdge": true,
+      "scale": 1,
+      "canvasGroundReference": 486
+    }
+  ]
+}

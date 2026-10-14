@@ -6,12 +6,16 @@
 <header><p class="eyebrow">荆楚文化探索 · 独立交互演示</p><h1>雾散荆州</h1></header>
 <div class="demo-note">AI 艺术化插画 · 非实景路线<br>博物馆为艺术示意，待实景校准</div>
 <p id="completion-message" role="status" hidden>雾散荆州，文脉重现</p>
-<section id="explore-panel" aria-labelledby="place-name" hidden>
-<p id="place-theme" class="eyebrow"></p><h2 id="place-name"></h2><p id="place-guide"></p>
-<p id="demo-description" hidden>开发演示功能，正式关卡尚未接入。此操作仅验证雾散与印记反馈。</p>
-<button id="begin-explore">开始探索</button><button id="finish-explore" hidden>模拟完成探索</button>
-<p id="reveal-note" hidden>迷雾散去，文化印记正在显现…</p>
+<div id="travel-transition" aria-hidden="true"></div>
+<p id="travel-scene-note" hidden></p>
+<section id="landmark-scene" aria-labelledby="landmark-name" hidden>
+<div class="landmark-paper" aria-hidden="true"></div>
+<div class="landmark-building"><img id="landmark-image" alt="" hidden><p id="landmark-image-fallback">正在展开地标近景…</p></div>
+<div class="landmark-cloud landmark-cloud-left" aria-hidden="true"></div><div class="landmark-cloud landmark-cloud-right" aria-hidden="true"></div>
+<div class="landmark-copy"><p class="eyebrow">雾散荆州 · 文化地标</p><h2 id="landmark-name"></h2><p id="landmark-title"></p><p id="landmark-theme"></p><p id="landmark-poem"></p><small id="landmark-credit"></small><nav aria-label="地标探索"><button id="begin-explore">开始探索</button><button id="landmark-learn">了解典故</button><button id="landmark-back">返回长卷</button></nav></div>
+<section id="landmark-game-host" aria-label="小游戏入口" hidden></section>
 </section>
+<dialog id="landmark-story"><h2 id="landmark-story-title"></h2><p id="landmark-story-text"></p><button id="landmark-story-close">返回地标展示</button></dialog>
 <footer><div class="journey-route"><span id="count">演示印记 0 / 4</span></div>
 <nav aria-label="画卷控制"><button id="back-map" hidden>返回画卷</button><button id="skip" hidden>跳过行进</button><button id="watch-prologue">重看序幕</button><button id="reset-progress">重置演示进度</button><p id="status" role="status" aria-live="polite">任选一处文化地标，开启探索</p></nav>
 <p id="storage-note" role="status"></p><p class="note">本游戏中的迷雾为虚构冒险设定，不代表荆州真实空气质量状况。仅保存独立演示进度。</p></footer>
@@ -20,4 +24,4 @@
 <div class="intro-wash" aria-hidden="true"></div><div class="intro-cloud intro-cloud-left" aria-hidden="true"></div><div class="intro-cloud intro-cloud-right" aria-hidden="true"></div><div class="intro-paper" aria-hidden="true"></div>
 <div class="intro-content"><p class="eyebrow">四境同卷 · 自由寻踪</p><h2 id="intro-title">雾散荆州</h2><p class="intro-poem">千年荆楚，藏于烟云之间。<br>待雾散时，再见荆州。</p></div>
 <div class="intro-bottom"><p id="intro-note" role="status">序幕静音呈现 · 开启旅程可听声音</p><div class="intro-actions"><button id="play-prologue" disabled>开启旅程</button><button id="enter-scroll" disabled>跳过序幕</button></div><p class="note">迷雾为虚构冒险设定 · 文化探索演示</p></div></section>
-</main><script src="vendor/pixi-8.6.6.min.js"></script><script src="journey-demo.js"></script></body></html>
+</main><script src="vendor/pixi-8.6.6.min.js"></script><script src="travel-scenery-config.js"></script><script src="travel-config.js"></script><script src="travel-scene.js"></script><script src="landmark-config.js"></script><script src="landmark-view.js"></script><script src="landmark-mock-games.js"></script><script src="journey-demo.js"></script></body></html>

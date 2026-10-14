@@ -1,0 +1,63 @@
+{
+  "sourceFramesUnchanged": true,
+  "fpsOptions": [
+    8,
+    10,
+    12
+  ],
+  "recommendedTestFPS": 10,
+  "order": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "scaleUnchanged": true,
+  "offsetsPixels": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      9,
+      0
+    ],
+    [
+      4,
+      6
+    ],
+    [
+      10,
+      3
+    ],
+    [
+      9,
+      7
+    ]
+  ],
+  "method": "bounded translation of upper-body reference, adjustable; no interpolation/scaling/blending",
+  "unmodifiedLegRegionDifference": {
+    "1->2": 0.1033,
+    "2->3": 0.0709,
+    "3->4": 0.0809,
+    "4->5": 0.064,
+    "5->6": 0.0823,
+    "6->1": 0.0753
+  },
+  "unmodifiedBladeRegionDifference": {
+    "1->2": 0.1672,
+    "2->3": 0.1891,
+    "3->4": 0.185,
+    "4->5": 0.1846,
+    "5->6": 0.1834,
+    "6->1": 0.1675
+  },
+  "measurementNote": "mean absolute RGB difference with alpha premultiplication; image-shape comparison, not a biomechanics score",
+  "conclusion": "keep source order; incomplete run cycle and original shape changes remain; 10fps is a test recommendation, not added in-between motion"
+}

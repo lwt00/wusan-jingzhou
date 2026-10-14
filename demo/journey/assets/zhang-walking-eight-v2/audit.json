@@ -1,0 +1,307 @@
+{
+  "source": {
+    "path": "/Users/xiongmengyao/.workbuddy/clipboard-images/clipboard-2026-10-13T14-45-29-504Z-2106b376.jpg",
+    "size": [
+      1774,
+      887
+    ]
+  },
+  "grid": [
+    4,
+    2
+  ],
+  "x_bounds": [
+    0,
+    444,
+    887,
+    1330,
+    1774
+  ],
+  "y_bounds": [
+    0,
+    444,
+    887
+  ],
+  "frames": [
+    {
+      "index": 1,
+      "row": 0,
+      "col": 0,
+      "components": 46,
+      "component_sizes": [
+        81051,
+        3,
+        2,
+        2,
+        2
+      ],
+      "dropped_pixels": 51,
+      "bbox_in_cell": [
+        42,
+        19,
+        370,
+        423
+      ],
+      "foot_in_cell": 441,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 2,
+      "top_in_cell": 19,
+      "axis_x": 288.5,
+      "body_height": 423,
+      "touch_bottom_edge": false,
+      "placed": {
+        "x": 8,
+        "y": 13,
+        "foot_y": 436
+      }
+    },
+    {
+      "index": 2,
+      "row": 0,
+      "col": 1,
+      "components": 40,
+      "component_sizes": [
+        79299,
+        4,
+        3,
+        1,
+        1
+      ],
+      "dropped_pixels": 44,
+      "bbox_in_cell": [
+        33,
+        17,
+        365,
+        424
+      ],
+      "foot_in_cell": 440,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 3,
+      "top_in_cell": 17,
+      "axis_x": 275.3,
+      "body_height": 424,
+      "touch_bottom_edge": false,
+      "placed": {
+        "x": 12,
+        "y": 12,
+        "foot_y": 436
+      }
+    },
+    {
+      "index": 3,
+      "row": 0,
+      "col": 2,
+      "components": 41,
+      "component_sizes": [
+        79841,
+        3,
+        3,
+        2,
+        1
+      ],
+      "dropped_pixels": 45,
+      "bbox_in_cell": [
+        37,
+        15,
+        351,
+        429
+      ],
+      "foot_in_cell": 443,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 0,
+      "top_in_cell": 15,
+      "axis_x": 265.3,
+      "body_height": 429,
+      "touch_bottom_edge": true,
+      "placed": {
+        "x": 26,
+        "y": 7,
+        "foot_y": 436
+      }
+    },
+    {
+      "index": 4,
+      "row": 0,
+      "col": 3,
+      "components": 65,
+      "component_sizes": [
+        84430,
+        3,
+        2,
+        1,
+        1
+      ],
+      "dropped_pixels": 67,
+      "bbox_in_cell": [
+        35,
+        12,
+        371,
+        432
+      ],
+      "foot_in_cell": 443,
+      "cell_h": 444,
+      "foot_distance_to_cell_bottom": 0,
+      "top_in_cell": 12,
+      "axis_x": 275.5,
+      "body_height": 432,
+      "touch_bottom_edge": true,
+      "placed": {
+        "x": 14,
+        "y": 4,
+        "foot_y": 436
+      }
+    },
+    {
+      "index": 5,
+      "row": 1,
+      "col": 0,
+      "components": 58,
+      "component_sizes": [
+        79319,
+        2,
+        2,
+        2,
+        1
+      ],
+      "dropped_pixels": 60,
+      "bbox_in_cell": [
+        32,
+        9,
+        366,
+        418
+      ],
+      "foot_in_cell": 426,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 16,
+      "top_in_cell": 9,
+      "axis_x": 271.9,
+      "body_height": 418,
+      "touch_bottom_edge": false,
+      "placed": {
+        "x": 14,
+        "y": 18,
+        "foot_y": 436
+      }
+    },
+    {
+      "index": 6,
+      "row": 1,
+      "col": 1,
+      "components": 36,
+      "component_sizes": [
+        74322,
+        1,
+        1,
+        1,
+        1
+      ],
+      "dropped_pixels": 35,
+      "bbox_in_cell": [
+        57,
+        7,
+        335,
+        421
+      ],
+      "foot_in_cell": 427,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 15,
+      "top_in_cell": 7,
+      "axis_x": 269.1,
+      "body_height": 421,
+      "touch_bottom_edge": false,
+      "placed": {
+        "x": 42,
+        "y": 15,
+        "foot_y": 436
+      }
+    },
+    {
+      "index": 7,
+      "row": 1,
+      "col": 2,
+      "components": 54,
+      "component_sizes": [
+        77827,
+        4,
+        2,
+        2,
+        1
+      ],
+      "dropped_pixels": 58,
+      "bbox_in_cell": [
+        46,
+        7,
+        343,
+        420
+      ],
+      "foot_in_cell": 426,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 16,
+      "top_in_cell": 7,
+      "axis_x": 272.3,
+      "body_height": 420,
+      "touch_bottom_edge": false,
+      "placed": {
+        "x": 28,
+        "y": 16,
+        "foot_y": 436
+      }
+    },
+    {
+      "index": 8,
+      "row": 1,
+      "col": 3,
+      "components": 37,
+      "component_sizes": [
+        78675,
+        3,
+        2,
+        2,
+        2
+      ],
+      "dropped_pixels": 43,
+      "bbox_in_cell": [
+        66,
+        7,
+        345,
+        420
+      ],
+      "foot_in_cell": 426,
+      "cell_h": 443,
+      "foot_distance_to_cell_bottom": 16,
+      "top_in_cell": 7,
+      "axis_x": 287.4,
+      "body_height": 420,
+      "touch_bottom_edge": false,
+      "placed": {
+        "x": 33,
+        "y": 16,
+        "foot_y": 436
+      }
+    }
+  ],
+  "canvas": [
+    392,
+    442
+  ],
+  "foot_baseline_y": 436,
+  "alignment": {
+    "vertical": "脚底对齐",
+    "horizontal": "头肩部重心对齐"
+  },
+  "row_foot_delta": {
+    "row0_feet": [
+      441,
+      440,
+      443,
+      443
+    ],
+    "row1_feet": [
+      426,
+      427,
+      426,
+      426
+    ],
+    "note": "下排相对格底更靠上，故必须按脚底对齐而非按格对齐"
+  }
+}

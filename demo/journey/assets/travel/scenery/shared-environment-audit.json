@@ -1,0 +1,197 @@
+{
+  "exports": [
+    {
+      "file": "pine.png",
+      "source": "scenery-02.png",
+      "coreBounds": [
+        1134,
+        239,
+        1523,
+        484
+      ],
+      "threshold": 8,
+      "size": [
+        410,
+        267
+      ]
+    },
+    {
+      "file": "bamboo.png",
+      "source": "scenery-01.png",
+      "coreBounds": [
+        794,
+        799,
+        967,
+        999
+      ],
+      "threshold": 32,
+      "size": [
+        195,
+        222
+      ]
+    },
+    {
+      "file": "peach-tree.png",
+      "source": "scenery-01.png",
+      "coreBounds": [
+        592,
+        795,
+        787,
+        1001
+      ],
+      "threshold": 32,
+      "size": [
+        217,
+        228
+      ]
+    },
+    {
+      "file": "stone-steps.png",
+      "source": "scenery-02.png",
+      "coreBounds": [
+        374,
+        479,
+        619,
+        674
+      ],
+      "threshold": 32,
+      "size": [
+        267,
+        218
+      ]
+    },
+    {
+      "file": "wood-railing.png",
+      "source": "scenery-02.png",
+      "coreBounds": [
+        11,
+        680,
+        459,
+        821
+      ],
+      "threshold": 32,
+      "size": [
+        470,
+        163
+      ]
+    },
+    {
+      "file": "distant-pavilion.png",
+      "source": "scenery-02.png",
+      "coreBounds": [
+        9,
+        234,
+        310,
+        462
+      ],
+      "threshold": 8,
+      "size": [
+        323,
+        250
+      ]
+    },
+    {
+      "file": "willow-canopy.png",
+      "source": "willow.png",
+      "cropBounds": [
+        0,
+        0,
+        261,
+        173
+      ],
+      "size": [
+        261,
+        173
+      ],
+      "note": "feathered detail; original colors retained"
+    },
+    {
+      "file": "bamboo-canopy.png",
+      "source": "bamboo.png",
+      "cropBounds": [
+        0,
+        0,
+        182,
+        130
+      ],
+      "size": [
+        182,
+        130
+      ],
+      "note": "feathered detail; original colors retained"
+    },
+    {
+      "file": "waterfall-flow-detail.png",
+      "source": "waterfall.png",
+      "cropBounds": [
+        208,
+        79,
+        340,
+        195
+      ],
+      "size": [
+        132,
+        116
+      ],
+      "note": "feathered detail; original colors retained"
+    },
+    {
+      "file": "creek-flow-detail.png",
+      "source": "stone-bridge.png",
+      "cropBounds": [
+        152,
+        157,
+        346,
+        230
+      ],
+      "size": [
+        194,
+        73
+      ],
+      "note": "feathered detail; original colors retained"
+    },
+    {
+      "file": "willow-fringe.png",
+      "source": "willow.png",
+      "cropBounds": [
+        8,
+        6,
+        107,
+        182
+      ],
+      "note": "left leaf fringe, no central trunk"
+    },
+    {
+      "file": "bamboo-fringe.png",
+      "source": "bamboo.png",
+      "cropBounds": [
+        28,
+        10,
+        168,
+        110
+      ],
+      "note": "upper leaf detail, feathered edges"
+    },
+    {
+      "file": "dry-grass.png",
+      "source": "scenery-02.png",
+      "coreBounds": [
+        171,
+        833,
+        399,
+        1004
+      ],
+      "size": [
+        250,
+        192
+      ]
+    }
+  ],
+  "missing": [
+    "独立高清垂柳/竹叶前景图层",
+    "独立落叶动作素材",
+    "无缝长条溪流与真正水流序列",
+    "统一画风的远城天际线"
+  ],
+  "note": "original images and old exports retained; no inpainting or stretching"
+}
