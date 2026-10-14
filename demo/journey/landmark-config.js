@@ -6,7 +6,7 @@ window.WusanLandmarkConfig={
       culturalTitle:'忠义千秋',theme:'在祠宇之前，开启一段关于忠义文化的探索。',
       poem:'诗词与典故资料待核实补充（占位）',
       anecdote:{title:'忠义文化 · 资料占位',text:'此处暂以三国忠义文化作为展示主题。正式诗词、史实与资料来源尚待整理，当前不引用作者、年代或具体历史典故。'},
-      game:{id:'mock-guanyu',enabled:true,mode:'mock'}},
+      game:{id:'guanyu-huarong',enabled:true,mode:'real'}},
     binyang:{name:'宾阳楼',map:{image:'assets/binyang-layer.png',width:315,stand:{u:.452,v:.91}},image:'assets/landmarks-v2/originals/binyang.jpg',imageLabel:'团队提供水墨建筑插画 · 艺术化展示',display:{maxWidth:1280,fullScene:true,layout:'courtyard',pushScale:1.015,imagePosition:'50% 48%'},
       culturalTitle:'古城风华',theme:'观察城楼的轮廓，寻找古城文化的线索。',
       poem:'诗词与典故资料待核实补充（占位）',
