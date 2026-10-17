@@ -9,21 +9,23 @@
 
 ## 本地运行
 
-在项目根目录使用已有静态服务，打开 http://127.0.0.1:4173/demo/journey/journey-demo.html 。也可以在 IDEA 中右键 HTML → Open in Browser，或用 VS Code Live Server 打开。单独复制整个 `demo/journey/` 目录到静态服务器也可运行，须保留 assets 和 vendor 的相对路径。不同端口或域名使用不同的浏览器存档。
+在项目根目录使用已有静态服务，打开 http://127.0.0.1:4173/demo/journey/journey-demo.html 。也可以在 IDEA 中右键 HTML → Open in Browser，或用 VS Code Live Server 打开。部署时同时复制 `demo/journey/` 与 `demo/guanyu-shrine/`，保留同级目录及 assets、vendor 的相对路径。通过同源 HTTP 服务运行，以支持完成消息与 Web Worker。不同端口或域名使用不同的浏览器存档。
 
 1. 点击“开启旅程”播放序幕，或“跳过序幕”进入全局画卷。
 2. 点击任意建筑或题签，在独立赶路场景中前往目标；点击当前位置直接进入云雾转场。
 3. 抵达后展示居中的建筑、缓慢推进、流动云雾及文化主题。支持“了解典故”和“返回长卷”。
-4. “开始探索”目前进入明确标注的开发模拟接口。点击“模拟探索完成”可验证区域雾散、盖章和 Demo 存档；这是测试流程，不是正式小游戏。
+4. 关羽祠的“开始探索”进入真实华容道：移动揭雾，20 格雾散后解锁一键通关；曹操从出口离开后阅读文化卡，点击“收下印记，返回长卷”触发区域雾散、盖章与存档。中途返回不计通关。其余三站仍为模拟探索接口。
 5. 原有完成记录继续恢复，已完成地点可重访。模拟接口与正式小游戏共用完成回调，重复完成不会累计相同印章。
 6. “重置演示进度”需确认，只清除 Demo 的记录。
 
 ## 独立地标展示与小游戏接入（当前版本）
 
-- `landmark-config.js`：四站 `image`、`display.maxWidth`、`culturalTitle`、`theme`、`poem`、`anecdote`、`game.id/enabled`。替换近景图片及核实过的文化资料只需修改该配置；当前四站启用 mock- 前缀的开发模拟适配器。
+`landmark-guanyu-game.js` 挂载 `../guanyu-shrine/index.html`，校验消息来源、同源与会话标识，并调用已有 complete/cancel 回调。关闭时移除监听与 iframe。小游戏不直接读写长卷存档。已有模拟印记仍保留；如需重新验收，可用“重置演示进度”清除全部 Demo 印记。
+
+- `landmark-config.js`：四站 `image`、`display.maxWidth`、`culturalTitle`、`theme`、`poem`、`anecdote`、`game.id/enabled`。替换近景图片及核实过的文化资料只需修改该配置；关羽祠使用 `guanyu-huarong` / `mode: real`，其余三站使用 mock- 前缀的模拟适配器。
 - `landmark-view.js`：素材缓存/加载超时降级、典故弹窗、小游戏占位与注册接口；不直接读写存档。
 - 图片保持比例，按原生分辨率和屏幕像素密度限制显示尺寸；只有克制的 1.025 倍缓慢推进。推荐正式近景横向场景 1920×1080 或 2560×1440；当前透明建筑不能代替正式第一人称环境插画。
-- 主控制器保留独立赶路、自由选站、区域雾散和原 Demo 存档格式。当前提供明确标注的“模拟探索完成”按钮，仅用于检验迷雾系统。
+- 主控制器保留独立赶路、自由选站、区域雾散和原 Demo 存档格式。关羽祠以真实通关回调完成，其余三站保留“模拟探索完成”用于检验迷雾系统。
 
 接入已实现的小游戏时，加载其脚本并注册：
 
@@ -67,7 +69,7 @@ WusanLandmarkGames.register('guanyu', {
 {"version":1,"completed":{"guanyu":false,"binyang":false,"zhangjuzheng":false,"museum":true}}
 ```
 
-只保存模拟完成成果，印记数从四个布尔值推导。刷新后人物回到关羽祠、镜头回总览，完成状态恢复。异常 JSON、未知版本或字段类型错误回退空进度并提示；存储不可写时允许本次会话继续。不会读取、覆盖或清除旧游戏 `wusan-jingzhou:exploration`，没有 `localStorage.clear()`。
+保存真实或模拟完成成果，印记数从四个布尔值推导。刷新后人物回到关羽祠、镜头回总览，完成状态恢复。异常 JSON、未知版本或字段类型错误回退空进度并提示；存储不可写时允许本次会话继续。不会读取、覆盖或清除旧游戏 `wusan-jingzhou:exploration`，没有 `localStorage.clear()`。
 
 正式关卡未来可替换 `exploring-demo` 阶段，在真实任务成功时接入揭示流程；当前没有接入旧版四关、印象册或正式奖励系统。
 

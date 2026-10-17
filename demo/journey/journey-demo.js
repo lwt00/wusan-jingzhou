@@ -189,7 +189,18 @@
   let transformEffect=null,transformSpec=null,travelPaused=false;
   const pauseTravel=document.getElementById('pause-travel');
   const landmarkView=new WusanLandmarkView(window.WusanLandmarkConfig,{
-    onExplore(){if(mode!=='awaiting-explore')return;setPhase('exploring-demo',window.WusanLandmarkConfig.landmarks[stations[stationIndex].id].game?.mode==='mock'?'开发模拟探索 · 可验证区域雾散与盖章':`${stations[stationIndex].name} · 完成探索后领取${stations[stationIndex].mark}`);landmarkView.openGame();},
+onExplore(){
+    if(mode !== 'awaiting-explore') return;
+
+    setPhase(
+        'exploring-demo',
+        window.WusanLandmarkConfig.landmarks[stations[stationIndex].id].game?.mode === 'mock'
+            ? '开发模拟探索 · 可验证区域雾散与盖章'
+            : `${stations[stationIndex].name} · 完成探索后领取${stations[stationIndex].mark}`
+    );
+
+    landmarkView.openGame();
+},
     onBack:returnToOverview,
     onDisplay(){landmarkView.displayAgain();setPhase('awaiting-explore','请选择开始探索，或返回长卷');begin.focus({preventScroll:true});},
     onComplete(id){if(mode!=='exploring-demo'||id!==stations[stationIndex].id)return;if(!completed[stationIndex])saveProgress(stationIndex);landmarkView.closeGame();travelSwitchDone=false;setPhase('landmark-reveal-return','探索完成 · 返回长卷揭晓文化印记');if(reduced.matches)endLandmarkTransition();}

@@ -4,7 +4,7 @@
     mount({ container, levelId, complete, cancel }) {
       const session = crypto.randomUUID();
       const frame = document.createElement('iframe');
-      const url = new URL('../../guanyu-shrine/index.html', document.baseURI);
+const url = new URL('../../guanyu-shrine/index.html', document.baseURI);
       url.searchParams.set('embed', '1');
       url.searchParams.set('session', session);
       frame.src = url.href;

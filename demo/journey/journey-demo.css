@@ -140,6 +140,7 @@ body[data-landmark-active=true] footer,body[data-landmark-active=true] header,bo
 #landmark-scene[data-layout=courtyard] .landmark-copy h2,#landmark-scene[data-layout=courtyard] #landmark-title{animation:landmark-copy-in 1.8s ease-out both}
 @media(prefers-reduced-motion:reduce){#landmark-scene[data-layout=courtyard] .landmark-copy h2,#landmark-scene[data-layout=courtyard] #landmark-title{animation:none}}
 
+
 /* 仅关羽祠：留白题诗与非模态宣纸侧栏。 */
 #guanyu-poetry[hidden]{display:none}
 #landmark-scene[data-landmark=guanyu] .landmark-copy{top:9%;left:4%;width:24%;text-align:left;background:none;padding:0}
