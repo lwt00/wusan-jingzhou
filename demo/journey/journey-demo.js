@@ -39,18 +39,19 @@
     }catch(error){storageNotice='演示存档不可用或格式异常，本次从空进度开始。';return stations.map(()=>false);}
   }
   const completed=loadProgress();
-  function saveProgress(){
-    try{localStorage.setItem(SAVE_KEY,JSON.stringify({version:1,completed:Object.fromEntries(stations.map((s,i)=>[s.id,completed[i]]))}));}
+  // Persist an accepted completion now; completed[] remains the reveal animation state.
+  function saveProgress(acceptedIndex=null){
+    try{localStorage.setItem(SAVE_KEY,JSON.stringify({version:1,completed:Object.fromEntries(stations.map((s,i)=>[s.id,completed[i]||i===acceptedIndex]))}));}
     catch(error){storageNotice='浏览器无法保存演示进度；本页仍可继续探索。';}
     document.getElementById('storage-note').textContent=storageNotice;
   }
   let stationIndex=0,targetIndex=null,legStart=START,legEnd=START,direction=1;
   const layers=[];
-  let seed=211,ambient=0,x=START,mode='idle',stopped=false,elapsed=0,legDuration=4;
+  let seed=211,ambient=0,x=START,mode='idle',stopped=false,elapsed=0,legDuration=0;
   let revealProgress=0,phaseFrom=null,pendingStamp=null;
   const camera={x:W/2,y:H/2,zoom:1};
   let viewScale=1;
-  const travelModes=['travel-depart','traveling','travel-arrive','travel-cancel'];
+  const travelModes=['travel-depart','transforming','traveling','travel-arrive','travel-cancel'];
   let travelReady=false,travelError='',travelSwitchDone=false,travelRequest=0;
   function random(){seed=(seed*16807)%2147483647;return(seed-1)/2147483646;}
   function layer(speed){const c=new Container();world.addChild(c);layers.push({c,speed});return c;}
@@ -184,13 +185,29 @@
   const footClip=new Graphics();person.addChild(footClip);person.mask=footClip;let clippedStation=null;
   const body=new Container();person.addChild(body);polygon(body,[-6,-29,6,-29,8,-12,-7,-12],0x466e65);rect(body,-4,-34,8,8,0xc5b597);body.addChild(new Graphics().circle(0,-36,5).fill(0x566250));const arm=new Graphics().moveTo(4,-27).lineTo(10,-19).stroke({color:0x566250,width:3});body.addChild(arm);rect(body,-11,-27,6,10,0x92764a);
   const travelScene=new WusanTravelScene(PIXI,app,window.WusanTravelConfig);
+  const transformExplorer=new WusanTravelScene(PIXI,app,window.WusanTravelConfig);transformExplorer.cache=travelScene.cache;
+  let transformEffect=null,transformSpec=null,travelPaused=false;
+  const pauseTravel=document.getElementById('pause-travel');
   const landmarkView=new WusanLandmarkView(window.WusanLandmarkConfig,{
-    onExplore(){if(mode!=='awaiting-explore')return;setPhase('exploring-demo',window.WusanLandmarkConfig.landmarks[stations[stationIndex].id].game?.mode==='mock'?'开发模拟探索 · 可验证区域雾散与盖章':'文化探索 · 完成小游戏后解锁印记');landmarkView.openGame();},
+onExplore(){
+    if(mode !== 'awaiting-explore') return;
+
+    setPhase(
+        'exploring-demo',
+        window.WusanLandmarkConfig.landmarks[stations[stationIndex].id].game?.mode === 'mock'
+            ? '开发模拟探索 · 可验证区域雾散与盖章'
+            : `${stations[stationIndex].name} · 完成探索后领取${stations[stationIndex].mark}`
+    );
+
+    landmarkView.openGame();
+},
     onBack:returnToOverview,
     onDisplay(){landmarkView.displayAgain();setPhase('awaiting-explore','请选择开始探索，或返回长卷');begin.focus({preventScroll:true});},
-    onComplete(id){if(mode!=='exploring-demo'||id!==stations[stationIndex].id)return;landmarkView.closeGame();travelSwitchDone=false;setPhase('landmark-reveal-return','探索完成 · 返回长卷揭晓文化印记');if(reduced.matches)endLandmarkTransition();}
+    onComplete(id){if(mode!=='exploring-demo'||id!==stations[stationIndex].id)return;if(!completed[stationIndex])saveProgress(stationIndex);landmarkView.closeGame();travelSwitchDone=false;setPhase('landmark-reveal-return','探索完成 · 返回长卷揭晓文化印记');if(reduced.matches)endLandmarkTransition();}
   });
   const travelTransition=document.getElementById('travel-transition'),travelNote=document.getElementById('travel-scene-note');
+  const travelTiming=window.WusanTravelConfig.travelTiming;
+  const travelDuration=travelTiming.travelDuration/1000,arrivalDuration=travelTiming.arrivalDuration/1000;
   const transitionDuration=Math.max(.6,window.WusanTravelConfig?.transition?.duration||1.15);
   if(window.WusanTravelConfig?.transition?.cloudSrc)travelTransition.style.setProperty('--travel-cloud-image',`url("${new URL(window.WusanTravelConfig.transition.cloudSrc,document.baseURI).href}")`);
   function transitionPose(u){
@@ -198,7 +215,7 @@
     travelTransition.style.setProperty('--travel-transition-alpha',String(opacity));
     travelTransition.style.setProperty('--travel-cloud-shift',`${u*30-15}%`);
   }
-  function stopTravelScene(){travelRequest++;travelScene.cancel();world.visible=true;travelNote.hidden=true;transitionPose(0);}
+  function stopTravelScene(){travelRequest++;transformEffect?.cancel();transformExplorer.cancel();travelPaused=false;travelScene.cancel();world.visible=true;travelNote.hidden=true;transitionPose(0);}
   const mist=layer(.68), clouds=[];
   // 一张 512×128 透明程序纹理复用于所有云雾，不加载或裁切旧图片。
   const cloudCanvas=document.createElement('canvas');cloudCanvas.width=512;cloudCanvas.height=128;
@@ -217,7 +234,7 @@
     world.y=drawH<=height?(height-drawH)/2:clamp(height*.43-camera.y*scale,height-drawH,0);
     // 真实建筑和地形严格对齐；云雾前景有微量视差，不移动整幅背景冒充景深。
     layers.forEach(({c,speed})=>{c.x=speed===.68?(camera.x-W/2)*.04:0;});
-    host.dataset.view=landmarkView.active?'first-person-landmark':travelScene.root.visible?'independent-travel':mode==='idle'?'overview':'landmark';
+    host.dataset.view=landmarkView.active?'first-person-landmark':(travelScene.root.visible||transformExplorer.root.visible)?'independent-travel':mode==='idle'?'overview':'landmark';
     host.dataset.travelPhase=travelModes.includes(mode)?mode:'';
     labels.forEach(({label,x:lx,y:ly},i)=>{
       const px=world.x+lx*scale,py=world.y+ly*scale;
@@ -285,8 +302,9 @@
       label.querySelector('small').textContent=completed[i]?stations[i].mark+' · 可重访':'未探索 · 点击前往';
       label.setAttribute('aria-label',`${stations[i].name}，${completed[i]?'已获'+stations[i].mark:'未探索'}，点击前往`);
     });
-    skip.hidden=!['travel-depart','traveling','revealing'].includes(mode);skip.disabled=introActive;
-    skip.textContent=mode==='revealing'?'跳过雾散演出':'跳过行进';
+    pauseTravel.hidden=!travelModes.includes(mode);pauseTravel.disabled=['travel-cancel'].includes(mode)||introActive;pauseTravel.textContent=travelPaused?'继续':'暂停';
+    skip.hidden=!['travel-depart','transforming','traveling','revealing'].includes(mode);skip.disabled=introActive;
+    skip.textContent=mode==='revealing'?'跳过雾散演出':mode==='transforming'?'跳过变身':'跳过行进';
     back.hidden=mode==='idle';back.disabled=mode==='returning'||mode==='travel-cancel'||introActive;
     resetButton.disabled=introActive;
     document.getElementById('watch-prologue').disabled=!active;
@@ -313,15 +331,29 @@
     targetIndex=index;
     landmarkView.prepare(stations[index].id);
     if(Math.abs(x-stations[index].x)<.5){travelSwitchDone=false;setPhase('landmark-enter','云雾渐开 · 走入文化地标');if(reduced.matches)endLandmarkTransition();return;}
-    legStart=x;legEnd=stations[index].x;direction=Math.sign(legEnd-legStart);legDuration=clamp(Math.abs(legEnd-legStart)/145,2.5,9);
+    legStart=x;legEnd=stations[index].x;direction=Math.sign(legEnd-legStart);legDuration=travelDuration;
     if(reduced.matches){setPhase('traveling');arrive();return;}
     travelReady=false;travelError='';travelSwitchDone=false;const request=++travelRequest;
     setPhase('travel-depart',`云雾启程 · 前往${stations[index].name}`);
-    travelScene.prepare(stations[stationIndex].id,stations[index].id,direction).then(ready=>{
-      if(request!==travelRequest)return;
-      travelReady=ready;travelError=travelScene.warning;
-      if(ready&&Number.isFinite(travelScene.scene.duration))legDuration=Math.max(2,Math.min(30,travelScene.scene.duration));
-    }).catch(()=>{if(request===travelRequest){travelReady=true;travelError='赶路场景暂不可用，将直接抵达目标';}});
+    transformEffect?.cancel();travelPaused=false;
+    const fromId=stations[stationIndex].id,toId=stations[index].id;
+    transformSpec=window.WusanTravelConfig.transforms[fromId]||null;
+    Promise.all([
+      travelScene.prepare(fromId,toId,direction),
+      transformSpec?transformExplorer.prepare('museum',toId,direction):Promise.resolve(),
+      transformSpec?travelScene.texture(window.WusanTravelConfig.transformBrush.src).catch(()=>null):Promise.resolve(null)
+    ]).then(([ready,,brushTexture])=>{
+      if(request!==travelRequest||mode!=='travel-depart')return;
+      travelReady=ready;travelError=travelScene.warning;legDuration=travelDuration;
+      if(transformSpec&&travelScene.actorFrames?.length&&brushTexture){
+        transformEffect?.destroy();
+        const duration=(window.WusanTravelConfig.characterTiming[transformSpec.characterId]?.transformDuration??travelTiming.transformDuration)/1000;
+        transformEffect=new WusanInkTransform(PIXI,app.stage,{from:transformExplorer,to:travelScene,host,duration,
+          brush:window.WusanTravelConfig.transformBrush,brushTexture,text:transformSpec.text,
+          onComplete(){if(mode==='transforming')setPhase('traveling',`山水赶路 · 前往${stations[targetIndex].name} · 可跳过`);}
+        });
+      }else {transformEffect=null;if(transformSpec&&!brushTexture)travelError='毛笔素材暂不可用，使用原角色直接赶路';}
+    }).catch(()=>{if(request===travelRequest){travelReady=true;transformEffect=null;travelError='变身素材暂不可用，使用已加载角色直接赶路';}});
   }
   function startTravelArrival(){
     if(!travelModes.includes(mode)||mode==='travel-arrive'||mode==='travel-cancel')return;
@@ -336,7 +368,7 @@
     if(mode==='idle'||mode==='returning'||introActive)return;
     // 独立赶路不改变地图位置，中途退出通过云雾返回出发地点，不授予印记。
     if(travelModes.includes(mode)){
-      if(mode==='travel-cancel')return;travelSwitchDone=false;setPhase('travel-cancel','中止赶路 · 返回出发地');
+      if(mode==='travel-cancel')return;travelPaused=false;travelSwitchDone=false;setPhase('travel-cancel','中止赶路 · 返回出发地');
       if(reduced.matches){stopTravelScene();targetIndex=null;finishReturn();}return;
     }
     if(landmarkView.active||mode==='landmark-enter'){landmarkView.closeGame();travelSwitchDone=false;setPhase('landmark-return','云雾归卷 · 返回全景');if(reduced.matches)endLandmarkTransition();return;}
@@ -358,12 +390,13 @@
   }
   function completeReveal(){
     if(mode!=='revealing')return;
-    const isNew=!completed[stationIndex];completed[stationIndex]=true;if(isNew)saveProgress();
-    pendingStamp=stationIndex;
+    const isNew=!completed[stationIndex];completed[stationIndex]=true;
+    pendingStamp=isNew?stationIndex:null;
     returnToOverview();
   }
-  back.addEventListener('click',returnToOverview);
-  skip.addEventListener('click',()=>{if(travelModes.includes(mode)){if(reduced.matches)arrive();else startTravelArrival();}else if(mode==='revealing'){revealProgress=1;completeReveal();}});
+  back.addEventListener('click',()=>{if(mode==='revealing'){revealProgress=1;completeReveal();}else returnToOverview();});
+  pauseTravel.addEventListener('click',()=>{if(!travelModes.includes(mode)||mode==='travel-cancel')return;travelPaused=!travelPaused;controls();});
+  skip.addEventListener('click',()=>{if(travelModes.includes(mode)){if(mode==='transforming'){travelPaused=false;transformEffect.skip();}else if(reduced.matches)arrive();else{travelPaused=false;startTravelArrival();}}else if(mode==='revealing'){revealProgress=1;completeReveal();}});
   resetButton.addEventListener('click',()=>{
     if(introActive||!confirm('清除四站的模拟探索记录？仅重置本 Demo，不影响旧版游戏存档。'))return;
     try{localStorage.removeItem(SAVE_KEY);storageNotice='';}catch(error){storageNotice='演示存档无法清除，本页已重置；刷新后可能恢复旧记录。';}
@@ -415,33 +448,41 @@
   app.ticker.maxFPS=60;
   app.ticker.add(ticker=>{
     if(stopped||document.hidden||introActive)return;
-    const dt=Math.min(ticker.elapsedMS/1000,.08);ambient+=dt;elapsed+=dt;
+    const dt=Math.min(ticker.elapsedMS/1000,.08);if(travelPaused&&travelModes.includes(mode))return;ambient+=dt;elapsed+=dt;
     if(['landmark-enter','landmark-return','landmark-reveal-return'].includes(mode)){
-      const u=clamp(elapsed/transitionDuration,0,1);transitionPose(u);
+      const u=clamp(elapsed/(mode==='landmark-enter'?arrivalDuration:transitionDuration),0,1);transitionPose(u);
       if(u>=.5&&!travelSwitchDone){travelSwitchDone=true;if(mode==='landmark-enter')showLandmark(targetIndex??stationIndex);else{landmarkView.hide();world.visible=true;}}
       if(u===1)endLandmarkTransition();
     }else if(mode==='travel-depart'||mode==='travel-arrive'||mode==='travel-cancel'){
       if(mode==='travel-depart'&&elapsed>=transitionDuration*.5&&!travelReady){elapsed=transitionDuration*.5;status.textContent='正在准备山水赶路场景 · 可跳过或返回';}
-      const u=clamp(elapsed/transitionDuration,0,1);transitionPose(u);
-      if(u>=.5&&!travelSwitchDone){
+      const u=clamp(elapsed/(mode==='travel-arrive'?arrivalDuration:transitionDuration),0,1);transitionPose(u);
+      if(u>=.5&&!travelSwitchDone&&(mode!=='travel-depart'||travelReady)){
         travelSwitchDone=true;
         if(mode==='travel-depart'&&travelScene.actor){
-          world.visible=false;travelScene.show();travelNote.hidden=false;travelNote.textContent=travelScene.scene.title||'独立赶路 · 临时场景';
+          world.visible=false;travelScene.update(0,0,false);
+          if(transformEffect){transformExplorer.update(0,0,false);transformExplorer.show();}else travelScene.show();travelNote.hidden=false;travelNote.textContent=travelScene.scene.title||'独立赶路 · 临时场景';
         }else if(mode==='travel-arrive'){
-          travelScene.hide();travelNote.hidden=true;
+          transformEffect?.cancel();transformExplorer.hide();travelScene.hide();travelNote.hidden=true;
           if(targetIndex!==null)showLandmark(targetIndex);
-        }else if(mode==='travel-cancel'){x=legStart;travelScene.hide();world.visible=true;travelNote.hidden=true;Object.assign(camera,{x:W/2,y:H/2,zoom:1});}
+        }else if(mode==='travel-cancel'){x=legStart;transformEffect?.cancel();transformExplorer.hide();travelScene.hide();world.visible=true;travelNote.hidden=true;Object.assign(camera,{x:W/2,y:H/2,zoom:1});}
       }
       if(u===1){
         transitionPose(0);
         if(mode==='travel-depart'){
           if(!travelScene.actor){startTravelArrival();}
+          else if(transformEffect){setPhase('transforming','一笔绘出 · 化身文化探索者');transformEffect.start();}
           else setPhase('traveling',`${travelError?travelError+' · ':''}山水赶路 · 前往${stations[targetIndex].name} · 可跳过`);
         }else if(mode==='travel-arrive')arrive();
         else{stopTravelScene();targetIndex=null;finishReturn();}
       }
+    }else if(mode==='transforming'){
+      const p=transformEffect.elapsed/transformEffect.options.duration;
+      transformExplorer.update(dt*.1,0,false);travelScene.update(p>=window.WusanTravelConfig.transformBrush.rideStart?dt:0,0,p>=window.WusanTravelConfig.transformBrush.rideStart);
+      const zoom=1+.01*transformEffect.smooth(0,.3,p)*(1-transformEffect.smooth(.75,1,p));
+      for(const scene of [transformExplorer,travelScene]){const k=Math.max(app.screen.width/scene.scene.width,app.screen.height/scene.scene.height)*zoom;scene.root.scale.set(k);scene.root.position.set((app.screen.width-scene.scene.width*k)/2,(app.screen.height-scene.scene.height*k)/2);}
+      transformEffect.update(dt);
     }else if(mode==='traveling'){
-      const u=clamp(elapsed/legDuration,0,1);travelScene.update(dt,smooth(u),u<1);
+      travelScene.resize();const u=clamp(elapsed/legDuration,0,1);travelScene.update(dt,smooth(u),u<1);
       if(u===1)startTravelArrival();
     }else if(mode==='revealing'){
       revealProgress=clamp(elapsed/3.5,0,1);if(revealProgress===1)completeReveal();
@@ -452,7 +493,7 @@
   });
   function resize(){
     app.renderer.resize(host.clientWidth,host.clientHeight);
-    viewScale=Math.min(host.clientWidth/W,host.clientHeight/H);travelScene.resize();landmarkView.resize();
+    viewScale=Math.min(host.clientWidth/W,host.clientHeight/H);travelScene.resize();transformExplorer.resize();landmarkView.resize();if(transformEffect?.active)transformEffect.draw();
     renderPose();app.render();
   }
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(host);resize();controls();
@@ -472,8 +513,9 @@
     visibility();
   }
   document.addEventListener('visibilitychange',visibility);reduced.addEventListener('change',reducedChange);
-  window.addEventListener('pagehide',event=>{app.stop();video.pause();if(!event.persisted){clearTimeout(introTimer);videoToken++;travelScene.destroy();landmarkView.destroy();stopped=true;resizeObserver.disconnect();document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',reducedChange);app.destroy(true,{children:true,texture:true,textureSource:true});}});
+  window.addEventListener('pagehide',event=>{app.stop();video.pause();if(!event.persisted){clearTimeout(introTimer);videoToken++;transformEffect?.destroy();transformExplorer.destroy();travelScene.destroy();landmarkView.destroy();stopped=true;resizeObserver.disconnect();document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',reducedChange);app.destroy(true,{children:true,texture:true,textureSource:true});}});
   window.addEventListener('pageshow',event=>{if(event.persisted)visibility();});
+  window.journeyTravelDebug=()=>({mode,paused:travelPaused,from:stations[stationIndex].id,target:targetIndex===null?null:stations[targetIndex].id,elapsed,character:transformSpec?.characterId||'explorer',frames:travelScene.actorFrames?.length||0,fps:travelScene.scene?.slots.character.frames?.fps||null,scale:travelScene.actor?.scale.x,transformActive:!!transformEffect?.active,brush:!!transformEffect?.brush,masked:!!travelScene.actor?.mask||!!transformExplorer.actor?.mask,actorRestored:!travelScene.actor||travelScene.actor.parent===travelScene.root,transformTime:transformEffect?.elapsed,transformDuration:transformEffect?.options.duration,travelDuration,arrivalDuration});
   visibility();playPrologue(false);
 
 })();

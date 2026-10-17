@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#171a1a">
+    <title>案前票拟 · 张居正｜雾散荆州</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <aside id="journey-connection" hidden role="status"><p></p><button type="button">重试连接</button></aside>
+    <main class="game-shell">
+      <div class="scene-backdrop" aria-hidden="true"></div>
+      <header class="topbar">
+        <p class="route-label">雾散荆州 <span>/</span> 张居正故居独立模块</p>
+        <p class="topbar-note">史实主题 · 游戏化推演</p>
+      </header>
+
+      <div class="game-layout">
+        <figure class="intro-character" aria-label="张居正持卷人物">
+          <span class="intro-character-seal" aria-hidden="true">太岳</span>
+          <img src="../../demo/journey/assets/zhang-walking-small-eight/walk_04-feet-v2.png" alt="黑色官帽、红色官服、黑色长髯，手持书卷的水墨淡彩张居正">
+          <figcaption>内阁首辅 · 张居正</figcaption>
+        </figure>
+        <aside class="identity-panel" aria-labelledby="identity-title">
+          <div class="portrait-frame">
+            <img src="assets/zhangjuzheng-official.jpg" alt="明代官服人物的参考形象">
+            <span class="portrait-tag">身份参考</span>
+          </div>
+          <div class="identity-copy">
+            <p class="kicker">荆州 · 张居正故居</p>
+            <h1 id="identity-title">阅章奏<br><em>中兴之臣</em></h1>
+            <p class="identity-lede">以张居正之身，批阅七道奏报。</p>
+            <dl class="identity-meta">
+              <div><dt>身份</dt><dd>万历朝首辅</dd></div>
+              <div><dt>荆州线索</dt><dd>历史人物与改革精神</dd></div>
+            </dl>
+          </div>
+          <figure class="statue-reference">
+            <img src="assets/zhangjuzheng-statue.jpg" alt="张居正铜像参考照片">
+            <figcaption><span>故居纪念像</span><small>人物形象参考</small></figcaption>
+          </figure>
+        </aside>
+
+        <section class="desk-panel" aria-labelledby="game-title">
+          <div class="desk-heading">
+            <div>
+              <p class="kicker">万历新政 · 七道票拟</p>
+              <h2 id="game-title">案前票拟，字字关乎朝局。</h2>
+            </div>
+            <button class="text-button" id="restart-button" type="button">重开本局</button>
+          </div>
+
+          <section class="resource-strip summary-resources" aria-label="当前治理资源">
+            <div class="resource treasury" data-resource="treasury">
+              <div class="resource-head"><span>国库</span><strong id="treasury-value">60</strong></div>
+              <div class="resource-track"><span id="treasury-bar"></span></div>
+              <small>财政与改革余力</small>
+            </div>
+            <div class="resource people" data-resource="people">
+              <div class="resource-head"><span>民心</span><strong id="people-value">60</strong></div>
+              <div class="resource-track"><span id="people-bar"></span></div>
+              <small>百姓承受与改革接受度</small>
+            </div>
+            <div class="resource defense" data-resource="defense">
+              <div class="resource-head"><span>边防</span><strong id="defense-value">55</strong></div>
+              <div class="resource-track"><span id="defense-bar"></span></div>
+              <small>军备与边疆稳定</small>
+            </div>
+          </section>
+
+          <section class="play-surface" id="intro-view" aria-labelledby="intro-title">
+            <p class="kicker">荆州 · 张居正故居</p>
+            <h3 id="intro-title">案前票拟 <span class="intro-title-dot">·</span> 张居正</h3>
+            <p class="intro-subtitle">一纸拟议，关乎天下。</p>
+            <div class="intro-guidance">
+              <p>万历年间，政务繁重。</p>
+              <p>你将化身内阁首辅张居正，<br>于书案前审阅奏报，<br>权衡国库、民心与边防。</p>
+              <p>以一纸票拟，体会改革决策的艰难。</p>
+            </div>
+            <button class="primary-button" id="start-button" type="button">开始票拟 <span aria-hidden="true">→</span></button>
+            <button class="text-button flow-exit" data-exit-game type="button">退出体验</button>
+            <p class="intro-footnote">七道奏报 · 三项国事 · 历史主题推演</p>
+          </section>
+
+          <section class="play-surface memorial-view" id="memorial-view" hidden aria-live="polite">
+            <div class="scene-frame">
+              <img class="scene-base-img" src="assets/study-background.png" alt="">
+
+              <div class="scene-meta">
+                <div>
+                  <p class="kicker" id="memorial-era"></p>
+                  <p class="scene-caption">案前票拟 · 审奏报，拟政议</p>
+                </div>
+                <p class="round-count" id="round-count">第 1 / 7 份</p>
+              </div>
+
+              <button class="scene-exit text-button flow-exit" data-exit-game type="button">退出体验</button>
+              <button class="scene-restart text-button" id="scene-restart-button" type="button">重开本局</button>
+
+              <div class="pending-stack-wrap" id="pending-stack" data-count="7">
+                <img class="pending-stack-img" id="pending-stack-img" src="assets/pending-stack-new.png" alt="">
+                <p class="pending-stack-label">未阅章奏</p>
+              </div>
+
+              <article class="open-scroll" id="open-scroll">
+                <img class="scroll-base-img" src="assets/scroll-open-transparent.png" alt="">
+                <img class="scroll-signature-img" src="assets/memorial-signature-reference.jpg" alt="张居正落款与朱印">
+                <button class="desk-scroll-preview" id="read-memorial" type="button" aria-haspopup="dialog">
+                  <strong id="desk-memorial-title"></strong>
+                  <span id="desk-memorial-scene"></span>
+                  <small>点击章奏，查看奏报</small>
+                </button>
+                <div class="reading-content" id="reading-content">
+                  <div class="reading-toolbar">
+                    <span id="reading-era"></span>
+                    <div class="reading-actions"><button id="close-reading" class="reading-back" type="button">收起奏报</button><button class="reading-back flow-exit" data-exit-game type="button">退出体验</button></div>
+                  </div>
+                  <p class="reading-resources" id="reading-resources"></p>
+                  <div class="scroll-question" id="scroll-question">
+                    <h3 id="memorial-title"></h3>
+                    <p id="memorial-scene" class="reading-scene"></p>
+                    <p id="memorial-context"></p>
+                  </div>
+                  <p class="reading-section-label">处置三策</p>
+                  <div class="scroll-options" id="choice-list" role="group" aria-label="奏报三策"></div>
+                  <div id="draft-writing-area" class="draft-writing-area" aria-label="票拟文字预留区域"><span>阁臣票拟</span>
+                    <div class="draft-writing-stage">
+                      <div class="draft-ink" role="img" aria-label="尚未票拟"></div>
+                      <img class="writing-brush-actor" src="assets/writing-brush.png" alt="" aria-hidden="true">
+                    </div>
+                    <p class="draft-disclaimer" hidden>游戏化拟办意见 · 非真实历史奏疏</p>
+                    <div class="writing-controls" hidden>
+                      <span role="status">正在票拟…</span>
+                      <button id="skip-writing" type="button">跳过动画</button>
+                      <button id="cancel-writing" type="button">取消提笔</button>
+                      <button id="restart-writing" type="button">重开本局</button>
+                    </div></div>
+                  <div class="scene-seal-action" id="seal-action" hidden>
+                    <p><span>已选定策</span><strong id="selected-choice"></strong></p>
+                    <button class="seal-button" id="seal-button" type="button">确认票拟</button>
+                  </div>
+                  <div class="scene-result" id="choice-result" hidden>
+                    <p class="result-label">本次票拟 · 治理变化</p>
+                    <p class="delta-line" id="delta-line"></p>
+                    <p class="history-note" id="history-note"></p>
+                    <details class="history-details" id="history-details">
+                      <summary>了解历史 · 史实小笺</summary>
+                      <p id="history-note-text"></p>
+                      <nav class="history-sources" aria-label="史实小笺资料来源"><span>资料来源</span><div id="history-sources"></div></nav>
+                    </details>
+                    <button class="secondary-button" id="continue-button" type="button">继续批阅 <span aria-hidden="true">→</span></button>
+                  </div>
+                </div>
+              </article>
+
+              <div class="desk-stationery" aria-hidden="true">
+                <img class="desk-inkstone" src="assets/inkstone.png" alt="">
+                <img class="desk-brush-rest" src="assets/brush-rest.png" alt="">
+                <img class="desk-writing-brush" src="assets/writing-brush.png" alt="">
+              </div>
+
+            </div>
+          </section>
+
+          <div id="reading-stage" class="reading-stage" hidden role="dialog" aria-modal="true" aria-labelledby="memorial-title"></div>
+
+          <section class="play-surface end-view" id="end-view" hidden aria-live="polite">
+            <p class="kicker" id="end-kicker">七份奏报已批完</p>
+            <h3 id="end-title"></h3>
+            <div class="end-score" id="end-score" aria-label="最终治理资源"></div>
+            <h4 class="ending-seal" id="end-evaluation"></h4>
+            <p class="ending-reason" id="end-reason"></p>
+            <p id="end-copy"></p>
+            <p class="ending-status" id="end-status"></p>
+            <p class="ending-notice" id="end-notice"></p>
+            <div class="ending-actions"><button class="primary-button" id="end-action" type="button"></button><button id="end-exit" class="secondary-button flow-exit" data-exit-game type="button">结束探索</button></div>
+          </section>
+
+          <section class="play-surface exit-view" id="exit-view" hidden aria-labelledby="exit-title">
+            <p class="kicker">张居正故居</p>
+            <h3 id="exit-title">体验已结束</h3>
+            <p id="exit-status" role="status"></p>
+            <p id="exit-copy"></p>
+            <button class="primary-button" id="return-start" type="button">返回开始页面</button>
+          </section>
+
+          <footer class="desk-footer">
+            <p><span class="footer-mark">注</span> 本模块是独立开发版本，不读取或写入现有项目的正式存档。</p>
+            <p>资源数字显示每次选择后的当前剩余值。</p>
+          </footer>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="app.mjs"></script>
+  </body>
+</html>

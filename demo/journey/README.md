@@ -2,6 +2,11 @@
 
 当前入口：`demo/journey/journey-demo.html`。全局画卷 → 独立电影式赶路 → 云雾转场 → 独立第一人称地标展示。沿用本地 PixiJS 8.6.6，无新增依赖。地标展示使用独立 HTML/CSS 场景，不放大全局地图；关羽祠、宾阳楼、博物馆使用团队提供的水墨完整场景作近景，长卷使用透明提取层；张居正保留原建筑并加入庭院雕像。素材属于艺术化展示，生成式提取的细小纹饰尚不能保证逐像素保真。
 
+
+## 当前赶路时间（毫秒配置）
+
+`travel-config.js` 的 `travelTiming` 统一管理：变身1500ms、山水赶路3500ms、抵达900ms；`characterTiming` 支持角色专属变身时长，未覆盖时回退默认。正式游戏未启用任何变身，不额外等待1500ms；原启程/返回云雾1.15秒保留，首轮加载耗时另计。动作帧率与旅程进度分离，关羽仍为8 FPS。独立 `guanyu-transform-demo.html` 使用浅色水墨擦拭，默认三个阶段总计5.9秒，未接入正式入口。
+
 ## 本地运行
 
 在项目根目录使用已有静态服务，打开 http://127.0.0.1:4173/demo/journey/journey-demo.html 。也可以在 IDEA 中右键 HTML → Open in Browser，或用 VS Code Live Server 打开。部署时同时复制 `demo/journey/` 与 `demo/guanyu-shrine/`，保留同级目录及 assets、vendor 的相对路径。通过同源 HTTP 服务运行，以支持完成消息与 Web Worker。不同端口或域名使用不同的浏览器存档。

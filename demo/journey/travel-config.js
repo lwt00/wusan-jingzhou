@@ -1,13 +1,23 @@
 /* 正式素材优先在这里替换，路径相对于 journey-demo.html。动画模块不包含图片路径。 */
 window.WusanTravelConfig={
   version:1,
+  // 唯一计时来源，单位毫秒；没有变身配置的出发地点直接赶路。
+  travelTiming:{transformDuration:1500,travelDuration:3500,arrivalDuration:900},
+  characterTiming:{guanyu:{transformDuration:1500},zhangjuzheng:{transformDuration:1500},jingzhouGuard:{transformDuration:1500}},
+  // 已验收毛笔轨迹：三个角色和独立 Demo 共用，不改变节奏与比例。
+  transformBrush:{src:'assets/transform/transform-brush.png',tip:{x:150/1536,y:970/1024},scale:.18,feather:22,enterEnd:2/15,sweepEnd:2/3,exitEnd:13/15,rideStart:13/15,enterDistance:90,exitDistance:220},
+  transforms:{
+    guanyu:{characterId:'guanyu',sceneId:'guanyu-riding',text:'承忠义之志，策马赴新程。'},
+    zhangjuzheng:{characterId:'zhangjuzheng',sceneId:'zhang-walking',text:'怀革新之志，步入新程。'},
+    binyang:{characterId:'jingzhouGuard',sceneId:'binyang-guard-walking',text:'守古城文脉，行荆楚山水。'}
+  },
   defaultScene:'ink-road',
   routes:{
     // 'guanyu->binyang':'river-road', 'binyang->guanyu':'river-road'
   },
   scenes:{'ink-road':{
     title:'山水驿道 · 临时技术场景',
-    width:1600,height:900,groundY:640,travelDistance:1400,duration:8,
+    width:1600,height:900,groundY:640,travelDistance:1400,
     camera:{follow:7,lead:35},
     scenery:window.WusanTravelScenery?.items||[],
     legacyLayerOpacity:window.WusanTravelScenery?.legacyLayerOpacity||{},
@@ -105,3 +115,6 @@ if(new URLSearchParams(location.search).get('walkingTest')==='1'){
   }}};
   for(const target of ['guanyu','zhangjuzheng','museum'])config.routes[`binyang->${target}`]='binyang-guard-walking';
 }
+
+// 兼容现有场景消费者，秒值由毫秒配置推导，不另存一份时长。
+Object.defineProperty(window.WusanTravelConfig.scenes['ink-road'],'duration',{enumerable:true,get(){return window.WusanTravelConfig.travelTiming.travelDuration/1000;}});

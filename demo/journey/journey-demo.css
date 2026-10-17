@@ -140,4 +140,125 @@ body[data-landmark-active=true] footer,body[data-landmark-active=true] header,bo
 #landmark-scene[data-layout=courtyard] .landmark-copy h2,#landmark-scene[data-layout=courtyard] #landmark-title{animation:landmark-copy-in 1.8s ease-out both}
 @media(prefers-reduced-motion:reduce){#landmark-scene[data-layout=courtyard] .landmark-copy h2,#landmark-scene[data-layout=courtyard] #landmark-title{animation:none}}
 
-#landmark-game-host[data-game='guanyu-huarong']{inset:0;transform:none;width:100%;height:100%;max-height:none;padding:0;gap:0;overflow:hidden;border:0;border-radius:0;background:#eae6dc}.guanyu-game-frame{width:100%;height:100%;border:0;display:block}
+
+/* 仅关羽祠：留白题诗与非模态宣纸侧栏。 */
+#guanyu-poetry[hidden]{display:none}
+#landmark-scene[data-landmark=guanyu] .landmark-copy{top:9%;left:4%;width:24%;text-align:left;background:none;padding:0}
+#guanyu-poetry{position:absolute;z-index:2;right:4%;top:9%;max-width:245px;color:#334b44;pointer-events:none;text-shadow:0 1px 5px #f6f1e4;font-family:"Songti SC","STSong",serif}
+.guanyu-verses{display:flex;flex-direction:row-reverse;gap:18px;justify-content:flex-start}
+.guanyu-verses span{writing-mode:vertical-rl;font-size:clamp(20px,1.8vw,27px);line-height:1.3;letter-spacing:.18em;opacity:0;animation:guanyu-ink-reveal 1.4s ease-out var(--verse-delay) forwards}
+.guanyu-poetry-credit{white-space:pre-line;font-size:12px;line-height:1.9;text-align:right;opacity:0;animation:guanyu-ink-reveal 1.5s ease-out 3.8s forwards;margin-top:14px}
+@keyframes guanyu-ink-reveal{from{opacity:0;filter:blur(1.8px);transform:translateY(3px);text-shadow:0 0 4px #354b4466}to{opacity:1;filter:blur(0);transform:none;text-shadow:0 1px 4px #faf3e7}}
+#landmark-scene[data-landmark=guanyu][data-poem-skipped=true] #guanyu-poetry *{animation:none;opacity:1;filter:none}
+#landmark-scene[data-landmark=guanyu][data-state=game] #guanyu-poetry{display:none}
+#landmark-story[data-landmark]{position:fixed;inset:70px 18px auto auto;margin:0;width:min(31vw,340px);max-height:calc(100svh - 175px);overflow:auto;padding:22px;border:1px solid #b3a483;border-radius:2px;background:repeating-linear-gradient(8deg,#a48d6208 0 1px,transparent 1px 5px),#f6f0e2f5;box-shadow:-6px 8px 22px #55452e18;font-family:"Songti SC","STSong",serif;animation:guanyu-sidebar-in .35s ease-out}
+#landmark-story[data-landmark] h2{font-size:20px;font-weight:500;line-height:1.5}
+#landmark-story[data-landmark] p{font-size:15px;line-height:1.9}
+#landmark-story[data-landmark] a{color:#7b493b;text-underline-offset:4px}
+#landmark-story[data-landmark]::backdrop{background:transparent;backdrop-filter:none}
+@keyframes guanyu-sidebar-in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@media(max-width:600px){
+ #landmark-scene[data-landmark=guanyu] .landmark-copy{left:6%;top:7%;width:65%;text-align:left}
+ #landmark-scene[data-landmark=guanyu] .landmark-copy h2{font-size:28px;margin:0 0 6px}
+ #guanyu-poetry{right:6%;top:19%;max-width:220px}
+ .guanyu-verses{gap:12px}.guanyu-verses span{font-size:20px;letter-spacing:.08em}
+ .guanyu-poetry-credit{font-size:11px;line-height:1.5;margin-top:8px}
+ #landmark-story[data-landmark]{right:8px;top:12%;width:48vw;max-height:68svh;padding:12px}
+ #landmark-story[data-landmark] h2{font-size:17px}#landmark-story[data-landmark] p{font-size:13px;line-height:1.8}
+}
+@media(max-height:600px) and (min-width:601px){#guanyu-poetry{top:7%;right:3%}.guanyu-verses span{font-size:18px}.guanyu-poetry-credit{font-size:10px;margin-top:6px}#landmark-scene[data-landmark=guanyu] .landmark-copy{top:8%}}
+@media(prefers-reduced-motion:reduce){#guanyu-poetry *{animation:none;opacity:1;filter:none}#landmark-story[data-landmark]{animation:none}}
+/* 按最新确认：题诗悬浮于关羽祠入口正中，保持按钮可直接操作。 */
+#landmark-scene[data-landmark=guanyu] #guanyu-poetry{left:50%;right:auto;top:52%;transform:translate(-50%,-50%);width:max-content;max-width:82vw;color:#fff3d5;text-shadow:0 1px 4px #342619,0 0 2px #342619;font-family:"STKaiti","KaiTi","Songti SC",serif}
+#landmark-scene[data-landmark=guanyu] .guanyu-verses{gap:22px;animation:guanyu-poetry-float 8s ease-in-out infinite alternate}
+#landmark-scene[data-landmark=guanyu] .guanyu-verses span{font-size:clamp(23px,2.2vw,31px);animation-duration:2.8s}
+#landmark-scene[data-landmark=guanyu] .guanyu-poetry-credit{text-align:center;font-size:12px;animation-delay:5.3s}
+#landmark-story[data-landmark]{z-index:12}
+@keyframes guanyu-poetry-float{from{translate:0 3px}to{translate:0 -5px}}
+@media(max-width:600px){#landmark-scene[data-landmark=guanyu] #guanyu-poetry{top:52%;max-width:86vw}#landmark-scene[data-landmark=guanyu] .guanyu-verses{gap:16px}#landmark-scene[data-landmark=guanyu] .guanyu-verses span{font-size:22px}#landmark-scene[data-landmark=guanyu] .guanyu-poetry-credit{font-size:11px}}
+@media(prefers-reduced-motion:reduce){#landmark-scene[data-landmark=guanyu] #guanyu-poetry *{animation:none;opacity:1;translate:none}}
+#landmark-scene[data-landmark=guanyu] .guanyu-verses span,#landmark-scene[data-landmark=guanyu] .guanyu-poetry-credit{text-shadow:0 1px 3px #342619,0 0 2px #342619!important}
+@media(max-width:600px){#landmark-scene[data-landmark=guanyu] #guanyu-poetry{color:#473c2a}#landmark-scene[data-landmark=guanyu] .guanyu-verses span,#landmark-scene[data-landmark=guanyu] .guanyu-poetry-credit{text-shadow:0 1px 3px #fff9e9,0 0 2px #fff9e9!important}}
+
+/* 仅宾阳楼：城门前浮空墨诗，两组共用同一锚点。 */
+#binyang-floating-poem[hidden]{display:none}
+#binyang-floating-poem{position:fixed;z-index:3;transform:translate(-50%,-50%) translateY(var(--poem-float,0px));display:grid;width:max-content;max-width:90vw;text-align:center;color:#2d3530;font-family:"STKaiti","KaiTi","Songti SC",serif;pointer-events:none;text-shadow:0 1px 3px #fff8e5,0 0 5px #fff8e5}
+.binyang-poem-group{grid-area:1/1;align-self:center}
+.binyang-poem-group p{font-size:clamp(25px,2.5vw,35px);line-height:1.8;letter-spacing:.22em;margin:0}
+.binyang-poem-group small{display:block;font-size:13px;line-height:1.8;margin-top:8px;letter-spacing:.04em}
+.binyang-poem-skip{grid-area:2/1;justify-self:center;pointer-events:auto;margin-top:12px;border:0;background:transparent;padding:3px 8px;font-size:11px;color:#535c4f;text-decoration:underline;text-underline-offset:4px;text-shadow:0 1px 3px #fff8e5}
+#landmark-scene[data-landmark=binyang] .landmark-copy{left:4%;top:9%;width:30%;text-align:left;background:none;padding:0}
+@media(max-width:600px){.binyang-poem-group p{font-size:22px;line-height:1.65;letter-spacing:.14em}.binyang-poem-group small{font-size:10px;margin-top:4px}.binyang-poem-skip{margin-top:6px}#landmark-scene[data-landmark=binyang] .landmark-copy{left:6%;top:7%;width:80%;text-align:left}#landmark-scene[data-landmark=binyang] .landmark-copy h2{font-size:28px;margin:0 0 6px}}
+@media(prefers-reduced-motion:reduce){#binyang-floating-poem{transform:translate(-50%,-50%)}}
+/* 漂浮仅作用于诗句，跳过控件不随诗句上下摆动。 */
+#binyang-floating-poem{transform:translate(-50%,-50%)}
+.binyang-poem-group{translate:0 var(--poem-float,0px)}
+@media(prefers-reduced-motion:reduce){.binyang-poem-group{translate:none}}
+
+/* 四站统一非模态宣纸侧栏；故居补齐共享楹联，博物馆只提示待补充。 */
+#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry{left:50%;right:auto;top:52%;transform:translate(-50%,-50%);width:max-content;max-width:86vw;color:#fff3d5;font-family:"STKaiti","KaiTi","Songti SC",serif;text-shadow:0 1px 3px #342619}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses{gap:28px;animation:guanyu-poetry-float 8s ease-in-out infinite alternate}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses span{font-size:clamp(24px,2.2vw,31px);text-shadow:0 1px 3px #342619!important}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-poetry-credit{text-align:center;animation-delay:3.2s;text-shadow:0 1px 3px #342619!important}
+#landmark-scene[data-landmark=zhangjuzheng] .landmark-copy,#landmark-scene[data-landmark=museum] .landmark-copy{left:4%;top:9%;width:30%;text-align:left;background:none;padding:0}
+#landmark-scene[data-landmark=museum] #guanyu-poetry{left:50%;right:auto;top:62%;transform:translate(-50%,-50%);max-width:80vw;text-align:center;color:#334b44}
+.museum-culture-pending{font-size:17px;letter-spacing:.12em;line-height:1.8;text-shadow:0 1px 4px #fff9e8;animation:guanyu-ink-reveal 2s ease-out both}
+#landmark-scene[data-state=game] #guanyu-poetry{display:none}
+#landmark-scene[data-poem-skipped=true] #guanyu-poetry *{animation:none;opacity:1;filter:none}
+@media(max-width:600px){#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses span{font-size:22px;color:#473c2a;text-shadow:0 1px 3px #fff9e9!important}#landmark-scene[data-landmark=zhangjuzheng] .guanyu-poetry-credit{font-size:11px;color:#473c2a;text-shadow:0 1px 3px #fff9e9!important}#landmark-scene[data-landmark=zhangjuzheng] .landmark-copy,#landmark-scene[data-landmark=museum] .landmark-copy{left:6%;top:7%;width:80%}.museum-culture-pending{font-size:14px}}
+@media(prefers-reduced-motion:reduce){#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry *,#landmark-scene[data-landmark=museum] #guanyu-poetry *{animation:none;opacity:1;translate:none;filter:none}}
+/* 故居楹联分列雕像肩膀两侧，中央留出人物轮廓。 */
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses{gap:clamp(72px,15vw,210px)}
+#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry{top:57%}
+@media(max-width:600px){#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses{gap:clamp(58px,18vw,90px)}#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry{top:54%}#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses span{font-size:18px;letter-spacing:.12em}}
+
+/* 故居楹联以人物中心（画面约49%）对称，等宽、顶部对齐、同步浮现。 */
+#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry{left:49%}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses{align-items:flex-start;justify-content:center}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses span{width:1.3em;flex:0 0 1.3em;height:9.5em;text-align:start;animation-delay:.6s!important}
+
+/* 共用毛笔过场字幕，只覆盖文字，不遮挡交互。 */
+.ink-transform-caption{position:absolute;bottom:12%;left:50%;transform:translateX(-50%);pointer-events:none;font-family:"Songti SC","SimSun",serif;font-size:clamp(13px,2vw,23px);letter-spacing:.08em;color:#3b5149;text-shadow:0 1px 5px #fff8e2;background:#f2efdfb5;padding:7px 13px;white-space:nowrap;z-index:5}
+
+/* 博物馆：原创题词沿建筑两侧留白排布，中央门厅保持完整。 */
+#landmark-scene[data-landmark=museum] #guanyu-poetry{left:50%;top:54%;right:auto;width:min(84vw,1160px);max-width:none;transform:translate(-50%,-50%);color:#2e3731;font-family:"STKaiti","KaiTi","Songti SC",serif}
+#landmark-scene[data-landmark=museum] .museum-inscription{flex-direction:row;justify-content:space-between;align-items:flex-start;gap:0}
+#landmark-scene[data-landmark=museum] .museum-inscription>span{font-size:clamp(23px,2vw,29px);width:1.3em;flex:0 0 1.3em;height:8.5em;letter-spacing:.16em;text-shadow:0 1px 4px #fff8e7!important;animation-delay:.6s}
+#landmark-scene[data-landmark=museum] .guanyu-poetry-credit{text-align:center;font-size:12px;animation-delay:2.1s;text-shadow:0 1px 4px #fff8e7!important}
+.museum-inscription-seal{display:inline-block;vertical-align:middle;margin-left:10px;padding:3px 4px;border:2px solid #a44737;border-radius:2px;color:#a44737;font:15px/1.1 "STKaiti","KaiTi",serif;letter-spacing:1px;transform:rotate(-5deg);text-shadow:none}
+@media(max-width:600px){#landmark-scene[data-landmark=museum] #guanyu-poetry{width:90vw;top:52%}#landmark-scene[data-landmark=museum] .museum-inscription>span{font-size:17px;height:8.5em;letter-spacing:.12em}#landmark-scene[data-landmark=museum] .guanyu-poetry-credit{font-size:10px}.museum-inscription-seal{font-size:12px;margin-left:6px;padding:2px}}
+
+/* 正式华容道独占小游戏插槽，不影响其他景点布局。 */
+#landmark-game-host[data-game="guanyu-huarong"]{inset:0;transform:none;width:100%;height:100%;max-height:none;padding:0;border:0;border-radius:0;overflow:hidden}
+.guanyu-game-frame{display:block;width:100%;height:100%;border:0;flex:1;min-height:0;background:#eae5d9}
+
+#landmark-game-host[data-game="zhangjuzheng-memorial"] { inset: 0; transform: none; width: 100%; height: 100%; max-height: none; padding: 0; border: 0; border-radius: 0; overflow: hidden; }
+.zhangjuzheng-game-frame { display: block; width: 100%; height: 100%; border: 0; flex: 1; min-height: 0; background: #eee5d1; }
+.zhang-connection[hidden] { display: none; }
+.zhang-connection { position: absolute; z-index: 6; top: 12px; left: 50%; transform: translateX(-50%); width: min(92%, 520px); padding: 12px; background: #f3e7ce; border: 1px solid #8e795b66; color: #354132; }
+.zhang-connection p { margin: 0 0 8px; }
+.zhang-connection button { min-height: 44px; margin: 4px 8px; }
+
+/* Zhang entrance only: keep the courtyard underneath until a decoded, stable intro is ready. */
+#landmark-game-host[data-game="zhangjuzheng-memorial"] { background: transparent; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"] .zhangjuzheng-game-frame {
+  opacity: 0; pointer-events: none; transition: opacity 520ms ease-in-out;
+}
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="revealing"] .zhangjuzheng-game-frame,
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="shown"] .zhangjuzheng-game-frame { opacity: 1; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="shown"] .zhangjuzheng-game-frame { pointer-events: auto; }
+#landmark-scene[data-landmark="zhangjuzheng"][data-zhang-entry]:not([data-zhang-entry="shown"]) .landmark-copy { visibility: visible; }
+#landmark-scene[data-landmark="zhangjuzheng"][data-zhang-entry]:not([data-zhang-entry="shown"]) #guanyu-poetry { display: block; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="revealing"] .zhang-connection { opacity: 0; pointer-events: none; transition: opacity 180ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  #landmark-game-host[data-game="zhangjuzheng-memorial"] .zhangjuzheng-game-frame,
+  #landmark-game-host[data-game="zhangjuzheng-memorial"] .zhang-connection { transition: none; }
+}
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry]:not([data-entry="shown"]) { pointer-events: none; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"] .zhang-connection { pointer-events: auto; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="revealing"] .zhang-connection { pointer-events: none; }
+/* Only an embedded intro's explicit exit uses this return fade. Other exit flows stay unchanged. */
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="returning"] .zhangjuzheng-game-frame { transition-duration: 450ms; }
+@media (prefers-reduced-motion: reduce) {
+  #landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="returning"] .zhangjuzheng-game-frame { transition-duration: 0s; }
+}
