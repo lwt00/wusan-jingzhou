@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#09070b">
+  <title>云上荆州博物馆 · 楚韵重生</title>
+  <link rel="stylesheet" href="styles/game.css?v=20261017-1">
+</head>
+<body>
+<main id="app">
+  <section id="entrance" class="scene entrance" aria-label="入馆">
+    <div class="door door-left"></div><div class="door door-right"></div>
+    <div class="entrance-copy">
+      <p class="museum-kicker">JINGZHOU MUSEUM</p>
+      <h1>云上荆州博物馆</h1>
+      <div class="seal">楚韵<br>重生</div>
+      <p class="entrance-line">两千三百年，等你点亮</p>
+      <button id="enterBtn" class="ceremony-btn"><span>入馆</span><i></i></button>
+      <p class="headphone-tip">建议佩戴耳机 · 点击后开启环境音</p>
+    </div>
+  </section>
+
+  <section id="hallScene" class="scene hall-scene" hidden aria-label="第一人称展厅">
+    <header class="museum-hud">
+      <div><small>云上荆州博物馆</small><b>楚韵重生</b></div>
+      <div class="hud-actions">
+        <button id="soundBtn" class="round-btn" aria-label="开关声音">声</button>
+        <button id="handbookBtn" class="round-btn" aria-label="修复师手册">册</button>
+      </div>
+    </header>
+    <div class="hall-depth" aria-hidden="true"><i class="wall-lines"></i><i class="floor-glow"></i></div>
+    <div id="hallViewport" class="hall-viewport">
+      <div id="hallTrack" class="hall-track"></div>
+    </div>
+    <div class="hall-instruction"><span>‹</span> 左右漫步 · 靠近展柜 <span>›</span></div>
+    <div id="hallProgress" class="hall-progress"></div>
+  </section>
+
+  <section id="artifactScene" class="scene artifact-scene" hidden aria-label="文物体验">
+    <header class="artifact-hud">
+      <button id="backHallBtn" class="text-btn">← 返回展厅</button>
+      <div class="artifact-heading"><small id="artifactEra"></small><b id="artifactName"></b></div>
+      <button id="artifactSoundBtn" class="round-btn">声</button>
+    </header>
+    <div id="chapterLine" class="chapter-line"></div>
+
+    <div id="artifactViewport" class="artifact-viewport">
+      <div id="photoPlane" class="photo-plane">
+        <img id="artifactPhoto" draggable="false" alt="">
+        <canvas id="dirtCanvas" hidden></canvas>
+        <div id="inspectionVeil" class="inspection-veil" hidden><i id="inspectionBeam"></i></div>
+        <div id="inspectionLayer" class="inspection-layer"></div>
+        <div id="hotspotLayer" class="hotspot-layer"></div>
+        <div id="photoShade" class="photo-shade"></div>
+        <div id="focusTraceLayer" class="focus-trace-layer"></div>
+      </div>
+      <div id="focusReticle" class="focus-reticle" aria-hidden="true"></div>
+    </div>
+
+    <div id="observePanel" class="lower-panel observe-panel" hidden>
+      <p id="observePrompt" class="whisper"></p>
+      <div class="observe-meter"><i id="observeMeter"></i></div>
+      <p class="gesture-tip">单指移动 · 双指或滚轮缩放</p>
+      <button id="startRestoreBtn" class="primary-btn" hidden>开启侧光检视</button>
+    </div>
+
+    <div id="inspectPanel" class="lower-panel inspect-panel" hidden>
+      <div class="clean-readout"><span>光学检视 · 病害记录</span><b id="inspectCount">0 / 3</b></div>
+      <div class="thin-progress"><i id="inspectProgress"></i></div>
+      <p id="inspectHint" class="inspect-hint">移动侧光，让细节从暗处浮现；微光变亮后点击记录。</p>
+      <button id="finishInspectBtn" class="primary-btn" hidden>完成检视</button>
+    </div>
+
+    <div id="guidePanel" class="guide-panel" hidden>
+      <small id="guideIndex"></small><h2 id="guideTitle"></h2>
+      <p id="guideBody"></p><p id="guideObserve" class="guide-observe"></p>
+      <button id="guideCloseBtn" class="primary-btn">继续观察</button>
+    </div>
+
+    <div id="hotspotFooter" class="lower-panel hotspot-footer" hidden>
+      <p>微光标记着值得细看的地方</p><span id="hotspotCount">0 / 0</span>
+      <button id="toPuzzleBtn" class="primary-btn" hidden>进入纹样拼合</button>
+    </div>
+
+    <div id="puzzlePanel" class="full-panel puzzle-panel" hidden>
+      <div class="panel-title"><small>残片即记忆</small><h2>让断裂的纹样重新相遇</h2></div>
+      <div id="puzzleShell" class="puzzle-shell"><div id="puzzleBoard" class="puzzle-board"></div><div class="puzzle-tray-label">残片托盘</div></div>
+      <div class="puzzle-controls"><span id="puzzleCount">0 / 0</span><button id="rotateBtn" class="rotate-btn">旋转 ⟳</button></div>
+    </div>
+
+    <div id="memoryFlash" class="memory-flash" hidden><span></span></div>
+
+    <div id="quizPanel" class="full-panel quiz-panel" hidden>
+      <div class="panel-title"><small>观察札记</small><h2 id="quizQuestion"></h2></div>
+      <div id="quizOptions" class="quiz-options"></div>
+      <div id="quizExplain" class="curator-card" hidden></div>
+    </div>
+
+    <div id="choicePanel" class="full-panel choice-panel" hidden>
+      <div class="panel-title"><small>终局一问 · 修旧如旧</small><h2 id="choicePrompt"></h2></div>
+      <p class="choice-intro">修复不是让文物变得崭新，而是让它带着真实的时间继续存在。</p>
+      <div id="choiceButtons" class="choice-buttons"></div>
+    </div>
+
+    <div id="drumPanel" class="full-panel drum-panel" hidden>
+      <p>最后的仪式</p><h2>请让它重新歌唱</h2>
+      <button id="drumHit" class="drum-hit"><img src="assets/images/artifact-drum.png" alt="点击虎座鸟架悬鼓"><i></i></button>
+      <span id="drumWords">轻触鼓面三次</span>
+    </div>
+
+    <div id="resultPanel" class="full-panel result-panel" hidden>
+      <div class="result-light"></div><img id="resultImage" alt="">
+      <small>修复档案 · 已归馆</small><h2 id="resultTitle"></h2>
+      <div id="resultStars" class="result-stars"></div><b id="resultScore"></b>
+      <div id="resultMetrics" class="result-metrics"></div>
+      <p id="resultQuote"></p>
+      <div class="result-actions"><button id="ticketBtn" class="subtle-btn">生成藏品票</button><button id="returnHallBtn" class="primary-btn">点亮展柜</button></div>
+    </div>
+  </section>
+
+  <section id="originMapPanel" class="scene origin-map-panel" hidden aria-label="文物出土地地图">
+    <div class="map-paper"><small>FROM THE EARTH OF JINGZHOU</small><h2>它从荆州地下走来</h2><div id="mapSvg" class="map-svg"></div><h3 id="mapOrigin"></h3><p id="mapStory"></p><span>点击任意处继续</span></div>
+  </section>
+
+  <dialog id="handbookDialog" class="museum-dialog">
+    <button id="closeHandbook" class="dialog-close">×</button>
+    <small>CONSERVATOR'S HANDBOOK</small><h2>修复师手册</h2>
+    <div id="handbookSummary" class="handbook-summary"></div>
+    <div id="handbookFeatures" class="handbook-features"></div>
+    <div id="handbookCards" class="handbook-cards"></div>
+  </dialog>
+
+  <dialog id="posterDialog" class="museum-dialog poster-dialog">
+    <button id="closePoster" class="dialog-close">×</button><h2>全馆点亮海报</h2>
+    <canvas id="posterCanvas" width="1080" height="1920"></canvas>
+    <button id="downloadPoster" class="primary-btn">保存点亮海报</button>
+  </dialog>
+
+  <section id="nineSongsPanel" class="scene nine-songs-panel" hidden>
+    <button id="closeNineSongs" class="text-btn">← 返回手册</button><div class="nine-paper"><small>楚辞集 · 已集齐</small><h2>九歌 · 楚声</h2><div id="nineLines" class="nine-lines"></div><p>楚韵重生 · 云上荆州博物馆</p></div>
+  </section>
+
+  <dialog id="ticketDialog" class="museum-dialog ticket-dialog">
+    <button id="closeTicket" class="dialog-close">×</button><h2>电子藏品票</h2>
+    <canvas id="ticketCanvas" width="900" height="1400"></canvas>
+    <button id="downloadTicket" class="primary-btn">保存藏品票</button>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+</main>
+<script src="scripts/qrcode.js?v=20261017-1"></script>
+<script src="scripts/media.js?v=20261017-1"></script>
+<script src="scripts/data.js?v=20261017-1"></script>
+<script src="scripts/audio.js?v=20261018-1"></script>
+<script src="scripts/app.js?v=20261018-1"></script>
+</body>
+</html>

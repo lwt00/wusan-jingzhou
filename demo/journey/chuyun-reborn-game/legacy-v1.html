@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>文物修复 · 楚韵重生</title>
+<style>
+:root{--black:#17121a;--black2:#241b26;--red:#b33124;--red2:#d4553f;--gold:#d9a441;--paper:#efe6d3;--ink:#3a2f2a;--mist:rgba(23,18,26,.92)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:radial-gradient(120% 90% at 50% 0%,#2b1f30 0%,var(--black) 55%);color:var(--paper);font:16px/1.7 "Noto Serif SC","Songti SC","SimSun",serif;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+#app{height:100%;display:flex;flex-direction:column;max-width:760px;margin:0 auto;position:relative}
+h1,h2,h3{font-weight:700;letter-spacing:.12em}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+
+/* 卷云纹边框装饰 */
+.frame{position:relative;flex:1;display:flex;flex-direction:column;padding:14px 16px calc(14px + env(safe-area-inset-bottom));min-height:0}
+.frame:before{content:'';position:absolute;inset:8px;border:1px solid rgba(217,164,65,.4);pointer-events:none;
+background:
+ radial-gradient(circle at 0 0,transparent 9px,var(--gold) 9px,var(--gold) 10.5px,transparent 11px) 0 0/100% 100% no-repeat,
+ radial-gradient(circle at 100% 0,transparent 9px,var(--gold) 9px,var(--gold) 10.5px,transparent 11px) 100% 0/100% 100% no-repeat,
+ radial-gradient(circle at 0 100%,transparent 9px,var(--gold) 9px,var(--gold) 10.5px,transparent 11px) 0 100%/100% 100% no-repeat,
+ radial-gradient(circle at 100% 100%,transparent 9px,var(--gold) 9px,var(--gold) 10.5px,transparent 11px) 100% 100%/100% 100% no-repeat}
+
+.topbar{text-align:center;padding:6px 0 10px;flex:none}
+.topbar .sub{font-size:12px;letter-spacing:.5em;color:var(--gold);opacity:.85}
+.topbar h1{font-size:22px;margin-top:2px;background:linear-gradient(180deg,#f4e3b8,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+.screen{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+[hidden]{display:none!important}
+
+/* 工坊列表 */
+.wlist{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:2px 4px}
+.wcard{display:flex;gap:12px;align-items:center;background:linear-gradient(180deg,var(--black2),#1c1520);border:1px solid rgba(217,164,65,.28);border-radius:10px;padding:12px;text-align:left;transition:transform .15s,border-color .15s}
+.wcard:active{transform:scale(.985)}
+.wcard.locked{opacity:.45;pointer-events:none;filter:saturate(.4)}
+.wcard .thumb{flex:none;width:74px;height:74px;border-radius:8px;background:#0d0a10 center/contain no-repeat;border:1px solid rgba(217,164,65,.25)}
+.wcard .thumb svg{width:100%;height:100%}
+.wcard .info{flex:1;min-width:0}
+.wcard .info b{font-size:17px;color:#f2e2c0}
+.wcard .info small{display:block;font-size:12px;color:#b7a98f;margin-top:2px}
+.wcard .state{flex:none;font-size:12px;color:var(--gold);border:1px solid rgba(217,164,65,.5);border-radius:99px;padding:2px 10px}
+.wcard .state.done{color:#8fce9f;border-color:#8fce9f}
+
+/* 通用舞台 */
+.stage-wrap{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.stage{flex:1;min-height:0;position:relative;border-radius:12px;overflow:hidden;background:#0d0a10;border:1px solid rgba(217,164,65,.22)}
+.progress{flex:none;display:flex;align-items:center;gap:10px;font-size:13px;color:#c9b993}
+.bar{flex:1;height:8px;border-radius:99px;background:#2a2030;overflow:hidden}
+.bar i{display:block;height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--gold));transition:width .25s}
+
+/* 工具选择 */
+.tools{flex:none;display:flex;gap:8px;justify-content:center;padding-top:10px}
+.tool{flex:1;max-width:130px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:10px;border:1px solid rgba(217,164,65,.3);background:var(--black2);font-size:13px;transition:.15s}
+.tool .ic{font-size:26px;line-height:1}
+.tool.on{border-color:var(--gold);background:#33251c;box-shadow:0 0 14px rgba(217,164,65,.25)}
+.tool small{font-size:11px;color:#a5947a}
+.hint{text-align:center;font-size:13px;color:#c9b993;min-height:20px}
+.hint b{color:var(--gold)}
+.casefile{border:1px solid rgba(217,164,65,.35);border-radius:10px;background:linear-gradient(135deg,#211924,#171218);padding:12px 14px;color:#c9b993;font-size:13px}.casefile b{color:#f2e2c0}.casefile .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.casefile em{font-style:normal;border:1px solid rgba(217,164,65,.35);border-radius:99px;padding:2px 9px;color:#d9a441}
+.toast{position:fixed;left:50%;bottom:9%;transform:translate(-50%,18px);z-index:20;background:rgba(15,11,17,.94);border:1px solid rgba(217,164,65,.55);border-radius:9px;padding:9px 14px;color:#f2e2c0;font-size:13px;opacity:0;transition:.25s;pointer-events:none;max-width:86%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+.damage{animation:damage .28s linear 2}@keyframes damage{50%{box-shadow:inset 0 0 45px rgba(179,49,36,.7)}}.metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:min(100%,430px)}.metric{border:1px solid rgba(217,164,65,.25);border-radius:8px;padding:8px;background:#1c1520}.metric b{display:block;color:#d9a441;font-size:18px}.metric small{color:#a5947a}
+
+/* 拼合托盘 */
+.tray{flex:none;height:118px;margin-top:10px;border-radius:10px;border:1px dashed rgba(217,164,65,.35);background:repeating-conic-gradient(#191320 0 25%,#1e1628 0 50%) 0 0/28px 28px;display:flex;align-items:center;gap:8px;overflow-x:auto;overflow-y:hidden;padding:8px}
+.tray .frag{flex:none;touch-action:none;cursor:grab;filter:drop-shadow(0 4px 6px #000a)}
+.tray .frag:active{cursor:grabbing}
+.stage .frag{position:absolute;touch-action:none;cursor:grab;filter:drop-shadow(0 6px 10px #000c)}
+.stage .frag.ok{pointer-events:none;filter:none}
+.rot-btn{flex:none;align-self:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);font-size:20px;background:var(--black2)}
+
+/* 记忆闪影 */
+.ghost{position:absolute;pointer-events:none;display:flex;align-items:center;justify-content:center;text-align:center;opacity:0;transition:opacity .5s;padding:8px}
+.ghost span{font-size:14px;font-style:italic;color:#ffe9b8;text-shadow:0 0 12px #d9a441,0 2px 4px #000;background:rgba(23,18,26,.55);border:1px solid rgba(217,164,65,.35);border-radius:8px;padding:6px 12px;backdrop-filter:blur(2px)}
+.ghost.show{opacity:1}
+
+/* 问答 */
+.quiz{flex:1;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.quiz .q{font-size:17px;color:#f2e2c0;text-align:center;padding:4px 8px}
+.quiz .q small{display:block;font-size:12px;color:#a5947a;letter-spacing:.3em;margin-bottom:6px}
+.opt{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;border:1px solid rgba(217,164,65,.3);background:var(--black2);text-align:left;font-size:15px;transition:.15s}
+.opt:active{transform:scale(.98)}
+.opt .tag{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px}
+.opt.right{border-color:#8fce9f;background:#1d2a1f}
+.opt.wrong{border-color:var(--red2);background:#2c1a18}
+.npc{border-radius:10px;border:1px solid rgba(143,206,159,.5);background:#1c241f;padding:12px;font-size:14px;color:#cfe3d3}
+.npc b{color:#a8e0b8}
+.npc .who{display:block;font-size:12px;color:#8fce9f;letter-spacing:.3em;margin-bottom:4px}
+
+/* 抉择 */
+.choice{flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.choice h2{font-size:19px;text-align:center;color:#f2e2c0}
+.choice p{text-align:center;font-size:14px;color:#b7a98f}
+.choice .row{display:flex;gap:10px}
+.choice button{flex:1;padding:16px 10px;border-radius:12px;border:1px solid rgba(217,164,65,.5);background:var(--black2);font-size:16px;color:#f2e2c0}
+.choice button small{display:block;font-size:12px;color:#a5947a;margin-top:4px}
+.choice button:active{transform:scale(.97)}
+
+/* 结算 / 展厅 */
+.result{flex:1;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;text-align:center;overflow-y:auto;padding:8px 0}
+.result .stars{font-size:30px;letter-spacing:.2em;color:var(--gold);text-shadow:0 0 16px rgba(217,164,65,.5)}
+.result h2{font-size:20px;color:#f2e2c0}
+.result .cider{font-size:15px;font-style:italic;color:#ffe9b8}
+.result .note{font-size:13px;color:#b7a98f;max-width:34em}
+.result .art{width:min(52vw,240px)}
+.result .art svg,.drum-face svg,#mem-art svg{width:100%;height:auto;display:block}
+.btn{flex:none;margin-top:6px;padding:12px 34px;border-radius:99px;background:linear-gradient(180deg,var(--red2),var(--red));color:#fff;font-size:16px;letter-spacing:.2em;box-shadow:0 6px 18px rgba(179,49,36,.35)}
+.btn:active{transform:scale(.97)}
+.btn.gold{background:linear-gradient(180deg,#e9c06a,var(--gold));color:#241a10}
+
+/* 击鼓 */
+.drum-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.drum-stage h2{font-size:18px;color:#f2e2c0;text-align:center}
+.drum-face{width:min(62vw,270px);cursor:pointer;transition:transform .1s}
+.drum-face:active{transform:scale(.96)}
+.drum-note{font-size:13px;color:#b7a98f;text-align:center;min-height:20px}
+.flap{transform-origin:50% 78%}
+.flap.fly{animation:flap .5s ease-in-out 3}
+@keyframes flap{0%,100%{transform:rotateX(0)}50%{transform:rotateX(38deg)}}
+
+/* 楚辞彩句 */
+.verse{position:fixed;left:50%;top:16%;transform:translateX(-50%);font-size:15px;font-style:italic;color:#ffe9b8;text-shadow:0 0 14px var(--gold);background:var(--mist);border:1px solid rgba(217,164,65,.4);padding:8px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .6s;z-index:9;white-space:nowrap}
+.verse.show{opacity:1}
+
+@media(max-width:480px){.topbar h1{font-size:19px}.wcard .thumb{width:62px;height:62px}.tool{font-size:12px;padding:8px 4px}}
+</style>
+</head>
+<body>
+<div id="app"><div class="frame">
+  <header class="topbar"><p class="sub">荆州博物馆</p><h1>文物修复 · 楚韵重生</h1></header>
+  <div id="verse" class="verse"></div>
+  <div id="toast" class="toast"></div>
+
+  <!-- 工坊 -->
+  <section id="sc-workshop" class="screen">
+    <p class="hint" style="text-align:left">修复师工坊 · 选择一件沉睡的文物，让它重生</p>
+    <div id="wlist" class="wlist"></div>
+  </section>
+
+  <!-- 拭尘 -->
+  <section id="sc-clean" class="screen" hidden>
+    <div id="casefile" class="casefile"></div>
+    <div class="stage-wrap">
+      <div id="clean-stage" class="stage">
+        <div id="clean-art"></div>
+        <canvas id="dirt"></canvas>
+      </div>
+      <div class="tools" id="clean-tools"></div>
+      <p class="hint" id="clean-hint"></p>
+      <div class="progress"><span>拭尘</span><div class="bar"><i id="clean-bar"></i></div><b id="clean-pct">0%</b></div>
+    </div>
+  </section>
+
+  <!-- 拼合 -->
+  <section id="sc-puzzle" class="screen" hidden>
+    <div class="stage-wrap">
+      <div id="puzzle-stage" class="stage">
+        <div id="base-art"></div>
+        <div id="ghost-layer"></div>
+      </div>
+      <p class="hint" id="puzzle-hint"></p>
+      <div class="progress"><span>拼合</span><div class="bar"><i id="puzzle-bar"></i></div><b id="puzzle-pct">0/0</b></div>
+      <div id="tray" class="tray"></div>
+      <button id="rot" class="rot-btn" title="旋转选中碎片">⟳</button>
+    </div>
+  </section>
+
+  <!-- 记忆连播 -->
+  <section id="sc-memory" class="screen" hidden>
+    <div class="result"><div id="mem-art" style="width:min(52vw,240px)"></div><p id="mem-text" class="cider" style="font-size:17px"></p><p class="note">碎片即记忆 —— 这件文物的故事，正被你亲手唤醒</p></div>
+  </section>
+
+  <!-- 问答 -->
+  <section id="sc-quiz" class="screen" hidden>
+    <div class="quiz" id="quiz-box"></div>
+  </section>
+
+  <!-- 修旧如旧 -->
+  <section id="sc-choice" class="screen" hidden>
+    <div class="choice">
+      <h2 id="choice-title"></h2><p id="choice-sub"></p>
+      <div class="row">
+        <button id="btn-complete">补全<small>画满纹样 · 视觉完整</small></button>
+        <button id="btn-keep">留白<small>残缺也是历史的一部分</small></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 击鼓重生 -->
+  <section id="sc-drum" class="screen" hidden>
+    <div class="drum-stage">
+      <h2>修复完成<br><small style="font-size:13px;color:#b7a98f;font-weight:400">点击鼓面，让它重新歌唱</small></h2>
+      <div id="drum-art" class="drum-face"></div>
+      <p class="drum-note" id="drum-note"></p>
+      <button id="btn-tomuseum" class="btn gold" hidden>入馆展出</button>
+    </div>
+  </section>
+
+  <!-- 结算 -->
+  <section id="sc-result" class="screen" hidden>
+    <div class="result" id="result-box"></div>
+  </section>
+
+  <!-- 云上展厅 -->
+  <section id="sc-hall" class="screen" hidden>
+    <p class="hint" style="text-align:left">云上展厅 · 你修复的文物在此陈列</p>
+    <div id="hall" class="wlist"></div>
+    <button id="btn-back" class="btn">回到工坊</button>
+  </section>
+</div></div>
+
+<script>
+'use strict';
+/* ============================================================
+ * 数据层：ARTIFACTS —— 文物配置驱动一切流程，新增文物=加一段配置
+ * fragments 的 x/y 为百分比底板坐标，r 为吸附角度(deg)
+ * ============================================================ */
+const ARTIFACTS=[
+{id:'drum',name:'虎座鸟架鼓',era:'战国 · 楚',desc:'荆州楚墓出土漆器，凤鸟踏虎为架的悬鼓',locked:false,
+ art:'drum',
+ dirt:[{type:'dust',tool:'brush',hint:'浮灰'},{type:'oxid',tool:'swab',hint:'氧化黑斑'},{type:'mud',tool:'knife',hint:'泥土硬壳'}],
+ fragments:[
+  {id:'f1',x:50,y:26,r:0,  mem:'我曾在郢都的宴乐上敲响'},
+  {id:'f2',x:28,y:52,r:0,  mem:'秦人的战火映红过我的凤羽'},
+  {id:'f3',x:72,y:52,r:0,  mem:'我在地下沉睡了两千三百年'},
+  {id:'f4',x:50,y:78,r:0,  mem:'今夜，请你让我重新歌唱'}],
+ lastFrag:'f4',
+ quiz:[
+  {q:'凤鸟双足踏在虎背上，这体现了楚人怎样的精神？',opts:['崇凤——以凤踩虎，象征浪漫主义与征服','崇虎——楚人以虎为图腾','图腾融合崇拜，凤虎并尊'],a:0,
+   explain:'楚人崇凤。凤为至美至善、导引飞升的神鸟；猛虎象征威权与力量。凤踞虎背，正是楚人浪漫主义精神与征服意志的写照。'},
+  {q:'虎座鸟架鼓以什么为鼓架？',opts:['两只伏虎背驮双凤','一株神木','青铜立柱'],a:0,
+   explain:'双虎伏地为座，双凤立于虎背，悬鼓居中——木为胎、漆为衣，是楚漆器中“实用与信仰合一”的巅峰之作。'},
+  {q:'这件漆器的主色调，体现了楚漆器怎样的美学？',opts:['黑与朱红为主，庄重炽烈','青绿为主，清雅素净','白底青花'],a:0,
+   explain:'楚人尚赤、崇火德。黑漆为底、朱砂绘纹，再施金彩——黑红金的对比构成了楚漆器独步天下的色彩美学。'}],
+ verses:['路漫漫其修远兮，吾将上下而求索'],
+ choiceText:'最后一块碎片上是残缺的凤羽纹。要为它【补全】纹样，还是让残缺【留白】？',
+ completeSay:'补全 —— 纹样重归完整，凤羽如新。',
+ keepSay:'留白 —— 残缺也是历史的一部分。真正的修复，是最小干预、修旧如旧。'},
+{id:'plate',name:'凤鸟纹漆盘',era:'战国 · 楚',desc:'黑底朱绘凤鸟纹漆盘',locked:true,art:'plate'},
+{id:'slip',name:'凤凰山简牍',era:'西汉',desc:'凤凰山168号汉墓出土木质简牍',locked:true,art:'slip'},
+{id:'silk',name:'战国丝绸残片',era:'战国 · 楚',desc:'碎片最多、参考图渐隐最快的高阶挑战',locked:true,art:'silk'}
+];
+const TOOLS=[
+ {id:'brush',ic:'🧹',name:'软毛刷',use:'拂去浮灰 · dust'},
+ {id:'swab',ic:'🩹',name:'棉签蘸药水',use:'去除氧化黑斑 · oxid'},
+ {id:'knife',ic:'🔪',name:'竹刀',use:'刮除泥土硬壳 · mud'}];
+const $=id=>document.getElementById(id);
+const saved=(()=>{try{return JSON.parse(localStorage.getItem('chuyun-reborn-v2')||'{}')}catch(_){return{}}})();
+const S={view:'workshop',done:saved.done||{},choice:null,metrics:null};
+function save(){try{localStorage.setItem('chuyun-reborn-v2',JSON.stringify({done:S.done}))}catch(_){}}
+function toast(text){const t=$('toast');t.textContent=text;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),1800)}
+
+/* ============================================================
+ * 音效层：Web Audio 程序化合成（零音频文件）
+ * ============================================================ */
+const AU=(()=>{let ctx;const ac=()=>ctx||(ctx=new (window.AudioContext||window.webkitAudioContext)());
+ const env=(g,t,v,d)=>{g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d)};
+ function tone(f,d,type,v,slide){const c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,f+slide),t+d);env(g,t,v,d);o.connect(g).connect(c.destination);o.start(t);o.stop(t+d+.05)}
+ function noise(d,fc,q,v){const c=ac(),t=c.currentTime,len=d*c.sampleRate|0,b=c.createBuffer(1,len,c.sampleRate),ch=b.getChannelData(0);for(let i=0;i<len;i++)ch[i]=Math.random()*2-1;const s=c.createBufferSource();s.buffer=b;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=fc;f.Q.value=q;const g=c.createGain();env(g,t,v,d);s.connect(f).connect(g).connect(c.destination);s.start(t)}
+ return{unlock:()=>{const c=ac();if(c.resume)c.resume()},
+ ok:()=>{tone(660,.12,'sine',.16);tone(990,.2,'sine',.12)},
+ snap:()=>{tone(523,.1,'triangle',.14);noise(.06,3000,2,.06)},
+ bad:()=>{tone(180,.18,'sawtooth',.1,-60)},
+ page:()=>noise(.12,1800,.8,.05),
+ brush:()=>noise(.08,2600,.7,.025),swab:()=>noise(.06,1100,1.6,.018),scrape:()=>noise(.055,3900,2.5,.025),
+ drum:()=>{tone(72,.75,'sine',.55,-34);tone(109,.42,'triangle',.13,-26);noise(.22,300,.6,.28);noise(.04,2500,1,.1)},
+ chime:i=>{tone([523,587,659,784][i%4]||523,1.1,'sine',.14);tone(([523,587,659,784][i%4]||523)*2,1.3,'sine',.05)},
+ sweep:()=>noise(.35,900,.5,.05)}})();
+
+/* ============================================================
+ * 美术层：内联 SVG 文物（预留真实图片替换接口）
+ * 后续替换：将 ART[id] 换成 <img src="real.png"> 即可
+ * ============================================================ */
+const ART={
+drum:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+ <defs><radialGradient id="dg" cx=".5" cy=".42"><stop offset="0" stop-color="#c8402e"/><stop offset="1" stop-color="#7e2117"/></radialGradient></defs>
+ <g stroke="#d9a441" stroke-width="2" fill="none" opacity=".8"><path d="M20 30 q14 -14 28 0 t28 0 t28 0 t28 0 t28 0"/><path d="M14 44 q16 -14 32 0 t32 0 t32 0 t32 0 t32 0" opacity=".5"/></g>
+ <g fill="url(#dg)" stroke="#3a1008" stroke-width="2">
+ <path d="M62 150 q-14 -8 -10 -26 q4 -20 18 -30 q-4 -12 6 -16 q10 3 8 14 q16 4 12 22 q-4 16 -12 22 q14 10 2 18 q-12 -2 -14 -12 q-12 4 -10 8z"/>
+ <path d="M138 150 q14 -8 10 -26 q-4 -20 -18 -30 q4 -12 -6 -16 q-10 3 -8 14 q-16 4 -12 22 q4 16 12 22 q-14 10 -2 18 q12 -2 14 -12 q12 4 10 8z"/></g>
+ <g stroke="#f4d78a" stroke-width="1.4" fill="none"><path d="M74 116 q10 -10 22 -4"/><path d="M104 112 q10 -6 20 2"/></g>
+ <ellipse cx="100" cy="46" rx="44" ry="15" fill="url(#dg)" stroke="#3a1008" stroke-width="2"/>
+ <ellipse cx="100" cy="46" rx="34" ry="10.5" fill="#8f2a1a" stroke="#f4d78a" stroke-width="1"/>
+ <g fill="#f4d78a"><circle cx="82" cy="46" r="2"/><circle cx="100" cy="46" r="2"/><circle cx="118" cy="46" r="2"/></g>
+ <path d="M58 50 L70 88 M142 50 L130 88" stroke="#d9a441" stroke-width="1.6"/>
+ <g fill="#2a1c14" stroke="#d9a441" stroke-width="1.6">
+ <path d="M40 178 q-12 -6 -8 -18 q-12 -2 -6 -10 q14 -2 24 8 l22 -6 q10 0 8 10 q-2 8 -12 8 l4 10 q0 6 -8 6 q-6 0 -6 -8 l-8 2 q0 8 -8 8 q-8 0 -6 -10z"/>
+ <path d="M160 178 q12 -6 8 -18 q12 -2 6 -10 q-14 -2 -24 8 l-22 -6 q-10 0 -8 10 q2 8 12 8 l-4 10 q0 6 8 6 q6 0 6 -8 l8 2 q0 8 8 8 q8 0 6 -10z"/></g>
+ <g stroke="#d9a441" stroke-width="1" opacity=".6" fill="none"><path d="M22 160 q10 -6 16 0"/><path d="M162 158 q12 -4 18 2"/></g></svg>`,
+plate:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="88" fill="#17121a" stroke="#d9a441" stroke-width="2"/><circle cx="100" cy="100" r="70" fill="none" stroke="#b33124" stroke-width="2"/><g fill="#b33124"><path d="M100 44 q22 14 8 34 q-8 10 -2 22 q-14 -8 -14 -26 q0 -18 8 -30z"/><path d="M100 156 q-22 -14 -8 -34 q8 -10 2 -22 q14 8 14 26 q0 18 -8 30z"/></g><g fill="#d9a441" opacity=".85"><circle cx="60" cy="100" r="3"/><circle cx="140" cy="100" r="3"/><circle cx="100" cy="60" r="2"/><circle cx="100" cy="140" r="2"/></g></svg>`,
+slip:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g fill="#6b4a2a" stroke="#3a2a18" stroke-width="1.5"><rect x="46" y="30" width="108" height="16" rx="3"/><rect x="52" y="54" width="108" height="16" rx="3"/><rect x="42" y="78" width="108" height="16" rx="3"/><rect x="58" y="102" width="108" height="16" rx="3"/><rect x="48" y="126" width="108" height="16" rx="3"/><rect x="60" y="150" width="100" height="16" rx="3"/></g><g stroke="#1d1610" stroke-width="1.6" stroke-linecap="round"><path d="M54 38 h20 M82 38 h14 M58 62 h26 M96 62 h18 M50 86 h16 M74 86 h30 M66 110 h22 M96 110 h12 M56 134 h30 M96 134 h20 M68 158 h24"/></g></svg>`,
+silk:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g stroke-width="1.2" fill="none"><path d="M30 90 q20 -26 44 -14 q26 12 10 34 q-18 22 -42 10 q-16 -8 -12 -30z" stroke="#a8607a"/><path d="M100 130 q26 -20 44 -2 q16 16 -2 30 q-22 16 -42 0 q-12 -10 0 -28z" stroke="#7a5a9a"/><path d="M110 40 q18 -10 30 2 q10 12 -4 22 q-18 10 -30 -2 q-6 -10 4 -22z" stroke="#c98a4a"/></g><g stroke="#d9a441" stroke-width=".8" opacity=".6"><path d="M40 86 q8 8 4 18"/><path d="M118 136 q10 4 10 14"/><path d="M122 46 q6 6 2 14"/></g></svg>`};
+const svgArt=id=>`<div style="width:100%;aspect-ratio:1">${ART[id]||''}</div>`;
+
+/* ============================================================
+ * 视图层
+ * ============================================================ */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.hidden=true);$(id).hidden=false;S.view=id}
+function verse(text){const v=$('verse');v.textContent=`「${text}」`;v.classList.add('show');AU.page();setTimeout(()=>v.classList.remove('show'),2400)}
+
+/* ---------- 工坊 ---------- */
+function renderWorkshop(){
+ const w=$('wlist');w.innerHTML='';
+ for(const a of ARTIFACTS){
+  const st=S.done[a.id]?`<span class="state done">已展出</span>`:a.locked?`<span class="state">待解锁</span>`:`<span class="state">待修复</span>`;
+  const b=document.createElement('button');
+  b.className='wcard'+(a.locked?' locked':'');
+  b.innerHTML=`<div class="thumb">${ART[a.art]||''}</div><div class="info"><b>${a.name}</b><small>${a.era} · ${a.desc}</small></div>${st}`;
+  if(!a.locked)b.onclick=()=>{AU.unlock();startClean(a)};
+  w.append(b);
+ }
+}
+
+/* ---------- 第一层 · 拭尘 ---------- */
+let CLEAN=null;
+function startClean(a){
+ show('sc-clean');
+ S.metrics={damage:0,wrongTool:0,puzzleMiss:0,quizRight:0,quizWrong:0,started:Date.now()};
+ $('casefile').innerHTML=`<b>修复委托 · ${a.name}</b><br>${a.era}｜入馆初检：表面附着物与局部漆层污染。请先判断病害，再选择相应工具。<div class="tags">${a.dirt.map(d=>`<em>${d.hint}</em>`).join('')}</div>`;
+ const stage=$('clean-stage');
+ $('clean-art').innerHTML=svgArt(a.art);
+ $('clean-art').style.cssText='position:absolute;inset:8%;filter:brightness(.5) blur(2px) sepia(.4)';
+ const cv=$('dirt');cv.style.cssText='position:absolute;inset:0;width:100%;height:100%;touch-action:none';
+ const tools=$('clean-tools');tools.innerHTML='';
+ let cur=null;
+ for(const t of TOOLS){const b=document.createElement('button');b.className='tool';b.innerHTML=`<span class="ic">${t.ic}</span>${t.name}<small>${t.use}</small>`;
+  b.onclick=()=>{cur=t;CLEAN.cur=t;tools.querySelectorAll('.tool').forEach(x=>x.classList.remove('on'));b.classList.add('on');$('clean-hint').innerHTML=`当前工具：<b>${t.name}</b> · 按住并擦拭文物`;AU.page()};tools.append(b)}
+ CLEAN={a,cur:null,scratches:0,layers:{},initial:0,lastSound:0};
+ $('clean-hint').innerHTML='观察病害标签，选择对应工具；错误操作会伤及漆层';
+ $('clean-pct').textContent='0%';$('clean-bar').style.width='0%';
+ requestAnimationFrame(()=>{const r=cv.getBoundingClientRect();cv.width=r.width;cv.height=r.height;paintDirt(cv,a.dirt)});
+ let last=null,down=false;
+ const draw=e=>{if(!down||!CLEAN.cur)return;const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+  const px=Math.max(0,Math.min(cv.width-1,x*cv.width|0)),py=Math.max(0,Math.min(cv.height-1,y*cv.height|0));
+  const target=Object.values(CLEAN.layers).find(o=>o.tool===CLEAN.cur.id&&o.g.getImageData(px,py,1,1).data[3]>10);
+  const any=Object.values(CLEAN.layers).some(o=>o.g.getImageData(px,py,1,1).data[3]>10);
+  if(!target&&any){if(Date.now()-(CLEAN.lastWrong||0)>500){CLEAN.lastWrong=Date.now();CLEAN.scratches++;S.metrics.wrongTool++;S.metrics.damage+=6;AU.bad();toast('工具不匹配：漆层稳定度 -6');stage.classList.add('damage');setTimeout(()=>stage.classList.remove('damage'),600)}return}
+  if(!target)return;
+  const g=target.g;g.globalCompositeOperation='destination-out';g.strokeStyle='#000';g.fillStyle='#000';g.lineWidth=CLEAN.cur.id==='knife'?14:CLEAN.cur.id==='swab'?20:28;g.lineCap='round';
+  if(last){g.beginPath();g.moveTo(last[0]*cv.width,last[1]*cv.height);g.lineTo(x*cv.width,y*cv.height);g.stroke()}else{g.beginPath();g.arc(x*cv.width,y*cv.height,g.lineWidth/2,0,7);g.fill()}
+  g.globalCompositeOperation='source-over';renderDirt(cv);
+  if(Date.now()-CLEAN.lastSound>110){CLEAN.lastSound=Date.now();(CLEAN.cur.id==='brush'?AU.brush:CLEAN.cur.id==='swab'?AU.swab:AU.scrape)()}
+  last=[x,y];updateDirt(cv);};
+ cv.onpointerdown=e=>{down=true;last=null;try{cv.setPointerCapture(e.pointerId)}catch(_){}draw(e)};
+ cv.onpointermove=draw;
+ cv.onpointerup=cv.onpointercancel=()=>{down=false;last=null};
+}
+function paintDirt(cv,dirt){
+ const cols=['rgba(90,74,58,.92)','rgba(40,30,26,.85)','rgba(110,90,64,.9)'];
+ dirt.forEach((d,i)=>{const c=document.createElement('canvas');c.width=cv.width;c.height=cv.height;const g=c.getContext('2d');g.fillStyle=cols[i%3];g.beginPath();g.ellipse(cv.width*[.3,.67,.5][i%3],cv.height*[.36,.48,.7][i%3],cv.width*.18,cv.height*.14,(i-1)*.45,0,7);g.fill();CLEAN.layers[d.type]={canvas:c,g,tool:d.tool,hint:d.hint}});renderDirt(cv);CLEAN.initial=countDirt();
+}
+function renderDirt(cv){const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);Object.values(CLEAN.layers).forEach(o=>g.drawImage(o.canvas,0,0))}
+function countDirt(){let n=0;Object.values(CLEAN.layers).forEach(o=>{const d=o.g.getImageData(0,0,o.canvas.width,o.canvas.height).data;for(let i=3;i<d.length;i+=40)if(d[i]>40)n++});return n}
+function updateDirt(cv){
+ const left=countDirt(),p=Math.min(100,Math.round((1-left/Math.max(1,CLEAN.initial))*100));
+ $('clean-pct').textContent=p+'%';$('clean-bar').style.width=p+'%';
+ $('clean-art').style.filter=`brightness(${.5+p/100*.6}) blur(${2-p/100*1.9}px) sepia(${.4-p/100*.35})`;
+ if(p>=90){AU.ok();cv.onpointerdown=cv.onpointermove=cv.onpointerup=cv.onpointercancel=null;setTimeout(()=>startPuzzle(CLEAN.a),450)}
+}
+
+/* ---------- 第二层 · 拼合 ---------- */
+let PZ=null;
+function startPuzzle(a){
+ show('sc-puzzle');
+ const stage=$('puzzle-stage');
+ $('base-art').innerHTML=svgArt(a.art);
+ $('base-art').style.cssText='position:absolute;inset:8%;opacity:.16;filter:grayscale(.6)';
+ stage.querySelectorAll('.frag').forEach(x=>x.remove());
+ const tray=$('tray');tray.innerHTML='';
+ PZ={a,placed:0,total:a.fragments.length,selected:null};
+ $('puzzle-pct').textContent=`0/${PZ.total}`;$('puzzle-bar').style.width='0%';
+ $('puzzle-hint').innerHTML='把碎片<b>拖上底板</b>，选中后按 <b>⟳</b> 旋转对位';
+ for(const f of a.fragments){
+  const el=document.createElement('div');el.className='frag';el.dataset.fid=f.id;
+  el.innerHTML=`<svg viewBox="0 0 60 60" width="54" height="54"><path d="M30 4 L52 16 L52 44 L30 56 L8 44 L8 16 Z" fill="#241b26" stroke="#d9a441" stroke-width="2"/><path d="M30 14 q10 6 4 16 q-4 10 -14 6 q-8 -4 -4 -14 q4 -8 14 -8z" fill="none" stroke="#b33124" stroke-width="2"/><circle cx="44" cy="42" r="3" fill="#d9a441"/></svg>`;
+  el.dataset.rot='0';el.dataset.onstage='0';
+  el.addEventListener('pointerdown',pickFrag);
+  tray.append(el);
+ }
+ if(Math.random()<.35)verse(a.verses[0]);
+}
+let held=null,off={x:0,y:0};
+function pickFrag(e){
+ const el=e.currentTarget;held=el;
+ PZ.selected=el;
+ document.querySelectorAll('.stage .frag').forEach(x=>x.style.outline='');
+ el.style.outline='2px solid #d9a441';
+ const r=el.getBoundingClientRect();
+ off.x=e.clientX-r.left;off.y=e.clientY-r.top;
+ try{el.setPointerCapture(e.pointerId)}catch(_){}
+ el.onpointermove=moveFrag;el.onpointerup=dropFrag;
+}
+function moveFrag(e){
+ if(!held)return;const st=$('puzzle-stage').getBoundingClientRect();
+ let x=e.clientX-st.left-off.x,y=e.clientY-st.top-off.y;
+ if(held.dataset.onstage==='0'&&y<-40){
+  held.dataset.onstage='1';$('puzzle-stage').append(held);
+  held.style.position='absolute';held.style.left='0';held.style.top='0';
+  const r2=held.getBoundingClientRect();off.x=e.clientX-r2.left;off.y=e.clientY-r2.top;
+  x=e.clientX-st.left-off.x;y=e.clientY-st.top-off.y;
+ }
+ held.style.transform=`translate(${x}px,${y}px) rotate(${held.dataset.rot}deg)`;
+ held.dataset.px=x;held.dataset.py=y;
+}
+function dropFrag(){
+ if(!held)return;const f=PZ.a.fragments.find(x=>x.id===held.dataset.fid);
+ const st=$('puzzle-stage').getBoundingClientRect();
+ const cx=(+held.dataset.px+27-st.width*.08)/(st.width*.84),cy=(+held.dataset.py+27-st.height*.08)/(st.height*.84);
+ if(held.dataset.onstage==='1'&&Math.abs(cx-f.x/100)<.09&&Math.abs(cy-f.y/100)<.11&&(+held.dataset.rot)%360===f.r){
+  held.classList.add('ok');held.style.outline='';
+  held.style.left=(f.x/100*st.width*.84+st.width*.08-27)+'px';
+  held.style.top=(f.y/100*st.height*.84+st.height*.08-27)+'px';
+  held.style.transform=`rotate(${f.r}deg)`;held.onpointermove=held.onpointerup=null;
+  PZ.placed++;$('puzzle-pct').textContent=`${PZ.placed}/${PZ.total}`;$('puzzle-bar').style.width=(PZ.placed/PZ.total*100)+'%';
+  AU.snap();ghost(f);
+   if(PZ.placed===PZ.total){setTimeout(()=>askChoice(PZ.a),900)}
+  }else{S.metrics.puzzleMiss++;AU.bad();toast('断口或纹样方向尚未吻合')}
+ held=null;
+}
+$('rot').onclick=()=>{const el=PZ&&PZ.selected;if(!el||el.classList.contains('ok')){toast('请先点选一块碎片');return}el.dataset.rot=(+el.dataset.rot+90)%360;el.style.transform=`translate(${el.dataset.px||0}px,${el.dataset.py||0}px) rotate(${el.dataset.rot}deg)`;AU.page()};
+function ghost(f){
+ const layer=$('ghost-layer'),g=document.createElement('div');g.className='ghost';
+ g.style.cssText=`left:${f.x-16}%;top:${f.y-4}%;width:32%;height:18%`;
+ g.innerHTML=`<span>${f.mem}</span>`;layer.append(g);
+ requestAnimationFrame(()=>g.classList.add('show'));
+ setTimeout(()=>{g.classList.remove('show');setTimeout(()=>g.remove(),600)},1900);
+}
+
+/* ---------- 终局一问 · 修旧如旧 ---------- */
+function askChoice(a){
+ show('sc-choice');
+ $('choice-title').textContent='修旧如旧';
+ $('choice-sub').textContent=a.choiceText;
+ $('btn-complete').onclick=()=>{S.choice='complete';startQuiz(a)};
+ $('btn-keep').onclick=()=>{S.choice='keep';startQuiz(a)};
+}
+
+/* ---------- 记忆连播 ---------- */
+function playMemory(a,next){
+ show('sc-memory');$('mem-art').innerHTML=svgArt(a.art);
+ let i=0;
+ const step=()=>{if(i>=a.fragments.length){next();return}
+  $('mem-text').textContent=a.fragments[i].mem;AU.chime(i);i++;setTimeout(step,1700)};
+ step();
+}
+
+/* ---------- 第三层 · 问答 ---------- */
+function startQuiz(a){
+ show('sc-quiz');
+ let qi=0,right=0;
+ const box=$('quiz-box');
+ const render=()=>{
+  box.innerHTML='';const q=a.quiz[qi];
+  const t=document.createElement('p');t.className='q';t.innerHTML=`<small>观察 · 第 ${qi+1}/${a.quiz.length} 题</small>${q.q}`;box.append(t);
+  q.opts.forEach((o,i)=>{
+   const b=document.createElement('button');b.className='opt';b.innerHTML=`<span class="tag">${'ABC'[i]}</span>${o}`;
+   b.onclick=()=>{
+    if(box.querySelector('.npc'))return;
+     if(i===q.a){b.classList.add('right');right++;S.metrics.quizRight++;AU.ok();
+     setTimeout(()=>{qi++;qi<a.quiz.length?render():playMemory(a,()=>startDrum(a))},650)}
+     else{b.classList.add('wrong');S.metrics.quizWrong++;AU.bad();
+     const n=document.createElement('div');n.className='npc';
+      n.innerHTML=`<span class="who">修复师 · 楚老师</span><b>${'ABC'[q.a]} 才是正确答案。</b><br>${q.explain}<br><button class="btn" style="margin-top:10px;padding:8px 22px">理解了，继续观察</button>`;box.append(n);n.querySelector('button').onclick=()=>{qi++;qi<a.quiz.length?render():playMemory(a,()=>startDrum(a))}}
+   };box.append(b)});
+ };render();
+}
+
+/* ---------- 击鼓重生 ---------- */
+function startDrum(a){
+ show('sc-drum');
+ $('drum-art').innerHTML=svgArt(a.art);
+ $('drum-note').textContent='— 轻触鼓面 —';
+ let hits=0;
+ $('drum-art').onclick=()=>{
+  AU.drum();hits++;
+  const ph=$('drum-art').querySelectorAll('path');
+  $('drum-art').style.transform='scale(.95)';setTimeout(()=>$('drum-art').style.transform='',110);
+  $('drum-note').textContent=['咚 ——','鼓声穿过了两千三百年…','凤鸟听见了。'][Math.min(hits-1,2)];
+  if(hits===3){setTimeout(()=>{
+   ph.forEach((p,i)=>{if(i<3){p.classList.add('flap','fly')}});
+   [0,1,2,3].forEach((n,i)=>setTimeout(()=>AU.chime(n),i*260));
+   $('drum-note').textContent='凤鸟振翅 · 文物重生';
+   setTimeout(()=>$('btn-tomuseum').hidden=false,1400);
+  },400)}
+ };
+ $('btn-tomuseum').hidden=true;
+ $('btn-tomuseum').onclick=()=>showResult(a);
+}
+
+/* ---------- 结算 ---------- */
+function showResult(a){
+ show('sc-result');
+ const safe=Math.max(0,100-S.metrics.damage),accuracy=Math.max(0,100-S.metrics.puzzleMiss*8),knowledge=Math.round(S.metrics.quizRight/a.quiz.length*100),ethics=S.choice==='keep'?100:75;
+ const score=Math.round(safe*.35+accuracy*.25+knowledge*.2+ethics*.2),stars=score>=88?3:score>=68?2:1;
+ S.done[a.id]={choice:S.choice,stars,score};save();
+ const say=S.choice==='keep'?a.keepSay:a.completeSay;
+ $('result-box').innerHTML=`
+  <div class="art">${ART[a.art]}</div>
+  <h2>「${a.name}」修复完成</h2>
+  <div class="stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div><b>修复评定 · ${score} 分</b>
+  <div class="metric-grid"><div class="metric"><b>${safe}</b><small>文物安全</small></div><div class="metric"><b>${accuracy}</b><small>拼合精度</small></div><div class="metric"><b>${knowledge}</b><small>研究完整</small></div><div class="metric"><b>${ethics}</b><small>伦理判断</small></div></div>
+  <p class="cider">「${a.verses[0]}」</p>
+  <p class="note">${say}<br><br>馆方记录：工具误用 ${S.metrics.wrongTool} 次，拼合试错 ${S.metrics.puzzleMiss} 次，知识辨识 ${S.metrics.quizRight}/${a.quiz.length}。<br>修复不是把文物变新，而是在安全、证据与历史痕迹之间作出有依据的判断。</p>
+  <button class="btn" id="r-hall">送往云上展厅</button>`;
+ $('r-hall').onclick=()=>renderHall();
+}
+function renderHall(){
+ show('sc-hall');const h=$('hall');h.innerHTML='';
+ const ids=Object.keys(S.done);
+ if(!ids.length){h.innerHTML='<p class="hint" style="margin:auto">展厅还空着 —— 去工坊修复第一件文物吧</p>'}
+ for(const id of ids){const a=ARTIFACTS.find(x=>x.id===id),d=S.done[id];
+  const b=document.createElement('div');b.className='wcard';
+  b.innerHTML=`<div class="thumb">${ART[a.art]}</div><div class="info"><b>${a.name}</b><small>${a.era}<br>展签 · ${d.choice==='keep'?'留白处见历史':'补全如新'} · ${'★'.repeat(d.stars)} · ${d.score||'—'}分</small></div><span class="state done">展出中</span>`;
+  h.append(b)}
+ $('btn-back').onclick=()=>{renderWorkshop();show('sc-workshop')};
+}
+
+/* ---------- 启动 ---------- */
+renderWorkshop();show('sc-workshop');
+</script>
+</body>
+</html>
