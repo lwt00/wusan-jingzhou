@@ -17,6 +17,18 @@
         document.getElementById('landmark-story-title').textContent=c.culture?c.culturalTitle:c.anecdote?.title||'典故资料待补充';
         document.getElementById('landmark-story-text').textContent=c.culture?c.culture.entries.map(entry=>[entry.lines.join(''),entry.author,entry.title,entry.kind==='诗词节选'?'（节选）':'',`释义：${entry.interpretation}`,entry.background?`${entry.backgroundLabel||'文化背景'}：${entry.background}`:''].filter(Boolean).join('\n\n')).join('\n\n────────\n\n'):c.anecdote?.text||'典故资料待补充。';this.dialog.dataset.landmark=this.id;
         for(const entry of c.culture?.entries||[]){if(!entry.source)continue;const source=document.createElement('a');source.textContent=entry.kind==='楹联'?'查看楹联资料':`查看${entry.title}出处`;source.href=entry.source;source.target='_blank';source.rel='noopener noreferrer';document.getElementById('landmark-story-text').append(document.createElement('br'),source);}
+        if(this.id==='museum'&&c.artifacts){
+          document.getElementById('landmark-story-title').textContent='荆楚遗珍 · 四件馆藏';
+          const content=document.getElementById('landmark-story-text');content.replaceChildren();
+          for(const artifact of c.artifacts){
+            const section=document.createElement('span');section.className='museum-story-entry';
+            const title=document.createElement('strong');title.textContent=artifact.name;
+            const period=document.createElement('small');period.textContent=artifact.period;
+            const description=document.createElement('span');description.textContent=artifact.text;
+            const source=document.createElement('a');source.textContent='查看文物资料';source.href=artifact.source;source.target='_blank';source.rel='noopener noreferrer';
+            section.append(title,period,description,source);content.append(section);
+          }
+        }
         if(!this.dialog.open)this.dialog.show();document.getElementById('landmark-story-close').focus({preventScroll:true});});
       document.getElementById('landmark-story-close').addEventListener('click',()=>{this.dialog.close();this.learn.focus({preventScroll:true});});
       this.storyEscape=e=>{if(e.key==='Escape'&&this.dialog.open){this.dialog.close();this.learn.focus({preventScroll:true});}};document.addEventListener('keydown',this.storyEscape);
@@ -48,6 +60,17 @@
         c.inscription.lines.forEach(text=>{const line=document.createElement('span');line.textContent=text;line.style.setProperty('--verse-delay','.6s');verses.append(line);});
         const credit=document.createElement('p');credit.className='guanyu-poetry-credit';credit.textContent=`${c.inscription.title} · ${c.inscription.kind}`;
         const seal=document.createElement('span');seal.className='museum-inscription-seal';seal.textContent='楚韵';seal.setAttribute('aria-hidden','true');credit.append(seal);this.poetry.append(verses,credit);
+      }
+      this.root.querySelector('.museum-artifacts')?.remove();
+      if(id==='museum'&&c.artifacts){
+        const gallery=document.createElement('div');gallery.className='museum-artifacts';gallery.setAttribute('role','list');gallery.setAttribute('aria-label','荆州博物馆馆藏，自右向左');
+        for(const artifact of c.artifacts){
+          const item=document.createElement('figure');item.className='museum-artifact';item.setAttribute('role','listitem');
+          const image=document.createElement('img');image.src=`assets/museum-artifacts/${artifact.id}.svg`;image.alt=`${artifact.name}形制示意`;image.draggable=false;
+          const caption=document.createElement('figcaption');caption.textContent=artifact.name;
+          item.append(image,caption);gallery.append(item);
+        }
+        this.root.append(gallery);
       }
       this.image.style.objectPosition=c.display?.imagePosition||'50% 50%';this.image.hidden=true;document.getElementById('landmark-image-fallback').hidden=false;
       this.prepare(id).then(image=>{if(token!==this.token||!this.active)return;this.ready=true;if(image){this.natural=image;this.image.src=image.src;this.image.alt=`${c.name}近景艺术化占位`;this.image.hidden=false;document.getElementById('landmark-image-fallback').hidden=true;this.resize();if(id==='binyang')this.startFloatingPoem();}else document.getElementById('landmark-image-fallback').textContent='近景素材待补充 · 可继续查看文化主题';});

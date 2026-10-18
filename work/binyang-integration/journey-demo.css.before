@@ -1,0 +1,275 @@
+:root{color-scheme:light;--ink:#314e47;--paper:#f0eee5;--gold:#92764a}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font-family:"PingFang SC","Microsoft YaHei",sans-serif}main{position:relative;min-height:100svh}#stage{position:fixed;inset:0;overflow:hidden;background:var(--paper)}#stage canvas{display:block;width:100%;height:100%}#loading{position:absolute;inset:45% 0;text-align:center}header{position:absolute;top:30px;left:4vw;pointer-events:none}h1{font-family:"Songti SC",serif;font-weight:500;font-size:clamp(30px,4vw,54px);letter-spacing:.18em;margin:10px 0}header p{font-size:13px;color:#69786c}.eyebrow{font-size:10px;letter-spacing:.15em}.demo-note{position:absolute;right:4vw;top:38px;text-align:right;font-size:10px;line-height:1.8;color:#778376;pointer-events:none}footer{position:absolute;bottom:0;width:100%;padding:16px 4vw 12px;background:linear-gradient(transparent,#f0eee5e8 30%)}nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}button{padding:10px 16px;border:1px solid #92764a;background:#f0eee5d9;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}#go{background:var(--ink);color:var(--paper)}button:disabled{opacity:.4;cursor:default}button:focus-visible{outline:2px solid #956258;outline-offset:3px}#status{margin-left:auto;font-size:14px}.note{font-size:10px;color:#788277;margin:6px 0 0}.landmark-label{position:absolute;transform:translate(-50%,-100%);display:flex;align-items:center;flex-direction:column;gap:4px;white-space:nowrap;pointer-events:none;text-shadow:0 1px 6px #f0eee5}.landmark-label strong{font:20px "Songti SC",serif;letter-spacing:.1em}.landmark-label small{font-size:10px;color:#778376}.landmark-label.current strong{color:#955e4d}.landmark-label.done strong:before{content:'✓ ';color:#466e65}.journey-route{position:relative;max-width:680px;margin-bottom:12px}.journey-route>span{font-size:11px}.journey-route ol{display:flex;justify-content:space-between;list-style:none;padding:0;margin:8px 0;font-size:11px}.journey-route li{padding-right:5px}.journey-route small,.route-seal{display:none}.journey-route strong{font-weight:400}.journey-route .done{color:#466e65}.journey-route .done strong:before{content:'✓ '}.journey-route .current{color:#955e4d}.route-track{height:2px;background:#cbc6b4;margin-top:7px}#route-fill{height:100%;background:#92764a;transform-origin:left;transform:scaleX(0)}@media(max-width:600px){header{top:16px}.demo-note{top:23px;max-width:145px;font-size:9px}header .eyebrow{font-size:8px}header p{font-size:11px}.landmark-label strong{font-size:12px;letter-spacing:0}.landmark-label small{font-size:8px}.landmark-label{gap:2px}footer{padding:12px 14px}button{padding:9px 10px;font-size:11px}nav{gap:7px}#status{width:100%;margin:3px 0;font-size:12px}.note{font-size:9px}.journey-route{margin-bottom:8px}}@media(max-height:600px) and (min-width:601px){header{top:8px}h1{font-size:26px}header p{margin:5px 0}.journey-route{display:none}footer{padding-top:5px}.demo-note{top:12px}#status{font-size:12px}}
+
+/* 原地图宣纸、灰瓦与朱红的视觉语言，仅作用于独立 Demo。 */
+header h1{color:#3d4133;text-shadow:0 2px 14px #f4ebd3}header p,.demo-note{color:#605b49;text-shadow:0 1px 5px #fff5df}.landmark-label{background:#f7ecd4ed;padding:7px 13px;border:1px solid #9e8057;box-shadow:0 0 0 3px #f7ecd4b0,0 3px 12px #4034231a}.landmark-label strong{color:#473d2b;font-size:18px}.landmark-label.current{border-color:#a15643}.landmark-label.current strong{color:#994c3e}.landmark-label small{color:#706551}#go{background:#7b493b;border-color:#7b493b}footer{background:linear-gradient(transparent,#f0e7d3ed 35%)}@media(max-width:600px){.landmark-label{padding:3px 5px;border-width:1px;box-shadow:0 0 0 1px #f7ecd4b0}.landmark-label strong{font-size:11px}.landmark-label small{font-size:8px}}
+
+/* 四个题签与人物承担进度表达，底部仅保留总收集数。 */
+.route-track,#route{display:none}.journey-route{margin:0 0 10px;max-width:none}.journey-route>span{letter-spacing:.1em;color:#5b5745;background:#f7eddcdd;padding:6px 10px;border-left:2px solid #9d614a}.chapter{font-size:10px;letter-spacing:.25em;color:#9b7857;border-bottom:1px solid #b59c7555;padding-bottom:3px}.landmark-label{padding:8px 17px;gap:5px;border-radius:2px;background:#f9efdbe8}.landmark-label.current{box-shadow:0 0 0 3px #a1564322,0 3px 14px #40342320}.landmark-label.done{border-color:#547866}.landmark-label.done .chapter{color:#547866}header{top:clamp(16px,3vh,36px)}header h1{font-size:clamp(30px,4vw,58px)}footer{padding-top:25px;background:linear-gradient(transparent,#f0e7d3cc 55%)}.demo-note{opacity:.8}@media(max-width:600px){.chapter{font-size:8px;letter-spacing:.08em;padding-bottom:1px}.landmark-label{padding:4px 6px;gap:2px}.landmark-label strong{font-size:11px}.landmark-label small{font-size:8px}}@media(max-height:600px) and (min-width:601px){.landmark-label{padding:3px 10px;gap:2px}.chapter{font-size:8px}.landmark-label strong{font-size:13px}.landmark-label small{font-size:9px}footer .note{display:none}}
+
+/* 独立建筑、实体路线和朱红印章承担进度表达。 */
+.landmark-label{overflow:visible}.completion-stamp{display:none;position:absolute;right:-36px;top:18px;width:58px;height:58px;align-items:center;justify-content:center;border:3px double #ac4635;border-radius:5px;color:#ac4635;background:#f9efdbea;transform:rotate(-12deg);font:700 17px/1.15 "Songti SC",serif;letter-spacing:2px;text-shadow:none}.landmark-label.done .completion-stamp{display:flex}.landmark-label.done strong:before{content:none}.landmark-label.current{border:2px solid #a4543c;box-shadow:0 0 0 5px #f9efdbb0}.landmark-label.current .chapter{color:#9c4835}.landmark-label.current small{color:#9c4835;font-weight:600}.traveller-marker{position:absolute;transform:translate(-50%,-100%);background:#7c4934;color:#fff6df;padding:5px 10px;border-radius:3px;font-size:11px;pointer-events:none;white-space:nowrap;box-shadow:0 2px 5px #44351e33}.traveller-marker:after{content:'';position:absolute;top:100%;left:calc(50% - 4px);border:4px solid transparent;border-top-color:#7c4934}.journey-route>span{font-size:16px;font-weight:600}.landmark-label.done{border-color:#ac4635}@media(max-width:600px){.completion-stamp{right:-10px;top:37px;width:34px;height:34px;font-size:10px;border-width:2px;letter-spacing:0}.traveller-marker{font-size:8px;padding:2px 4px}.landmark-label.current{box-shadow:0 0 0 2px #f9efdbb0}.journey-route>span{font-size:13px}}
+
+header{top:10px}header h1{font-size:32px;margin:5px 0}header p:not(.eyebrow){display:none}header .eyebrow{font-size:9px;margin:4px 0}@media(max-width:600px){header h1{font-size:26px}header .eyebrow{font-size:8px}}
+
+/* 自由文化探索：题签可操作，聚焦时以轻量题跋代替大型弹窗。 */
+[hidden]{display:none!important}
+.landmark-label{left:0;top:0;pointer-events:auto;cursor:pointer;transition:box-shadow .2s,border-color .2s}
+.landmark-label:hover{box-shadow:0 0 0 4px #ab784d33,0 3px 12px #40342320}
+.traveller-marker{left:0;top:0}
+#explore-panel{position:fixed;left:4vw;bottom:140px;width:min(330px,90vw);padding:16px 20px;border-left:3px solid #9d614a;background:#f7eedceF;box-shadow:0 6px 30px #42371c12}
+#explore-panel h2{font:25px "Songti SC",serif;margin:8px 0}
+#explore-panel p{font-size:13px;line-height:1.65;margin:7px 0}
+#explore-panel .eyebrow{font-size:11px;color:#92764a}
+#begin-explore,#finish-explore,#play-prologue{background:#7b493b;color:#fff4de;border-color:#7b493b}
+#demo-description{color:#846448;border-top:1px solid #b59c7555;padding-top:8px}
+#reveal-note{color:#984e3a}
+#storage-note{font-size:12px;color:#97513b;margin:4px 0}
+#storage-note:empty{display:none}
+#intro{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:#f0eee5f7;overflow:auto}
+.intro-content{text-align:center;width:min(980px,100%)}
+#intro-title{font:clamp(36px,5vw,64px) "Songti SC",serif;letter-spacing:.2em;margin:14px 0;color:#514635}
+#intro p{font-size:14px;line-height:1.7}
+#intro .note{font-size:11px;margin-top:18px}
+#prologue{display:block;max-height:55svh;width:100%;margin:16px auto;background:#272b27}
+.intro-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+@media(max-width:600px){#explore-panel{left:5vw;bottom:160px;width:90vw;padding:12px 16px}#explore-panel h2{font-size:22px}#explore-panel p{font-size:12px}#intro{padding:16px}.landmark-label small{font-size:7px}.landmark-label{padding:4px}#status{line-height:1.5}footer .note{max-width:95%;line-height:1.5}}
+@media(max-height:600px) and (min-width:601px){#explore-panel{bottom:82px;padding:10px 16px}#explore-panel p{font-size:11px;margin:4px 0}#explore-panel h2{font-size:20px}#prologue{max-height:40svh}#intro-title{font-size:28px;margin:5px 0}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* 序幕融入画幅：单一视频保留比例，云雾从边缘进入，长卷在下方叠化显现。 */
+#intro{padding:0;overflow:hidden;background:transparent;display:block;isolation:isolate;--intro-exit-time:1150ms}
+#prologue{position:absolute;inset:0;width:100%;height:100%;max-height:none;margin:0;object-fit:contain;background:transparent;opacity:0;transition:opacity 1.1s ease;z-index:-3}
+#intro::before{content:'';position:absolute;inset:0;z-index:-4;background:#e9e8dd url('assets/terrain-v3.png') center/cover no-repeat}
+#intro[data-state="playing"] #prologue,#intro[data-state="transition"] #prologue{opacity:1}
+.intro-wash{position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,#263b3855,transparent 25%,transparent 65%,#263b3877),radial-gradient(ellipse at center,transparent 42%,#eae9dd66 100%);pointer-events:none}
+.intro-paper{position:absolute;inset:0;z-index:-1;opacity:.10;pointer-events:none;background:repeating-linear-gradient(12deg,#c0b69818 0 1px,transparent 1px 4px),repeating-linear-gradient(96deg,#f6f2de22 0 1px,transparent 1px 6px)}
+.intro-cloud{position:absolute;z-index:-1;width:72%;height:105%;top:0;opacity:.32;background:url('assets/fog-dense-1.png') center/100% 100% no-repeat;pointer-events:none;animation:intro-cloud-drift 22s ease-in-out infinite alternate}
+.intro-cloud-left{left:-40%;--cloud-start:0px;--cloud-end:35px}.intro-cloud-right{right:-40%;--cloud-start:0px;--cloud-end:-35px;animation-delay:-9s}
+#intro .intro-content{position:absolute;top:12%;left:7%;width:auto;max-width:80%;text-align:left;color:#fff5df;text-shadow:0 2px 15px #1d302bcc;animation:intro-title-in 1.8s ease both}
+#intro-title{color:inherit;font-size:clamp(42px,5vw,76px);letter-spacing:.24em;margin:12px 0 20px}
+#intro .intro-poem{font-family:"Songti SC",serif;font-size:clamp(14px,1.3vw,18px);line-height:2.1;letter-spacing:.12em}
+.intro-bottom{position:absolute;bottom:max(28px,env(safe-area-inset-bottom));left:7%;right:7%;color:#fff5df;text-shadow:0 1px 8px #1d302b}
+#intro .intro-actions{justify-content:flex-start}#intro .note{color:#f4eedacc;font-size:10px;margin-top:15px}
+#intro button{background:#f1e8d4db;border-color:#c1a677;color:#3e4b3e;min-height:42px}#intro #play-prologue{background:#7b493be8;color:#fff4de;border-color:#b3856a}
+#intro[data-state="transition"]{animation:intro-dissolve var(--intro-exit-time) ease-in-out forwards;pointer-events:none}
+#intro[data-state="transition"] #prologue{animation:intro-soften var(--intro-exit-time) ease forwards}
+#intro[data-state="transition"] .intro-content,#intro[data-state="transition"] .intro-bottom{opacity:0;transition:opacity .4s ease}
+#intro[data-state="transition"] .intro-paper{opacity:.4;transition:opacity .7s ease}
+#intro[data-state="transition"] .intro-cloud{animation:intro-cloud-enter var(--intro-exit-time) ease forwards}
+#intro[data-state="transition"] .intro-cloud-left{--cloud-in:48%}#intro[data-state="transition"] .intro-cloud-right{--cloud-in:-48%}
+@keyframes intro-cloud-drift{from{transform:translateX(var(--cloud-start))}to{transform:translateX(var(--cloud-end))}}
+@keyframes intro-title-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes intro-dissolve{0%,18%{opacity:1}100%{opacity:0}}
+@keyframes intro-soften{from{filter:blur(0)}to{filter:blur(2px)}}
+@keyframes intro-cloud-enter{from{opacity:.32;transform:translateX(0)}to{opacity:.8;transform:translateX(var(--cloud-in))}}
+@media(max-width:600px){#intro .intro-content{top:11%;left:7%}#intro-title{font-size:42px}#intro .intro-poem{font-size:13px}.intro-cloud{width:105%}.intro-cloud-left{left:-55%}.intro-cloud-right{right:-55%}.intro-bottom{bottom:max(24px,env(safe-area-inset-bottom))}#intro-note{font-size:12px}}
+@media(max-height:500px) and (min-width:601px){#intro .intro-content{top:5%}#intro-title{font-size:34px;margin:6px 0}#intro .intro-poem{font-size:12px;line-height:1.6}.intro-bottom{bottom:12px}#intro .note{display:none}}
+@media(prefers-reduced-motion:reduce){#intro[data-state="transition"]{opacity:0}#intro .intro-content{opacity:1}}
+#intro[data-state="transition"] .intro-content{animation:none}
+.intro-paper{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E")}
+@media(min-aspect-ratio:4/3){#prologue{object-fit:cover}}
+@media(max-aspect-ratio:1/1){
+ #intro::before{filter:blur(5px);transform:scale(1.03)}
+ #prologue{top:50%;bottom:auto;height:auto;transform:translateY(-50%);mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent)}
+ #intro .intro-content{color:#344c44;text-shadow:0 1px 8px #f8f4e7}
+ .intro-bottom{color:#344c44;text-shadow:0 1px 8px #f8f4e7}#intro .note{color:#45584e}
+}
+#completion-message{position:fixed;top:88px;left:50%;transform:translateX(-50%);margin:0;padding:10px 20px;border-bottom:1px solid #aa866055;background:#f6efdecc;color:#79513b;white-space:nowrap;font:22px "Songti SC",serif;letter-spacing:.12em;pointer-events:none}
+@media(max-width:600px){#completion-message{top:105px;font-size:17px;padding:8px 12px}}
+#travel-transition{position:fixed;inset:0;z-index:12;opacity:var(--travel-transition-alpha,0);pointer-events:none;background:#eeeee3;background-image:radial-gradient(ellipse at 30% 45%,#d8e1d755,transparent 60%),repeating-linear-gradient(9deg,#bdb69a08 0 1px,transparent 1px 5px)}
+#travel-transition::before,#travel-transition::after{content:'';position:absolute;inset:-20% -30%;background-image:var(--travel-cloud-image);background-repeat:no-repeat;background-size:100% 100%;opacity:.7;transform:translateX(var(--travel-cloud-shift,0%))}
+#travel-transition::after{transform:translateX(calc(-1 * var(--travel-cloud-shift,0%))) rotate(180deg);opacity:.45}
+#travel-scene-note{position:fixed;top:88px;left:4vw;margin:0;font:13px "Songti SC",serif;letter-spacing:.1em;color:#5d7064;background:#f0eee5cc;padding:7px 12px;pointer-events:none}
+@media(max-width:600px){#travel-scene-note{top:85px;font-size:11px}}
+body[data-phase^="travel-"] footer{z-index:13}
+
+/* 独立地标近景：不放大画卷，图片按原生像素上限呈现。 */
+#landmark-scene{position:fixed;inset:0;z-index:8;overflow:hidden;background:#e9eee5;color:#25453f;--landmark-image-width:680px;--landmark-image-height:680px}
+#landmark-scene[hidden],#landmark-game-host[hidden],#landmark-image[hidden],#landmark-image-fallback[hidden]{display:none}
+.landmark-paper{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 28%,#fafaf1aa,transparent 64%),repeating-linear-gradient(12deg,#a9a4880a 0 1px,transparent 1px 4px);opacity:.8}
+.landmark-building{position:absolute;left:50%;top:39%;width:min(90vw,var(--landmark-image-width));height:min(58svh,var(--landmark-image-height));transform:translate(-50%,-50%);display:grid;place-items:center}
+#landmark-image{width:100%;height:100%;object-fit:contain;animation:landmark-push 10s ease-out both}
+.landmark-cloud{position:absolute;inset:0;pointer-events:none;background-image:var(--landmark-cloud);background-size:cover;background-position:center;opacity:.25;animation:landmark-drift 28s ease-in-out infinite alternate}
+.landmark-cloud-left{width:65%;left:-25%;transform:rotate(7deg)}
+.landmark-cloud-right{left:60%;width:65%;animation-delay:-14s;opacity:.2}
+.landmark-copy{position:absolute;z-index:2;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(90%,760px);text-align:center;animation:landmark-copy-in 1.8s ease-out both}
+.landmark-copy h2{font-size:clamp(26px,3vw,40px);letter-spacing:.15em;margin:8px 0}
+.landmark-copy p{margin:6px 0;line-height:1.6}.landmark-copy small{opacity:.7;font-size:12px}
+.landmark-copy nav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:16px}
+#landmark-poem{font-size:13px;opacity:.7}
+#landmark-game-host{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;background:#f2f2e9f5;text-align:center}
+#landmark-game-host p{max-width:520px;line-height:1.8}#landmark-game-host h2{font-size:24px}
+#landmark-story{width:min(86vw,520px);border:1px solid #9aa99b;border-radius:12px;padding:28px;background:#f5f4e9;color:#25453f}
+#landmark-story p{line-height:1.9;white-space:pre-line}#landmark-story::backdrop{background:#29423b80;backdrop-filter:blur(5px)}
+body[data-landmark-active=true] footer,body[data-landmark-active=true] header,body[data-landmark-active=true] .demo-note{visibility:hidden}
+@keyframes landmark-push{from{transform:scale(1)}to{transform:scale(var(--landmark-push))}}
+@keyframes landmark-drift{from{translate:-15px 0}to{translate:28px 9px}}
+@keyframes landmark-copy-in{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
+@media(max-width:600px){.landmark-building{top:31%;height:43svh}.landmark-copy{bottom:24px}.landmark-copy p{font-size:13px}.landmark-copy nav{gap:7px}.landmark-copy button{font-size:13px;padding:10px 14px}}
+@media(prefers-reduced-motion:reduce){#landmark-image,.landmark-cloud,.landmark-copy{animation:none}}
+#landmark-image{position:absolute;inset:0;min-width:0;min-height:0}
+#landmark-scene[data-state=game] .landmark-copy{visibility:hidden}
+@media(max-height:600px) and (min-width:601px){.landmark-building{left:30%;top:50%;width:min(50vw,var(--landmark-image-width));height:86svh}.landmark-copy{left:75%;bottom:15%;width:44%}.landmark-copy p{font-size:12px}.landmark-copy h2{font-size:26px}}
+/* 点击探索只临时拨云，完成记录决定永久清晰；占位页透出建筑与雾散反馈。 */
+.landmark-cloud{transition:opacity 1.4s ease,left 1.8s ease}
+#landmark-scene[data-fog=arrived] .landmark-cloud-left{left:-8%;opacity:.62}
+#landmark-scene[data-fog=arrived] .landmark-cloud-right{left:43%;opacity:.54}
+#landmark-scene[data-fog=exploring] .landmark-cloud-left{left:-30%;opacity:.25}
+#landmark-scene[data-fog=exploring] .landmark-cloud-right{left:68%;opacity:.2}
+#landmark-scene[data-fog=complete] .landmark-cloud{opacity:.06}
+#landmark-game-host{inset:auto;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(90%,650px);max-height:45svh;overflow:auto;gap:8px;padding:18px 24px;background:#f2f2e9ed;border:1px solid #9aa99b70;border-radius:8px}
+#landmark-game-host h2{margin:0;font-size:20px}#landmark-game-host p{margin:0;font-size:14px}
+@media(prefers-reduced-motion:reduce){.landmark-cloud{transition:none}}
+.mock-exploration{display:flex;flex-direction:column;align-items:center;gap:12px}
+.mock-exploration button[data-mock-complete]{background:#7b493b;color:#fff4de}
+
+/* 独立完整近景原图；按比例完整展示，不放大全局地图。 */
+#landmark-scene[data-full-scene=true] .landmark-building{left:50%;top:50%;width:min(100vw,var(--landmark-image-width));height:100svh;transform:translate(-50%,-50%)}
+#landmark-scene[data-full-scene=true] .landmark-copy{background:linear-gradient(transparent,#f4f2e4dc 20%);padding:18px 20px 12px;border-radius:12px}
+
+/* 仅完整庭院布局：文字留在侧边，中央雕像/石路无遮挡。 */
+#landmark-scene[data-layout=courtyard] #landmark-image{transform-origin:50% 82%;animation-duration:14s}
+#landmark-scene[data-layout=courtyard] .landmark-copy{left:4%;top:18%;bottom:auto;transform:none;width:26%;padding:16px;text-align:left;animation:none;background:linear-gradient(90deg,#f4f2e4c4,#f4f2e400);border-radius:0}
+#landmark-scene[data-layout=courtyard] .landmark-copy .eyebrow,
+#landmark-scene[data-layout=courtyard] #landmark-theme,
+#landmark-scene[data-layout=courtyard] #landmark-poem{display:none}
+#landmark-scene[data-layout=courtyard] #landmark-credit{position:fixed;right:18px;bottom:8px;font-size:10px}
+#landmark-scene[data-layout=courtyard] .landmark-copy nav{position:fixed;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:94vw;margin:0;padding:8px;background:#f4f2e4d9;border-radius:6px}
+@media(max-width:600px){#landmark-scene[data-layout=courtyard] .landmark-copy{top:12%;left:5%;width:90%;text-align:center;background:none}#landmark-scene[data-layout=courtyard] .landmark-copy h2{font-size:30px}#landmark-scene[data-layout=courtyard] #landmark-credit{right:10px;bottom:5px}}
+
+#landmark-scene[data-layout=courtyard] .landmark-copy h2,#landmark-scene[data-layout=courtyard] #landmark-title{animation:landmark-copy-in 1.8s ease-out both}
+@media(prefers-reduced-motion:reduce){#landmark-scene[data-layout=courtyard] .landmark-copy h2,#landmark-scene[data-layout=courtyard] #landmark-title{animation:none}}
+
+
+/* 仅关羽祠：留白题诗与非模态宣纸侧栏。 */
+#guanyu-poetry[hidden]{display:none}
+#landmark-scene[data-landmark=guanyu] .landmark-copy{top:9%;left:4%;width:24%;text-align:left;background:none;padding:0}
+#guanyu-poetry{position:absolute;z-index:2;right:4%;top:9%;max-width:245px;color:#334b44;pointer-events:none;text-shadow:0 1px 5px #f6f1e4;font-family:"Songti SC","STSong",serif}
+.guanyu-verses{display:flex;flex-direction:row-reverse;gap:18px;justify-content:flex-start}
+.guanyu-verses span{writing-mode:vertical-rl;font-size:clamp(20px,1.8vw,27px);line-height:1.3;letter-spacing:.18em;opacity:0;animation:guanyu-ink-reveal 1.4s ease-out var(--verse-delay) forwards}
+.guanyu-poetry-credit{white-space:pre-line;font-size:12px;line-height:1.9;text-align:right;opacity:0;animation:guanyu-ink-reveal 1.5s ease-out 3.8s forwards;margin-top:14px}
+@keyframes guanyu-ink-reveal{from{opacity:0;filter:blur(1.8px);transform:translateY(3px);text-shadow:0 0 4px #354b4466}to{opacity:1;filter:blur(0);transform:none;text-shadow:0 1px 4px #faf3e7}}
+#landmark-scene[data-landmark=guanyu][data-poem-skipped=true] #guanyu-poetry *{animation:none;opacity:1;filter:none}
+#landmark-scene[data-landmark=guanyu][data-state=game] #guanyu-poetry{display:none}
+#landmark-story[data-landmark]{position:fixed;inset:70px 18px auto auto;margin:0;width:min(31vw,340px);max-height:calc(100svh - 175px);overflow:auto;padding:22px;border:1px solid #b3a483;border-radius:2px;background:repeating-linear-gradient(8deg,#a48d6208 0 1px,transparent 1px 5px),#f6f0e2f5;box-shadow:-6px 8px 22px #55452e18;font-family:"Songti SC","STSong",serif;animation:guanyu-sidebar-in .35s ease-out}
+#landmark-story[data-landmark] h2{font-size:20px;font-weight:500;line-height:1.5}
+#landmark-story[data-landmark] p{font-size:15px;line-height:1.9}
+#landmark-story[data-landmark] a{color:#7b493b;text-underline-offset:4px}
+#landmark-story[data-landmark]::backdrop{background:transparent;backdrop-filter:none}
+@keyframes guanyu-sidebar-in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@media(max-width:600px){
+ #landmark-scene[data-landmark=guanyu] .landmark-copy{left:6%;top:7%;width:65%;text-align:left}
+ #landmark-scene[data-landmark=guanyu] .landmark-copy h2{font-size:28px;margin:0 0 6px}
+ #guanyu-poetry{right:6%;top:19%;max-width:220px}
+ .guanyu-verses{gap:12px}.guanyu-verses span{font-size:20px;letter-spacing:.08em}
+ .guanyu-poetry-credit{font-size:11px;line-height:1.5;margin-top:8px}
+ #landmark-story[data-landmark]{right:8px;top:12%;width:48vw;max-height:68svh;padding:12px}
+ #landmark-story[data-landmark] h2{font-size:17px}#landmark-story[data-landmark] p{font-size:13px;line-height:1.8}
+}
+@media(max-height:600px) and (min-width:601px){#guanyu-poetry{top:7%;right:3%}.guanyu-verses span{font-size:18px}.guanyu-poetry-credit{font-size:10px;margin-top:6px}#landmark-scene[data-landmark=guanyu] .landmark-copy{top:8%}}
+@media(prefers-reduced-motion:reduce){#guanyu-poetry *{animation:none;opacity:1;filter:none}#landmark-story[data-landmark]{animation:none}}
+/* 按最新确认：题诗悬浮于关羽祠入口正中，保持按钮可直接操作。 */
+#landmark-scene[data-landmark=guanyu] #guanyu-poetry{left:50%;right:auto;top:52%;transform:translate(-50%,-50%);width:max-content;max-width:82vw;color:#fff3d5;text-shadow:0 1px 4px #342619,0 0 2px #342619;font-family:"STKaiti","KaiTi","Songti SC",serif}
+#landmark-scene[data-landmark=guanyu] .guanyu-verses{gap:22px;animation:guanyu-poetry-float 8s ease-in-out infinite alternate}
+#landmark-scene[data-landmark=guanyu] .guanyu-verses span{font-size:clamp(23px,2.2vw,31px);animation-duration:2.8s}
+#landmark-scene[data-landmark=guanyu] .guanyu-poetry-credit{text-align:center;font-size:12px;animation-delay:5.3s}
+#landmark-story[data-landmark]{z-index:12}
+@keyframes guanyu-poetry-float{from{translate:0 3px}to{translate:0 -5px}}
+@media(max-width:600px){#landmark-scene[data-landmark=guanyu] #guanyu-poetry{top:52%;max-width:86vw}#landmark-scene[data-landmark=guanyu] .guanyu-verses{gap:16px}#landmark-scene[data-landmark=guanyu] .guanyu-verses span{font-size:22px}#landmark-scene[data-landmark=guanyu] .guanyu-poetry-credit{font-size:11px}}
+@media(prefers-reduced-motion:reduce){#landmark-scene[data-landmark=guanyu] #guanyu-poetry *{animation:none;opacity:1;translate:none}}
+#landmark-scene[data-landmark=guanyu] .guanyu-verses span,#landmark-scene[data-landmark=guanyu] .guanyu-poetry-credit{text-shadow:0 1px 3px #342619,0 0 2px #342619!important}
+@media(max-width:600px){#landmark-scene[data-landmark=guanyu] #guanyu-poetry{color:#473c2a}#landmark-scene[data-landmark=guanyu] .guanyu-verses span,#landmark-scene[data-landmark=guanyu] .guanyu-poetry-credit{text-shadow:0 1px 3px #fff9e9,0 0 2px #fff9e9!important}}
+
+/* 仅宾阳楼：城门前浮空墨诗，两组共用同一锚点。 */
+#binyang-floating-poem[hidden]{display:none}
+#binyang-floating-poem{position:fixed;z-index:3;transform:translate(-50%,-50%) translateY(var(--poem-float,0px));display:grid;width:max-content;max-width:90vw;text-align:center;color:#2d3530;font-family:"STKaiti","KaiTi","Songti SC",serif;pointer-events:none;text-shadow:0 1px 3px #fff8e5,0 0 5px #fff8e5}
+.binyang-poem-group{grid-area:1/1;align-self:center}
+.binyang-poem-group p{font-size:clamp(25px,2.5vw,35px);line-height:1.8;letter-spacing:.22em;margin:0}
+.binyang-poem-group small{display:block;font-size:13px;line-height:1.8;margin-top:8px;letter-spacing:.04em}
+.binyang-poem-skip{grid-area:2/1;justify-self:center;pointer-events:auto;margin-top:12px;border:0;background:transparent;padding:3px 8px;font-size:11px;color:#535c4f;text-decoration:underline;text-underline-offset:4px;text-shadow:0 1px 3px #fff8e5}
+#landmark-scene[data-landmark=binyang] .landmark-copy{left:4%;top:9%;width:30%;text-align:left;background:none;padding:0}
+@media(max-width:600px){.binyang-poem-group p{font-size:22px;line-height:1.65;letter-spacing:.14em}.binyang-poem-group small{font-size:10px;margin-top:4px}.binyang-poem-skip{margin-top:6px}#landmark-scene[data-landmark=binyang] .landmark-copy{left:6%;top:7%;width:80%;text-align:left}#landmark-scene[data-landmark=binyang] .landmark-copy h2{font-size:28px;margin:0 0 6px}}
+@media(prefers-reduced-motion:reduce){#binyang-floating-poem{transform:translate(-50%,-50%)}}
+/* 漂浮仅作用于诗句，跳过控件不随诗句上下摆动。 */
+#binyang-floating-poem{transform:translate(-50%,-50%)}
+.binyang-poem-group{translate:0 var(--poem-float,0px)}
+@media(prefers-reduced-motion:reduce){.binyang-poem-group{translate:none}}
+
+/* 四站统一非模态宣纸侧栏；故居补齐共享楹联，博物馆只提示待补充。 */
+#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry{left:50%;right:auto;top:52%;transform:translate(-50%,-50%);width:max-content;max-width:86vw;color:#fff3d5;font-family:"STKaiti","KaiTi","Songti SC",serif;text-shadow:0 1px 3px #342619}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses{gap:28px;animation:guanyu-poetry-float 8s ease-in-out infinite alternate}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses span{font-size:clamp(24px,2.2vw,31px);text-shadow:0 1px 3px #342619!important}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-poetry-credit{text-align:center;animation-delay:3.2s;text-shadow:0 1px 3px #342619!important}
+#landmark-scene[data-landmark=zhangjuzheng] .landmark-copy,#landmark-scene[data-landmark=museum] .landmark-copy{left:4%;top:9%;width:30%;text-align:left;background:none;padding:0}
+#landmark-scene[data-landmark=museum] #guanyu-poetry{left:50%;right:auto;top:62%;transform:translate(-50%,-50%);max-width:80vw;text-align:center;color:#334b44}
+.museum-culture-pending{font-size:17px;letter-spacing:.12em;line-height:1.8;text-shadow:0 1px 4px #fff9e8;animation:guanyu-ink-reveal 2s ease-out both}
+#landmark-scene[data-state=game] #guanyu-poetry{display:none}
+#landmark-scene[data-poem-skipped=true] #guanyu-poetry *{animation:none;opacity:1;filter:none}
+@media(max-width:600px){#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses span{font-size:22px;color:#473c2a;text-shadow:0 1px 3px #fff9e9!important}#landmark-scene[data-landmark=zhangjuzheng] .guanyu-poetry-credit{font-size:11px;color:#473c2a;text-shadow:0 1px 3px #fff9e9!important}#landmark-scene[data-landmark=zhangjuzheng] .landmark-copy,#landmark-scene[data-landmark=museum] .landmark-copy{left:6%;top:7%;width:80%}.museum-culture-pending{font-size:14px}}
+@media(prefers-reduced-motion:reduce){#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry *,#landmark-scene[data-landmark=museum] #guanyu-poetry *{animation:none;opacity:1;translate:none;filter:none}}
+/* 故居楹联分列雕像肩膀两侧，中央留出人物轮廓。 */
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses{gap:clamp(72px,15vw,210px)}
+#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry{top:57%}
+@media(max-width:600px){#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses{gap:clamp(58px,18vw,90px)}#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry{top:54%}#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses span{font-size:18px;letter-spacing:.12em}}
+
+/* 故居楹联以人物中心（画面约49%）对称，等宽、顶部对齐、同步浮现。 */
+#landmark-scene[data-landmark=zhangjuzheng] #guanyu-poetry{left:49%}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses{align-items:flex-start;justify-content:center}
+#landmark-scene[data-landmark=zhangjuzheng] .guanyu-verses span{width:1.3em;flex:0 0 1.3em;height:9.5em;text-align:start;animation-delay:.6s!important}
+
+/* 共用毛笔过场字幕，只覆盖文字，不遮挡交互。 */
+.ink-transform-caption{position:absolute;bottom:12%;left:50%;transform:translateX(-50%);pointer-events:none;font-family:"Songti SC","SimSun",serif;font-size:clamp(13px,2vw,23px);letter-spacing:.08em;color:#3b5149;text-shadow:0 1px 5px #fff8e2;background:#f2efdfb5;padding:7px 13px;white-space:nowrap;z-index:5}
+
+/* 博物馆：原创题词沿建筑两侧留白排布，中央门厅保持完整。 */
+#landmark-scene[data-landmark=museum] #guanyu-poetry{left:50%;top:54%;right:auto;width:min(84vw,1160px);max-width:none;transform:translate(-50%,-50%);color:#2e3731;font-family:"STKaiti","KaiTi","Songti SC",serif}
+#landmark-scene[data-landmark=museum] .museum-inscription{flex-direction:row;justify-content:space-between;align-items:flex-start;gap:0}
+#landmark-scene[data-landmark=museum] .museum-inscription>span{font-size:clamp(23px,2vw,29px);width:1.3em;flex:0 0 1.3em;height:8.5em;letter-spacing:.16em;text-shadow:0 1px 4px #fff8e7!important;animation-delay:.6s}
+#landmark-scene[data-landmark=museum] .guanyu-poetry-credit{text-align:center;font-size:12px;animation-delay:2.1s;text-shadow:0 1px 4px #fff8e7!important}
+.museum-inscription-seal{display:inline-block;vertical-align:middle;margin-left:10px;padding:3px 4px;border:2px solid #a44737;border-radius:2px;color:#a44737;font:15px/1.1 "STKaiti","KaiTi",serif;letter-spacing:1px;transform:rotate(-5deg);text-shadow:none}
+@media(max-width:600px){#landmark-scene[data-landmark=museum] #guanyu-poetry{width:90vw;top:52%}#landmark-scene[data-landmark=museum] .museum-inscription>span{font-size:17px;height:8.5em;letter-spacing:.12em}#landmark-scene[data-landmark=museum] .guanyu-poetry-credit{font-size:10px}.museum-inscription-seal{font-size:12px;margin-left:6px;padding:2px}}
+
+/* 正式华容道独占小游戏插槽，不影响其他景点布局。 */
+#landmark-game-host[data-game="guanyu-huarong"]{inset:0;transform:none;width:100%;height:100%;max-height:none;padding:0;border:0;border-radius:0;overflow:hidden}
+.guanyu-game-frame{display:block;width:100%;height:100%;border:0;flex:1;min-height:0;background:#eae5d9}
+
+#landmark-game-host[data-game="zhangjuzheng-memorial"] { inset: 0; transform: none; width: 100%; height: 100%; max-height: none; padding: 0; border: 0; border-radius: 0; overflow: hidden; }
+.zhangjuzheng-game-frame { display: block; width: 100%; height: 100%; border: 0; flex: 1; min-height: 0; background: #eee5d1; }
+.zhang-connection[hidden] { display: none; }
+.zhang-connection { position: absolute; z-index: 6; top: 12px; left: 50%; transform: translateX(-50%); width: min(92%, 520px); padding: 12px; background: #f3e7ce; border: 1px solid #8e795b66; color: #354132; }
+.zhang-connection p { margin: 0 0 8px; }
+.zhang-connection button { min-height: 44px; margin: 4px 8px; }
+
+/* Zhang entrance only: keep the courtyard underneath until a decoded, stable intro is ready. */
+#landmark-game-host[data-game="zhangjuzheng-memorial"] { background: transparent; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"] .zhangjuzheng-game-frame {
+  opacity: 0; pointer-events: none; transition: opacity 520ms ease-in-out;
+}
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="revealing"] .zhangjuzheng-game-frame,
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="shown"] .zhangjuzheng-game-frame { opacity: 1; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="shown"] .zhangjuzheng-game-frame { pointer-events: auto; }
+#landmark-scene[data-landmark="zhangjuzheng"][data-zhang-entry]:not([data-zhang-entry="shown"]) .landmark-copy { visibility: visible; }
+#landmark-scene[data-landmark="zhangjuzheng"][data-zhang-entry]:not([data-zhang-entry="shown"]) #guanyu-poetry { display: block; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="revealing"] .zhang-connection { opacity: 0; pointer-events: none; transition: opacity 180ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  #landmark-game-host[data-game="zhangjuzheng-memorial"] .zhangjuzheng-game-frame,
+  #landmark-game-host[data-game="zhangjuzheng-memorial"] .zhang-connection { transition: none; }
+}
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry]:not([data-entry="shown"]) { pointer-events: none; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"] .zhang-connection { pointer-events: auto; }
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="revealing"] .zhang-connection { pointer-events: none; }
+/* Only an embedded intro's explicit exit uses this return fade. Other exit flows stay unchanged. */
+#landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="returning"] .zhangjuzheng-game-frame { transition-duration: 450ms; }
+@media (prefers-reduced-motion: reduce) {
+  #landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="returning"] .zhangjuzheng-game-frame { transition-duration: 0s; }
+}
+/* 博物馆馆藏：独立叠层，不改建筑原图、题词及主流程。 */
+#landmark-scene[data-landmark=museum] .museum-artifacts{position:absolute;z-index:2;left:50%;bottom:12%;transform:translateX(-50%);width:min(78vw,1080px);display:flex;flex-direction:row-reverse;justify-content:space-between;gap:20px;pointer-events:none}
+#landmark-scene[data-landmark=museum] .museum-artifact{display:flex;flex-direction:row-reverse;align-items:center;gap:10px;margin:0;padding:8px;background:radial-gradient(ellipse,#f6f0e2db,transparent 72%)}
+#landmark-scene[data-landmark=museum] .museum-artifact img{width:clamp(65px,8vw,110px);height:clamp(90px,11vw,145px);object-fit:contain;filter:drop-shadow(0 3px 3px #463b3222)}
+#landmark-scene[data-landmark=museum] .museum-artifact figcaption{writing-mode:vertical-rl;text-orientation:upright;font:clamp(14px,1.25vw,19px)/1.4 "STKaiti","KaiTi","Songti SC",serif;letter-spacing:.12em;color:#334b44;text-shadow:0 1px 3px #fff8e7}
+#landmark-scene[data-landmark=museum][data-state=game] .museum-artifacts{display:none}
+#landmark-story[data-landmark=museum] .museum-story-entry{display:block;margin-bottom:22px;white-space:normal}
+#landmark-story[data-landmark=museum] .museum-story-entry strong,#landmark-story[data-landmark=museum] .museum-story-entry small,#landmark-story[data-landmark=museum] .museum-story-entry>span{display:block}
+#landmark-story[data-landmark=museum] .museum-story-entry small{opacity:.75;margin:3px 0 8px}
+#landmark-story[data-landmark=museum] .museum-story-entry a{font-size:13px}
+@media(max-width:600px){#landmark-scene[data-landmark=museum] .museum-artifacts{width:94vw;bottom:16%;gap:3px}#landmark-scene[data-landmark=museum] .museum-artifact{gap:2px;padding:0}#landmark-scene[data-landmark=museum] .museum-artifact img{width:42px;height:88px}#landmark-scene[data-landmark=museum] .museum-artifact figcaption{font-size:13px;letter-spacing:.04em}}

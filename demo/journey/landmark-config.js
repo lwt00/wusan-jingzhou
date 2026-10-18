@@ -7,7 +7,7 @@
     zhangjuzheng:{entries:[{kind:'楹联',lines:['一人而为帝王师，','双肩能担天下事。'],author:'',title:'张居正故居·太岳堂楹联',source:'https://news.hubeidaily.net/mobile/c_3088588.html',interpretation:'楹联赞颂张居正身为帝王之师，辅佐君王，以一身担当起治理天下的重任。',backgroundLabel:'典故背景',background:'张居正，号太岳，荆州江陵人，明代内阁首辅、著名改革家。出身江陵，年少苦读，入朝堂主持万历新政，推行考成法、一条鞭法，整顿吏治、改革税制，是明代影响深远的改革名臣。本联陈列于故居太岳堂，为后人题写，用以纪念他为国革新、勇担重任的一生。'}]}
   };
   for(const c of Object.values(culture))for(const entry of c.entries)Object.defineProperty(entry,'credit',{enumerable:true,get(){return `——${this.author.replace(/^(唐|宋)·/,'')}${this.title}`;}});
-/* 独立地标展示配置：建筑近景、文化文案、典故与小游戏插槽。前三站共享正式文化文字；博物馆资料待补充。 */
+/* 独立地标展示配置：建筑近景、文化文案、典故与小游戏插槽。前三站共享正式文化文字；博物馆独立馆藏资料。 */
 window.WusanLandmarkConfig={
   visuals:{cloudSrc:'assets/fog-dense-1.png',loadTimeout:4000,pushScale:1.025},
   landmarks:{
@@ -19,15 +19,15 @@ window.WusanLandmarkConfig={
       culturalTitle:'古城风华',theme:'观察城楼的轮廓，寻找古城文化的线索。',
       poetryCycle:{holdSeconds:6,fadeSeconds:1,initialDelay:.6,opacity:.94,floatAmplitude:6,floatSeconds:8,anchor:{u:.5,v:.66},
         groups:culture.binyang.entries},
-      game:{id:'mock-binyang',enabled:true,mode:'mock'}},
+      game:{id:'binyang-fenghuo',enabled:true,mode:'real'}},
     zhangjuzheng:{name:'张居正故居',map:{statue:{image:'assets/landmarks-v2/zhang-statue.png',u:.49,v:.57,height:76}},image:'assets/landmarks-v2/originals/zhang-courtyard.png',imageLabel:'团队提供完整庭院水墨插画 · 艺术化展示',display:{maxWidth:1376,fullScene:true,layout:'courtyard',pushScale:1.015},
       culturalTitle:'革新之志',theme:'走近庭院，预备一段关于责任与革新的文化探索。',
       game:{id:'zhangjuzheng-memorial',enabled:true,mode:'real'}},
     museum:{name:'荆州博物馆',map:{image:'assets/museum-layer.png',width:350,stand:{u:.58,v:.695}},image:'assets/landmarks-v2/originals/museum.png',imageLabel:'团队提供馆舍水墨插画 · 艺术化展示',display:{maxWidth:1376,fullScene:true,layout:'courtyard',pushScale:1.015,imagePosition:'50% 50%'},
       culturalTitle:'荆楚遗韵',theme:'从城市记忆出发，预备一段关于文化传承的探索。',
       inscription:{title:'楚韵千秋',kind:'原创文化题词',lines:['千年楚韵藏珍器','一脉文华续古今']},
-      anecdote:{title:'荆楚遗珍 · 文明传承',text:'江汉之间，楚风绵延。\n\n青铜凝铸古人的智慧，\n丝帛织就楚地的华彩，\n漆器承载浪漫的想象。\n\n一件件历史文物，\n诉说着荆楚大地的千年故事。\n\n走进荆州博物馆，\n循着文物留下的印记，\n探寻楚文化的独特魅力。'},
-      game:{id:'mock-museum',enabled:true,mode:'mock'}}
+      artifacts:[{"id": "drum", "name": "虎座凤鸟悬鼓", "period": "战国 · 漆木乐器", "text": "出土于天星观二号楚墓。两只卧虎承托长腿凤鸟，双凤之间悬挂大鼓，器表施以彩绘。它将乐器功能与动物造型结合，展现楚地漆木工艺与礼乐文化。", "source": "https://news.hubeidaily.net/mobile/c_2040630.html"}, {"id": "sword", "name": "越王州句剑", "period": "战国 · 青铜兵器", "text": "出土于藤店一号楚墓。剑身近格处有两行八字错金鸟篆铭文，记述越王州句自作用剑。州句亦写作州勾；此剑为研究越国青铜铸造与楚越交流提供了实物资料。", "source": "https://news.hubeidaily.net/pc/c_2089326.html"}, {"id": "slips", "name": "张家山汉简", "period": "西汉早期 · 竹简文献", "text": "张家山汉墓出土的竹简保存了汉初珍贵文献。其中二四七号墓简书包括《二年律令》《奏谳书》《算数书》《脉书》等，内容涉及法律、数学和医学，为认识汉代制度与知识提供了重要材料。", "source": "https://faxueyanjiu.ajcass.com/Admin/UploadFile/publish_article/2003/5/20030510.pdf"}, {"id": "mask", "name": "战国玉覆面", "period": "战国 · 葬玉", "text": "出土于荆州秦家山二号战国墓。以整块玉片雕成人面形，刻出五官与须眉，边缘留有穿缀小孔，可缝于织物上。玉覆面属于覆盖逝者面部的葬玉，反映当时的丧葬习俗与琢玉工艺。", "source": "https://www.chnmuseum.cn/zp/zpml/kgfjp/202104/t20210416_249796.shtml"}],
+      game:{id:'chuyun-reborn',enabled:true,mode:'real'}}
   }
 };
 
