@@ -262,3 +262,25 @@ body[data-landmark-active=true] footer,body[data-landmark-active=true] header,bo
 @media (prefers-reduced-motion: reduce) {
   #landmark-game-host[data-game="zhangjuzheng-memorial"][data-entry="returning"] .zhangjuzheng-game-frame { transition-duration: 0s; }
 }
+/* 博物馆馆藏：独立叠层，不改建筑原图、题词及主流程。 */
+#landmark-scene[data-landmark=museum] .museum-artifacts{position:absolute;z-index:2;left:50%;bottom:12%;transform:translateX(-50%);width:min(78vw,1080px);display:flex;flex-direction:row-reverse;justify-content:space-between;gap:20px;pointer-events:none}
+#landmark-scene[data-landmark=museum] .museum-artifact{display:flex;flex-direction:row-reverse;align-items:center;gap:10px;margin:0;padding:8px;background:radial-gradient(ellipse,#f6f0e2db,transparent 72%)}
+#landmark-scene[data-landmark=museum] .museum-artifact img{width:clamp(65px,8vw,110px);height:clamp(90px,11vw,145px);object-fit:contain;filter:drop-shadow(0 3px 3px #463b3222)}
+#landmark-scene[data-landmark=museum] .museum-artifact figcaption{writing-mode:vertical-rl;text-orientation:upright;font:clamp(14px,1.25vw,19px)/1.4 "STKaiti","KaiTi","Songti SC",serif;letter-spacing:.12em;color:#334b44;text-shadow:0 1px 3px #fff8e7}
+#landmark-scene[data-landmark=museum][data-state=game] .museum-artifacts{display:none}
+#landmark-story[data-landmark=museum] .museum-story-entry{display:block;margin-bottom:22px;white-space:normal}
+#landmark-story[data-landmark=museum] .museum-story-entry strong,#landmark-story[data-landmark=museum] .museum-story-entry small,#landmark-story[data-landmark=museum] .museum-story-entry>span{display:block}
+#landmark-story[data-landmark=museum] .museum-story-entry small{opacity:.75;margin:3px 0 8px}
+#landmark-story[data-landmark=museum] .museum-story-entry a{font-size:13px}
+@media(max-width:600px){#landmark-scene[data-landmark=museum] .museum-artifacts{width:94vw;bottom:16%;gap:3px}#landmark-scene[data-landmark=museum] .museum-artifact{gap:2px;padding:0}#landmark-scene[data-landmark=museum] .museum-artifact img{width:42px;height:88px}#landmark-scene[data-landmark=museum] .museum-artifact figcaption{font-size:13px;letter-spacing:.04em}}
+
+/* 宾阳楼正式小游戏只占地标内的 iframe 插槽，退出交还既有主流程。 */
+#landmark-game-host[data-game="binyang-fenghuo"]{inset:0;transform:none;width:100%;height:100%;max-height:none;padding:0;gap:0;border:0;border-radius:0;overflow:hidden;background:#eae5d9}
+.binyang-game-frame{display:block;width:100%;height:0;flex:1 1 auto;min-height:0;border:0;background:#eae5d9}
+.binyang-game-toolbar{display:flex;flex:0 0 auto;align-items:center;justify-content:space-between;gap:12px;width:100%;box-sizing:border-box;padding:6px 12px;background:#eee7d8;color:#334b44;font-size:13px}
+.binyang-game-toolbar button{padding:7px 12px;font-size:13px}
+@media(max-width:480px){.binyang-game-toolbar{gap:6px;padding:4px 8px;font-size:11px}.binyang-game-toolbar button{padding:6px 8px;font-size:11px}}
+
+/* 博物馆正式游戏只使用既有地标插槽，不影响沉浸展示。 */
+#landmark-game-host[data-game="chuyun-reborn"]{inset:0;transform:none;width:100%;height:100%;max-height:none;padding:0;gap:0;border:0;border-radius:0;overflow:hidden;background:#09070b}
+.museum-game-frame{display:block;width:100%;height:100%;flex:1;min-height:0;border:0;background:#09070b}

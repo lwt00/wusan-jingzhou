@@ -1,0 +1,29 @@
+{
+  "videos": {
+    "wave1": "assets/moat-water-loop.mp4",
+    "wave2": "assets/moat-water-dusk-loop.mp4"
+  },
+  "bgm": {
+    "wave1": "assets/bgm-wave1-fog.mp3",
+    "wave2": "assets/bgm-wave2-fireboat.mp3",
+    "wave3": "assets/bgm-wave3-flagship.mp3"
+  },
+  "sfx": {
+    "ballista": "assets/sfx-ballista.mp3",
+    "arrowFlight": "assets/sfx-arrow-flight.mp3",
+    "arrowWater": "assets/sfx-arrow-water.mp3",
+    "gateHit": "assets/sfx-gate-hit.mp3",
+    "shipHit": "assets/sfx-ship-hit.mp3",
+    "burning": "assets/sfx-burning.mp3",
+    "fireboatBlast": "assets/sfx-fireboat-blast.mp3",
+    "warDrum": "assets/sfx-war-drum.mp3",
+    "battleCry": "assets/sfx-battle-cry.mp3",
+    "gong": "assets/sfx-gong.mp3",
+    "horn": "assets/sfx-horn.mp3",
+    "ropeBreak": "assets/sfx-rope-break.mp3",
+    "hookScrape": "assets/sfx-hook-scrape.mp3",
+    "oar": "assets/sfx-oar.mp3",
+    "civilianAlarm": "assets/sfx-civilian-alarm.mp3",
+    "seal": "assets/sfx-seal.mp3"
+  }
+}
