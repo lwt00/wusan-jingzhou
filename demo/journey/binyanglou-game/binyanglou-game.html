@@ -1,45 +1,22 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>宾阳楼 · 烽火守城</title>
-  <link rel="stylesheet" href="binyanglou-game.css">
-</head>
-<body>
-  <main class="game" aria-labelledby="game-title">
-    <header class="game-header">
-      <div>
-        <p class="eyebrow">宾阳楼 · 城墙守护</p>
-        <h1 id="game-title">烽火守城</h1>
-        <p id="instruction">点击护城河上的敌船进行拦截，别让它们抵达城门。</p>
-      </div>
-      <div class="stats" aria-label="对局数据">
-        <span>波次 <b id="wave-value">1/3</b></span>
-        <span>城防 <b id="wall-value">3</b></span>
-        <span>军功 <b id="score-value">0</b></span>
-      </div>
-    </header>
-
-    <section id="battlefield" class="battlefield" aria-label="宾阳楼守城战场">
-      <div class="sky"><span class="sun"></span><i></i><i></i><i></i></div>
-      <div class="mountains" aria-hidden="true"></div>
-      <div class="wall" aria-hidden="true">
-        <div class="battlement"></div><div class="tower tower-one"><span></span></div>
-        <div class="gate"><b>宾阳楼</b></div><div class="tower tower-two"><span></span></div>
-      </div>
-      <div class="river"><span>护城河 · 点击敌船拦截</span></div>
-      <div id="boats" class="boats" aria-label="敌船区域"></div>
-      <div id="beacons" class="beacons" aria-label="烽火传讯区域"></div>
-      <div id="message" class="message" role="status" aria-live="polite"></div>
-    </section>
-
-    <footer class="controls">
-      <button id="start-button">开始守城</button>
-      <button id="retry-button" hidden>重新挑战</button>
-      <p><b>守城要领</b>每波拦截完成后，按数字顺序点燃烽火台。</p>
-    </footer>
-  </main>
-  <script src="binyanglou-game.js"></script>
-</body>
-</html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>宾阳楼 · 烽火守城</title><link rel="stylesheet" href="binyanglou-game.css"><link rel="stylesheet" href="binyanglou-game-v3.css"><link rel="stylesheet" href="binyanglou-game-v4.css"><link rel="stylesheet" href="binyanglou-game-v5.css"><link rel="stylesheet" href="binyanglou-game-v6.css"><link rel="stylesheet" href="binyanglou-game-v7.css"><link rel="stylesheet" href="binyanglou-game-v8.css"><link rel="stylesheet" href="binyanglou-game-v9.css"><link rel="stylesheet" href="binyanglou-game-v10.css"><link rel="stylesheet" href="binyanglou-game-v11.css"><link rel="stylesheet" href="binyanglou-game-v12.css"><link rel="stylesheet" href="binyanglou-game-v13.css"><link rel="stylesheet" href="binyanglou-game-v14.css"><link rel="stylesheet" href="binyanglou-game-v15.css"><link rel="stylesheet" href="binyanglou-game-v16.css"><link rel="stylesheet" href="binyanglou-game-v17.css"><link rel="stylesheet" href="binyanglou-game-v18.css"><link rel="stylesheet" href="binyanglou-game-v19.css"><link rel="stylesheet" href="binyanglou-game-v20.css"><link rel="stylesheet" href="binyanglou-game-v21.css"></head>
+<body><main class="game" id="game">
+  <header class="topbar"><div><p class="eyebrow">荆州古城 · 宾阳楼</p><h1>烽火守城</h1></div><div class="mission" id="mission">移动准星，发射弩箭拦截敌船</div><div class="stats"><span>波次<b id="wave">1 / 3</b></span><span>城门<b id="wall">100</b></span><span>军功<b id="score">0</b></span><span>军械<b id="supplies">120</b></span><span>连击<b id="combo">×1</b></span></div></header>
+  <section class="battlefield" id="battlefield" tabindex="0" aria-label="守城战场，方向键移动准星，空格发射">
+    <video id="water-video" class="water-video" autoplay muted loop playsinline poster="assets/winter-fog-bg-v3.png" aria-hidden="true"></video><div id="dusk-background" class="dusk-background" aria-hidden="true"></div><div class="fog-layer" aria-hidden="true"></div><div class="ink-wash"></div><div class="river-lines"></div><div class="gate-glow" id="gate-glow"></div>
+    <div class="hud-left"><div class="wall-meter"><i id="wall-bar"></i></div><small>城门耐久</small></div>
+    <div id="objects" class="objects"></div><div id="aim" class="aim" aria-hidden="true"><i></i></div><div class="parapet-layer" aria-hidden="true"></div><div class="ballista" id="ballista" aria-hidden="true"><i class="bow"></i><i class="base"></i></div>
+    <div id="beacon-phase" class="beacon-phase" hidden><p id="beacon-title">战鼓传令 · 点燃一座烽火请求支援</p><div class="beacon-row"><button data-beacon="0"><i></i><b>弩手齐射</b><span>下波前3艘船受创</span></button><button data-beacon="1"><i></i><b>火油增援</b><span>火油齐射强化</span></button><button data-beacon="2"><i></i><b>城防援军</b><span>修复城门+补给</span></button></div></div>
+    <div id="upgrade-phase" class="upgrade-phase" hidden><p>军备整备 · 选择一项后迎接下一波</p><div><button data-upgrade="power"><b>弩机强化</b><small>普通箭伤害 +1</small><em>80 军械</em></button><button data-upgrade="rate"><b>绞盘改良</b><small>发射间隔 -15%</small><em>70 军械</em></button><button data-upgrade="repair"><b>抢修城门</b><small>恢复 30 耐久</small><em>60 军械</em></button><button data-upgrade="skip"><b>保留军械</b><small>不进行升级</small><em>免费</em></button></div></div>
+    <aside class="signal-panel"><div><b>烽火令</b><span id="signal-value">0 / 100</span></div><div class="signal-meter"><i id="signal-bar"></i></div><div class="signal-actions"><button data-signal="0"><kbd>1</kbd><b>弩手齐射</b></button><button data-signal="1"><kbd>2</kbd><b>烽火火攻</b></button><button data-signal="2"><kbd>3</kbd><b>城防援军</b></button></div><small id="signal-hint">击沉敌船积蓄烽火令</small></aside>
+    <aside id="culture-guide" class="culture-guide"><b id="culture-label">观察任务 · 雾中识谍</b><p id="culture-copy">民船吃水浅、单人摇橹且挂有渔网；伪装商船吃水深、白衣人数异常，货舱可见兵器寒光。</p></aside>
+    <div id="hook-qte" class="hook-qte" hidden><p id="hook-instruction">敌军抛出登城钩索 · 沿绳索方向滑动斩断</p><div class="hook-timer"><i id="hook-timer-bar"></i></div><div class="hooks"><button data-hook="0"><kbd>1</kbd><i class="climber"></i><span class="chain-hits"></span></button><button data-hook="1"><kbd>2</kbd><i class="climber"></i><span class="chain-hits"></span></button><button data-hook="2"><kbd>3</kbd><i class="climber"></i><span class="chain-hits"></span></button></div><div id="parry-panel" class="parry-panel" hidden><p id="parry-copy">敌兵登城！按红光方向格挡</p><div><button data-parry="left">左</button><button data-parry="right">右</button></div></div></div>
+    <div id="banner" class="banner" role="status" aria-live="polite"></div>
+    <div class="keyboard-help"><span><kbd>WASD</kbd> 城头移动</span><span><kbd>Shift</kbd> 疾跑</span><span><kbd>方向键</kbd> 瞄准</span><span><kbd>空格</kbd> 发射</span><span><kbd>Q</kbd> 火油齐射</span><span><kbd>1 2 3</kbd> 烽火支援</span></div>
+    <div class="weapon-bar" aria-label="武器选择"><button class="active" data-weapon="bolt"><kbd>Z</kbd><b>破甲弩</b><small>单体精准</small></button><button data-weapon="fire"><kbd>X</kbd><b>火矢</b><small>持续燃烧</small></button><button data-weapon="stone"><kbd>C</kbd><b>投石</b><small>范围震荡</small></button></div>
+    <div class="touch-controls" aria-label="触摸控制"><div class="dpad"><button data-move="up">▲</button><button data-move="left">◀</button><button data-move="down">▼</button><button data-move="right">▶</button></div><div class="touch-actions"><button id="skill-touch" class="skill">火油<br><small id="skill-cooldown">就绪</small></button><button id="fire-touch" class="fire">发射</button></div></div>
+  </section>
+  <footer class="command"><div class="skill-card"><span class="seal">Q</span><div><b>火油齐射</b><small>范围伤害 · 12 秒冷却</small></div><div class="cooldown"><i id="cooldown-bar"></i></div></div><p id="feedback">守住三波水路，再依次点燃烽火台传讯。</p><button id="pause">暂停</button></footer>
+  <div id="overlay" class="overlay open"><section><p class="eyebrow">第二境 · 城墙守护</p><h2 id="overlay-title">冬雾漫江 · 疑船逼近</h2><p id="overlay-copy">冬日清晨，护城河浓雾未散。你正站在宾阳楼城头，需要从雾中分辨吃水异常的白衣商船：第一箭用于识破伪装，甲士现形后才能正式伤敌。</p><ul><li>WASD 控制人物沿城头侧移与前后探身</li><li>方向键或鼠标控制准星，空格或点击发射</li><li>雾中盲射可提前识破，Tab 只能锁定已较清晰的疑船</li></ul><div id="rating" class="rating" hidden><div><span id="rating-stars"></span><b id="rating-title"></b></div><dl class="rating-breakdown"><div><dt>识谍</dt><dd id="rating-spy">0</dd></div><div><dt>护民</dt><dd id="rating-civilian">0</dd></div><div><dt>守城</dt><dd id="rating-defense">0</dd></div><div><dt>传讯</dt><dd id="rating-signal">0</dd></div></dl><p id="rating-summary"></p></div><button id="start">击鼓开战</button></section></div>
+  <div id="knowledge-card" class="knowledge-card" hidden><section><div><p>荆州城防文化线索</p><img id="knowledge-image" alt=""><h2 id="knowledge-title"></h2><p id="knowledge-copy"></p><small id="knowledge-note"></small><button id="knowledge-continue">收下城防情报</button></div></section></div>
+</main><script src="binyanglou-game.js"></script></body></html>
