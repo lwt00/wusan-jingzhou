@@ -11,11 +11,11 @@
 window.WusanLandmarkConfig={
   visuals:{cloudSrc:'assets/fog-dense-1.png',loadTimeout:4000,pushScale:1.025},
   landmarks:{
-    guanyu:{name:'关羽祠',map:{image:'assets/guanyu-layer.png',width:345,stand:{u:.5,v:.88}},image:'assets/landmarks-v2/originals/guanyu.png',imageLabel:'团队提供水墨建筑插画 · 艺术化展示',display:{maxWidth:1376,fullScene:true,layout:'courtyard',pushScale:1.015,imagePosition:'50% 46%'},
+    guanyu:{name:'关羽祠',map:{image:'assets/guanyu-layer.webp',width:345,stand:{u:.5,v:.88}},image:'assets/landmarks-v2/originals/guanyu.png',imageLabel:'团队提供水墨建筑插画 · 艺术化展示',display:{maxWidth:1376,fullScene:true,layout:'courtyard',pushScale:1.015,imagePosition:'50% 46%'},
       culturalTitle:'忠义千秋',theme:'在祠宇之前，开启一段关于忠义文化的探索。',
 
       game:{id:'guanyu-huarong',enabled:true,mode:'real'}},
-    binyang:{name:'宾阳楼',map:{image:'assets/binyang-layer.png',width:315,stand:{u:.452,v:.91}},image:'assets/landmarks-v2/originals/binyang.jpg',imageLabel:'团队提供水墨建筑插画 · 艺术化展示',display:{maxWidth:1280,fullScene:true,layout:'courtyard',pushScale:1.015,imagePosition:'50% 48%'},
+    binyang:{name:'宾阳楼',map:{image:'assets/binyang-layer.webp',width:315,stand:{u:.452,v:.91}},image:'assets/landmarks-v2/originals/binyang.jpg',imageLabel:'团队提供水墨建筑插画 · 艺术化展示',display:{maxWidth:1280,fullScene:true,layout:'courtyard',pushScale:1.015,imagePosition:'50% 48%'},
       culturalTitle:'古城风华',theme:'观察城楼的轮廓，寻找古城文化的线索。',
       poetryCycle:{holdSeconds:6,fadeSeconds:1,initialDelay:.6,opacity:.94,floatAmplitude:6,floatSeconds:8,anchor:{u:.5,v:.66},
         groups:culture.binyang.entries},
@@ -23,7 +23,7 @@ window.WusanLandmarkConfig={
     zhangjuzheng:{name:'张居正故居',map:{statue:{image:'assets/landmarks-v2/zhang-statue.png',u:.49,v:.57,height:76}},image:'assets/landmarks-v2/originals/zhang-courtyard.png',imageLabel:'团队提供完整庭院水墨插画 · 艺术化展示',display:{maxWidth:1376,fullScene:true,layout:'courtyard',pushScale:1.015},
       culturalTitle:'革新之志',theme:'走近庭院，预备一段关于责任与革新的文化探索。',
       game:{id:'zhangjuzheng-memorial',enabled:true,mode:'real'}},
-    museum:{name:'荆州博物馆',map:{image:'assets/museum-layer.png',width:350,stand:{u:.58,v:.695}},image:'assets/landmarks-v2/originals/museum.png',imageLabel:'团队提供馆舍水墨插画 · 艺术化展示',display:{maxWidth:1376,fullScene:true,layout:'courtyard',pushScale:1.015,imagePosition:'50% 50%'},
+    museum:{name:'荆州博物馆',map:{image:'assets/museum-layer.webp',width:350,stand:{u:.58,v:.695}},image:'assets/landmarks-v2/originals/museum.png',imageLabel:'团队提供馆舍水墨插画 · 艺术化展示',display:{maxWidth:1376,fullScene:true,layout:'courtyard',pushScale:1.015,imagePosition:'50% 50%'},
       culturalTitle:'荆楚遗韵',theme:'从城市记忆出发，预备一段关于文化传承的探索。',
       inscription:{title:'楚韵千秋',kind:'原创文化题词',lines:['千年楚韵藏珍器','一脉文华续古今']},
       artifacts:[{"id": "drum", "name": "虎座凤鸟悬鼓", "period": "战国 · 漆木乐器", "text": "出土于天星观二号楚墓。两只卧虎承托长腿凤鸟，双凤之间悬挂大鼓，器表施以彩绘。它将乐器功能与动物造型结合，展现楚地漆木工艺与礼乐文化。", "source": "https://news.hubeidaily.net/mobile/c_2040630.html"}, {"id": "sword", "name": "越王州句剑", "period": "战国 · 青铜兵器", "text": "出土于藤店一号楚墓。剑身近格处有两行八字错金鸟篆铭文，记述越王州句自作用剑。州句亦写作州勾；此剑为研究越国青铜铸造与楚越交流提供了实物资料。", "source": "https://news.hubeidaily.net/pc/c_2089326.html"}, {"id": "slips", "name": "张家山汉简", "period": "西汉早期 · 竹简文献", "text": "张家山汉墓出土的竹简保存了汉初珍贵文献。其中二四七号墓简书包括《二年律令》《奏谳书》《算数书》《脉书》等，内容涉及法律、数学和医学，为认识汉代制度与知识提供了重要材料。", "source": "https://faxueyanjiu.ajcass.com/Admin/UploadFile/publish_article/2003/5/20030510.pdf"}, {"id": "mask", "name": "战国玉覆面", "period": "战国 · 葬玉", "text": "出土于荆州秦家山二号战国墓。以整块玉片雕成人面形，刻出五官与须眉，边缘留有穿缀小孔，可缝于织物上。玉覆面属于覆盖逝者面部的葬玉，反映当时的丧葬习俗与琢玉工艺。", "source": "https://www.chnmuseum.cn/zp/zpml/kgfjp/202104/t20210416_249796.shtml"}],

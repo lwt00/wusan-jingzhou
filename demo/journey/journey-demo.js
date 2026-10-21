@@ -61,10 +61,10 @@
   // 新插画独立于正式地图；静态建筑固定，动态角色和云雾另行渲染。
   const scenery=layer(0);
   try {
-    const illustration=new Image();illustration.src='assets/terrain-v3.png';await illustration.decode();
+    const illustration=new Image();illustration.src='assets/terrain-v3.webp';await illustration.decode();
     const backdrop=new Sprite(Texture.from(illustration));backdrop.width=W;backdrop.height=H;scenery.addChild(backdrop);
   } catch(error) {
-    status.textContent='全景插画加载失败，请检查 assets/terrain-v3.png 后刷新';
+    status.textContent='全景插画加载失败，请检查 assets/terrain-v3.webp 后刷新';
     host.insertAdjacentHTML('beforeend','<p id="loading">全景插画未加载，请刷新页面</p>');
     app.destroy(true,{children:true,texture:true,textureSource:true});return;
   }
@@ -74,7 +74,7 @@
   try {
     for(const [i,station] of stations.entries()){
       const mapArt=window.WusanLandmarkConfig.landmarks[station.id].map;
-      const image=new Image();image.src=mapArt?.image||`assets/${station.id}-layer.png`;await image.decode();
+      const image=new Image();image.src=mapArt?.image||`assets/${station.id}-layer.webp`;await image.decode();
       const sprite=new Sprite(Texture.from(image));sprite.anchor.set(.5,1);
       const size=mapArt?.width||[345,315,355,350][i];sprite.width=size;sprite.height=mapArt?.image?size*image.naturalHeight/image.naturalWidth:size;
       if(mapArt?.stand)Object.assign(standPoints[station.id],mapArt.stand);
