@@ -39,10 +39,41 @@
     }
     current(){return this.config.landmarks?.[this.id]||{};}
     get active(){return !this.root.hidden;}
-    async prepare(id){
-      const c=this.config.landmarks?.[id];if(!c)return null;
-      if(!this.cache.has(c.image))this.cache.set(c.image,(async()=>{const image=new Image();image.src=new URL(c.image,document.baseURI).href;let timer;try{await Promise.race([image.decode(),new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('timeout')),this.config.visuals?.loadTimeout||4000))]);return image;}catch(_){return null;}finally{clearTimeout(timer);}})());
+    prepare(id){
+      const c=this.config.landmarks?.[id];if(!c)return Promise.resolve(null);
+      if(!this.cache.has(c.image)){
+        const startedAt=performance.now();
+        // Share in-flight and successful decodes; a failed task must remain retryable.
+        const task=Promise.resolve().then(async()=>{
+          try{const image=new Image();image.src=new URL(c.image,document.baseURI).href;await image.decode();return image;}
+          catch(_){if(this.cache.get(c.image)===task)this.cache.delete(c.image);return null;}
+        });
+        task.startedAt=startedAt;this.cache.set(c.image,task);
+      }
       return this.cache.get(c.image);
+    }
+    clearImageWait(){clearTimeout(this.imageTimer);this.imageTimer=null;this.imageAttempt=(this.imageAttempt||0)+1;}
+    loadSceneImage(id,token){
+      this.clearImageWait();const attempt=this.imageAttempt,c=this.config.landmarks[id];
+      const current=()=>token===this.token&&attempt===this.imageAttempt&&this.active&&this.id===id;
+      const fallback=document.getElementById('landmark-image-fallback');
+      this.ready=false;this.natural=null;this.image.hidden=true;
+      fallback.hidden=false;fallback.setAttribute('role','status');fallback.setAttribute('aria-live','polite');
+      fallback.replaceChildren(document.createTextNode('正在展开地标近景…'));
+      const task=this.prepare(id),remaining=Math.max(0,(this.config.visuals?.loadTimeout||4000)-(performance.now()-task.startedAt));
+      this.imageTimer=setTimeout(()=>{if(current())fallback.replaceChildren(document.createTextNode('画卷正在徐徐展开……'));},remaining);
+      task.then(image=>{
+        if(!current())return;
+        clearTimeout(this.imageTimer);this.imageTimer=null;this.ready=true;
+        if(image){
+          this.natural=image;this.image.src=image.src;this.image.alt=`${c.name}近景艺术化占位`;this.image.hidden=false;fallback.hidden=true;this.resize();
+          if(id==='binyang'&&this.root.dataset.state==='display')this.startFloatingPoem();
+        }else{
+          fallback.replaceChildren(document.createTextNode('画卷加载失败，请重试。 '));
+          const retry=document.createElement('button');retry.type='button';retry.textContent='重新加载';
+          retry.addEventListener('click',()=>{if(current())this.loadSceneImage(id,token);});fallback.append(retry);
+        }
+      });
     }
     show(id){
       if(this.active&&this.id===id)return;
@@ -72,8 +103,8 @@
         }
         this.root.append(gallery);
       }
-      this.image.style.objectPosition=c.display?.imagePosition||'50% 50%';this.image.hidden=true;document.getElementById('landmark-image-fallback').hidden=false;
-      this.prepare(id).then(image=>{if(token!==this.token||!this.active)return;this.ready=true;if(image){this.natural=image;this.image.src=image.src;this.image.alt=`${c.name}近景艺术化占位`;this.image.hidden=false;document.getElementById('landmark-image-fallback').hidden=true;this.resize();if(id==='binyang')this.startFloatingPoem();}else document.getElementById('landmark-image-fallback').textContent='近景素材待补充 · 可继续查看文化主题';});
+      this.image.style.objectPosition=c.display?.imagePosition||'50% 50%';
+      this.loadSceneImage(id,token);
     }
     positionFloatingPoem(){
       if(this.id!=='binyang'||!this.natural)return;
@@ -122,7 +153,7 @@
     }
     closeGame(){this.gameToken++;if(this.dispose){try{this.dispose();}catch(_){}this.dispose=null;}this.gameHost.replaceChildren();this.gameHost.hidden=true;delete this.gameHost.dataset.entry;delete this.root.dataset.zhangEntry;if(this.gameHost.dataset.game==='zhangjuzheng-memorial')delete this.gameHost.dataset.game;}
     displayAgain(){this.closeGame();this.root.dataset.state='display';if(this.id==='binyang')this.startFloatingPoem();}
-    hide(){this.stopFloatingPoem(true);this.token++;this.closeGame();if(this.dialog.open)this.dialog.close();this.root.hidden=true;document.body.dataset.landmarkActive='false';}
+    hide(){this.clearImageWait();this.stopFloatingPoem(true);this.token++;this.closeGame();if(this.dialog.open)this.dialog.close();this.root.hidden=true;document.body.dataset.landmarkActive='false';}
     destroy(){this.hide();document.removeEventListener('keydown',this.storyEscape);this.poetry.remove();document.removeEventListener('visibilitychange',this.poemVisibility);this.floatingPoem.remove();this.cache.clear();}
   };
 })();
