@@ -25,9 +25,8 @@
     exit.type = 'button';
     exit.className = 'journey-museum-exit';
     exit.textContent = '退出修复 · 返回博物馆';
-    exit.style.cssText = 'position:fixed;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:1000;padding:10px 14px;border:1px solid #b89458;border-radius:4px;background:#19131fee;color:#f0e4ce;font:13px sans-serif;cursor:pointer';
     exit.addEventListener('click', cancel);
-    document.body.append(exit);
+    document.getElementById('hallScene').append(exit);
     window.addEventListener('pagehide', () => { closed = true; }, { once: true });
   }
 })();

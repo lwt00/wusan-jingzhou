@@ -29,7 +29,7 @@ test('museum host validates origin/source/session, exact artifacts and start; co
 test('cancel before or during play never awards a stamp; late completion is ignored',()=>{for(const started of [false,true]){const h=host();if(started)h.send({action:'start'});h.send({action:'cancel'});h.send(win);assert.deepEqual(h.calls,['cancel']);h.dispose();}});
 test('embedded game starts with fresh repair progress; archive writes never touch main save or standalone session',()=>{
  const f=fixture();assert.deepEqual(Object.keys(f.core.S.done),[]);assert.ok(f.writes.every(w=>w.k==='chuyun-reborn-v2-full'));assert.equal(f.sent.length,0);
- f.window.ChuyunJourney.completeHall();assert.equal(f.sent.length,0);f.document.body.children[0].listeners.get('click')();assert.equal(f.sent.at(-1).data.action,'cancel');assert.equal(f.sent.at(-1).origin,'http://localhost');
+ f.window.ChuyunJourney.completeHall();assert.equal(f.sent.length,0);f.nodes.get('hallScene').children.find(el=>el.className==='journey-museum-exit').listeners.get('click')();assert.equal(f.sent.at(-1).data.action,'cancel');assert.equal(f.sent.at(-1).origin,'http://localhost');
 });
 test('real result and triple-drum nodes notify only after all three current-session artifacts and final hall',()=>{
  const f=fixture(),j=f.window.ChuyunJourney,h=host();j.begin();const artifacts=f.window.CHUYUN_DATA.artifacts;
@@ -58,6 +58,16 @@ test('museum completion reuses legal save/reveal/stamp sequence and restores on 
 });
 test('entry dependencies and host script order resolve',()=>{
  const html=read('chuyun-reborn-game/index.html');for(const m of html.matchAll(/(?:src|href)="([^"]+)"/g))assert.ok(existsSync(resolve(root,'chuyun-reborn-game',m[1].split('?')[0])),m[1]);
+ const compatible=read('chuyun-reborn-game/chuyun-reborn-game.html');for(const path of ['styles/game.css','scripts/journey-bridge.js']){const escaped=path.replaceAll('.','\\.');const pattern=new RegExp(escaped+'\\?v=([^\"]+)');assert.equal(html.match(pattern)?.[1],'20261021-nav1');assert.equal(compatible.match(pattern)?.[1],'20261021-nav1');}
  const c={window:{}};vm.runInNewContext(read('chuyun-reborn-game/scripts/data.js'),c);for(const a of c.window.CHUYUN_DATA.artifacts)assert.ok(existsSync(resolve(root,'chuyun-reborn-game',a.image)));
  const host=read('demo/journey/journey-demo.html');assert.ok(host.indexOf('landmark-view.js')<host.indexOf('landmark-museum-game.js'));assert.ok(host.indexOf('landmark-museum-game.js')<host.indexOf('src="journey-demo.js"'));
+});
+
+test('single hall-scoped exit cannot cover repair actions and preserves both return paths',()=>{
+ const f=fixture();f.window.ChuyunJourney.begin();const hall=f.nodes.get('hallScene');
+ const exits=hall.children.filter(el=>el.className==='journey-museum-exit');assert.equal(exits.length,1);assert.equal(f.document.body.children.length,0);assert.equal(exits[0].style.cssText,undefined);
+ const [cup,pig]=f.window.CHUYUN_DATA.artifacts;f.core.startArtifact(cup);f.core.S.choice='retain';f.core.showResult();const record=f.core.S.done.cup;
+ f.core.startArtifact(pig);assert.equal(hall.hidden,true);const attempt=f.core.attempt();f.c.confirm=()=>false;f.nodes.get('backHallBtn').onclick();assert.equal(f.core.attempt(),attempt);assert.equal(hall.hidden,true);
+ f.c.confirm=()=>true;f.nodes.get('backHallBtn').onclick();assert.equal(hall.hidden,false);assert.equal(f.core.S.done.cup,record);assert.equal(f.core.S.done.pigbox,undefined);assert.equal(f.sent.some(x=>x.data.action==='complete'||x.data.action==='cancel'),false);
+ exits[0].listeners.get('click')();exits[0].listeners.get('click')();const h=host();for(const {data}of f.sent)h.send(data);assert.deepEqual(h.calls,['cancel']);assert.equal(f.sent.filter(x=>x.data.action==='cancel').length,1);h.dispose();
 });
