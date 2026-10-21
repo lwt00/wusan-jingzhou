@@ -30,3 +30,6 @@
 @media(max-width:520px){.display-case{width:78vw;height:64vh}.hall-track{gap:12vw;padding-left:11vw;padding-right:11vw}.artifact-viewport{inset:91px 0 166px}.photo-plane{width:min(100vw,calc((100vh - 257px) * var(--photo-ratio,1.45)));height:min(calc(100vh - 257px),calc(100vw / var(--photo-ratio,1.45)))}.lower-panel{min-height:166px}.full-panel{inset:80px 0 0}.choice-buttons{grid-template-columns:1fr}.choice-card{padding:14px 12px}.museum-dialog{inset:2.5%;width:95%;height:95%;padding:18px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media(max-width:520px){.map-paper{width:94vw;padding:14px}.map-paper h2{font-size:20px}.map-svg{height:38vh}.handbook-features{grid-template-columns:1fr 1fr}.feature-card{padding:10px}.nine-lines{gap:10px;margin:14px}.nine-line{font-size:16px}.origin-map-panel{padding:8px}.poster-dialog canvas{width:100%}}
+
+/* 退出只属于展厅，避免全局浮层遮挡修复页右下角的流程按钮。 */
+#hallScene>.journey-museum-exit{position:absolute;z-index:41;left:16px;top:calc(56px + env(safe-area-inset-top,0px));min-height:40px;padding:6px 0;color:#baab96;font:13px/1.65 sans-serif;text-align:left}
