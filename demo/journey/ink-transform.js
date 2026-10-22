@@ -20,11 +20,27 @@ window.WusanInkTransform=class {
       sprite.position.set(this.box.left,this.box.top);sprite.width=this.box.width;sprite.height=this.box.height;this.root.addChild(sprite);
       return {canvas,ctx,pixels,texture,sprite};
     });
+    this.prepareMaskData();
     from.actor.mask=this.masks[0].sprite;to.actor.mask=this.masks[1].sprite;
     this.trace=new P.Graphics();this.root.addChild(this.trace);
     this.brush=new P.Sprite(this.options.brushTexture);this.brush.anchor.set(c.tip.x,c.tip.y);this.brush.scale.set(c.scale);this.root.addChild(this.brush);
     if(this.options.host){this.caption=document.createElement('p');this.caption.className='ink-transform-caption';this.caption.textContent=this.options.text||'';this.options.host.appendChild(this.caption);}
     this.draw();return true;
+  }
+  prepareMaskData(){
+    const W=this.masks[0].canvas.width,H=this.masks[0].canvas.height,b=this.box;
+    // Float64 preserves the original arithmetic; never cache a time-dependent distance.
+    const worldY=new Float64Array(H),jitter=new Float64Array(W),fiber=new Float64Array(W*H);
+    for(let x=0;x<W;x++){
+      const worldX=b.left+x/W*b.width;
+      jitter[x]=Math.abs(3.6*Math.sin(worldX*.11)+2.2*Math.sin(worldX*.29+1)+1.3*Math.sin(worldX*.83));
+    }
+    for(let y=0;y<H;y++){
+      worldY[y]=b.top+y/H*b.height;
+      for(let x=0;x<W;x++)fiber[y*W+x]=Math.pow(Math.max(0,Math.sin(y*1.71+x*.23)),14);
+    }
+    for(const m of this.masks)m.pixels.data.fill(255);
+    this.maskStatic={worldY,jitter,fiber};
   }
   draw(){
     if(!this.root)return;
@@ -35,18 +51,14 @@ window.WusanInkTransform=class {
     this.tipX=b.left+b.width*.5+7*Math.sin(sweep*Math.PI);
     // 羽化与飞白仅在笔尖后方出现：未扫过的像素始终完全不可见。
     const [a,z]=this.masks,W=a.canvas.width,H=a.canvas.height;
+    const {worldY,jitter,fiber}=this.maskStatic;
     let total=0;
     for(let y=0;y<H;y++){
-      const worldY=b.top+y/H*b.height;
       for(let x=0;x<W;x++){
-        const worldX=b.left+x/W*b.width;
-        const jitter=3.6*Math.sin(worldX*.11)+2.2*Math.sin(worldX*.29+1)+1.3*Math.sin(worldX*.83);
-        const d=worldY-this.boundary-Math.abs(jitter);
+        const d=worldY[y]-this.boundary-jitter[x];
         let v=s(0,c.feather,d);
-        if(d>0&&d<c.feather*1.8){const fiber=Math.pow(Math.max(0,Math.sin(y*1.71+x*.23)),14);v*=1-.18*fiber*(1-s(c.feather,c.feather*1.8,d));}
+        if(d>0&&d<c.feather*1.8)v*=1-.18*fiber[y*W+x]*(1-s(c.feather,c.feather*1.8,d));
         const i=(y*W+x)*4,alpha=Math.round(v*255);total+=v;
-        a.pixels.data[i]=a.pixels.data[i+1]=a.pixels.data[i+2]=255;
-        z.pixels.data[i]=z.pixels.data[i+1]=z.pixels.data[i+2]=255;
         a.pixels.data[i+3]=255-alpha;z.pixels.data[i+3]=alpha;
       }
     }
@@ -73,7 +85,7 @@ window.WusanInkTransform=class {
   dispose(){
     if(this.actorParent){this.options.from.actor.mask=null;this.options.to.actor.mask=null;this.actorParent.addChildAt(this.options.to.actor,Math.min(this.actorIndex,this.actorParent.children.length));this.actorParent=null;}
     this.caption?.remove();this.caption=null;this.root?.destroy({children:true});this.root=null;
-    for(const m of this.masks||[])m.texture.destroy(true);this.masks=null;this.brush=null;this.trace=null;
+    for(const m of this.masks||[])m.texture.destroy(true);this.masks=null;this.maskStatic=null;this.brush=null;this.trace=null;
   }
   destroy(){this.cancel();this.dispose();}
 };

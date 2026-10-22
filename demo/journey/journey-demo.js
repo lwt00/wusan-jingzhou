@@ -226,28 +226,33 @@ onExplore(){
   const light=layer(0);const glow=new Graphics().ellipse(680,80,510,250).fill({color:0xfffdf1,alpha:.07});light.addChild(glow);
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const smooth=t=>t*t*(3-2*t);
+  let viewportWidth=app.screen.width,viewportHeight=app.screen.height,cameraSignature='',mapRenderPending=false;
+  function setDomValue(target,key,value){if(target[key]!==value)target[key]=value;}
   function applyCamera(){
-    const width=host.clientWidth,height=host.clientHeight;
+    const signature=[viewportWidth,viewportHeight,viewScale,camera.x,camera.y,camera.zoom,mode,introActive,stationIndex,targetIndex,x,direction,travelSwitchDone,world.visible,landmarkView.active,travelScene.root.visible,transformExplorer.root.visible].join('|');
+    if(signature===cameraSignature)return;
+    cameraSignature=signature;
+    const width=viewportWidth,height=viewportHeight;
     const scale=viewScale*camera.zoom,drawW=W*scale,drawH=H*scale;
     world.scale.set(scale);
     world.x=drawW<=width?(width-drawW)/2:clamp(width*.5-camera.x*scale,width-drawW,0);
     world.y=drawH<=height?(height-drawH)/2:clamp(height*.43-camera.y*scale,height-drawH,0);
     // 真实建筑和地形严格对齐；云雾前景有微量视差，不移动整幅背景冒充景深。
     layers.forEach(({c,speed})=>{c.x=speed===.68?(camera.x-W/2)*.04:0;});
-    host.dataset.view=landmarkView.active?'first-person-landmark':(travelScene.root.visible||transformExplorer.root.visible)?'independent-travel':mode==='idle'?'overview':'landmark';
-    host.dataset.travelPhase=travelModes.includes(mode)?mode:'';
+    setDomValue(host.dataset,'view',landmarkView.active?'first-person-landmark':(travelScene.root.visible||transformExplorer.root.visible)?'independent-travel':mode==='idle'?'overview':'landmark');
+    setDomValue(host.dataset,'travelPhase',travelModes.includes(mode)?mode:'');
     labels.forEach(({label,x:lx,y:ly},i)=>{
       const px=world.x+lx*scale,py=world.y+ly*scale;
-      label.style.transform=`translate(${px}px,${py}px) translate(-50%,-100%)`;
-      label.hidden=mode!=='idle'||introActive;
+      setDomValue(label.style,'transform',`translate(${px}px,${py}px) translate(-50%,-100%)`);
+      setDomValue(label,'hidden',mode!=='idle'||introActive);
     });
     const landing=landmarkLanding();
-    marker.style.transform=`translate(${world.x+landing.x*scale}px,${world.y+(landing.y-42*landing.scale-9)*scale}px) translate(-50%,-100%)`;
-    marker.hidden=introActive||travelModes.includes(mode)||['focusing','awaiting-explore','exploring-demo','revealing'].includes(mode);
-    host.dataset.mode=mode;host.dataset.station=stations[stationIndex].id;
-    host.dataset.target=targetIndex===null?'':stations[targetIndex].id;
-    host.dataset.character=x.toFixed(2);host.dataset.direction=String(direction);
-    host.dataset.camera=JSON.stringify(camera);
+    setDomValue(marker.style,'transform',`translate(${world.x+landing.x*scale}px,${world.y+(landing.y-42*landing.scale-9)*scale}px) translate(-50%,-100%)`);
+    setDomValue(marker,'hidden',introActive||travelModes.includes(mode)||['focusing','awaiting-explore','exploring-demo','revealing'].includes(mode));
+    setDomValue(host.dataset,'mode',mode);setDomValue(host.dataset,'station',stations[stationIndex].id);
+    setDomValue(host.dataset,'target',targetIndex===null?'':stations[targetIndex].id);
+    setDomValue(host.dataset,'character',x.toFixed(2));setDomValue(host.dataset,'direction',String(direction));
+    setDomValue(host.dataset,'camera',JSON.stringify(camera));
   }
   function landmarkLanding(){
     const index=mode==='travel-arrive'&&travelSwitchDone&&targetIndex!==null?targetIndex:stationIndex;
@@ -255,6 +260,7 @@ onExplore(){
     return {...pose,id:station.id,x:sprite.x+(pose.u-sprite.anchor.x)*sprite.width,y:sprite.y+(pose.v-sprite.anchor.y)*sprite.height};
   }
   function renderPose(){
+    if(!world.visible){applyCamera();return;}
     const landing=landmarkLanding();
     // 地图人物只有入口待机；位置不从路线上插值，左右赶路完全由独立模块承担。
     person.position.set(landing.x,landing.y);person.scale.set(landing.scale*landing.face,landing.scale);
@@ -267,7 +273,7 @@ onExplore(){
     }
     const breath=reduced.matches?0:Math.sin(ambient*1.4);
     body.y=0;body.scale.y=1+breath*.007;arm.rotation=breath*.025;
-    marker.textContent='你在这里';host.dataset.landing=JSON.stringify({id:landing.id,x:landing.x,y:landing.y,scale:landing.scale});
+    setDomValue(marker,'textContent','你在这里');setDomValue(host.dataset,'landing',JSON.stringify({id:landing.id,x:landing.x,y:landing.y,scale:landing.scale}));
     applyCamera();
   }
   function updateFog(dt=0){
@@ -282,10 +288,14 @@ onExplore(){
       if(reduced.matches)f.openness=target;
       else f.openness+=(target-f.openness)*(1-Math.exp(-dt*4));
       if(Math.abs(target-f.openness)<.001)f.openness=target;
+    });
+    // Keep logical fog evolution identical while hidden, without pixels, uploads or sprite work.
+    if(!world.visible){mapRenderPending=true;return;}
+    fogPuffs.forEach((f,i)=>{
       const color=completed[i]?1:mode==='revealing'&&i===stationIndex?Math.min(1,.55+.45*revealProgress):f.openness*.85;
       if(f.colorAmount!==color){colorFilters[i].saturate(-.85*(1-color),false);buildingSprites[i].filters=color===1?[]:[colorFilters[i]];f.colorAmount=color;}
     });
-    paintFogMask(dt===0||reduced.matches);
+    paintFogMask(mapRenderPending||dt===0||reduced.matches);mapRenderPending=false;
     const allClear=completed.every(Boolean);fogLayer.visible=!allClear;
     fogPieces.forEach(f=>{f.g.x=f.base+(reduced.matches?0:Math.sin(ambient*f.speed+f.seed)*28);f.g.y=f.baseY+(reduced.matches?0:Math.sin(ambient*f.speed*.7+f.seed)*12);});
     clouds.forEach(({g,base},i)=>{g.alpha=allClear?0:.2;g.x=base+(reduced.matches?0:Math.sin(ambient*.09+i)*32);g.y=270+(i%3)*130;});
@@ -492,8 +502,9 @@ onExplore(){
     updateFog(dt);renderPose();
   });
   function resize(){
-    app.renderer.resize(host.clientWidth,host.clientHeight);
-    viewScale=Math.min(host.clientWidth/W,host.clientHeight/H);travelScene.resize();transformExplorer.resize();landmarkView.resize();if(transformEffect?.active)transformEffect.draw();
+    viewportWidth=host.clientWidth;viewportHeight=host.clientHeight;
+    app.renderer.resize(viewportWidth,viewportHeight);
+    viewScale=Math.min(viewportWidth/W,viewportHeight/H);travelScene.resize();transformExplorer.resize();landmarkView.resize();if(transformEffect?.active)transformEffect.draw();
     renderPose();app.render();
   }
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(host);resize();controls();
