@@ -16,7 +16,7 @@ test('iframe adapter validates window/origin, reloads sessions, handles timeout 
     globalThis.setTimeout=fn=>{const id=++serial;timeouts.set(id,fn);return id;};globalThis.clearTimeout=id=>timeouts.delete(id);
     const container=element('section');container.dataset.game='old';
     const dispose=mountZhangGame({container,levelId:'zhangjuzheng',complete(){finished++;},cancel(){cancelled++;},prepareIntro:async()=>{}});
-    const [frame,notice]=container.children;
+    let [frame,notice]=container.children;
     frame.listeners.get('load')();const first=frame.contentWindow.sent.at(-1).data;
     const receive=(data,extra={})=>listeners.get('message')?.({data,source:frame.contentWindow,origin:location.origin,...extra});
     const ready=message('GAME_READY',first.sessionId,'rdy',{runGeneration:0},'run');
@@ -32,7 +32,7 @@ test('iframe adapter validates window/origin, reloads sessions, handles timeout 
     receive(message('GAME_EXIT',first.sessionId,'old-exit',{outcome:'completed',completionMessageId:'done'},'run'));
     assert.equal(finished,0);
     for(const fn of [...timeouts.values()])fn();assert.equal(notice.hidden,false);assert.equal(notice.children[1].hidden,false);
-    notice.children[1].listeners.get('click')();frame.listeners.get('load')();const third=frame.contentWindow.sent.at(-1).data;
+    notice.children[1].listeners.get('click')();frame=container.children.at(-2);frame.listeners.get('load')();const third=frame.contentWindow.sent.at(-1).data;
     receive(message('GAME_READY',third.sessionId,'rdy2',{runGeneration:0},'run2'));
     receive({...complete,sessionId:third.sessionId,runId:'run2'});
     const exit=message('GAME_EXIT',third.sessionId,'exit',{outcome:'completed',completionMessageId:'done'},'run2');
@@ -54,11 +54,11 @@ test('readiness duplicates, retry, cancellation and reduced motion cannot reveal
     globalThis.document={baseURI:'http://localhost:1234/demo/journey/journey-demo.html',createElement:element};globalThis.location={origin:'http://localhost:1234',protocol:'http:'};
     globalThis.setInterval=globalThis.setTimeout=fn=>{timers.set(++serial,fn);return serial;};globalThis.clearInterval=globalThis.clearTimeout=id=>timers.delete(id);
     const container=element();const dispose=mountZhangGame({container,levelId:'zhangjuzheng',complete(){assert.fail('entry cannot complete the game');},cancel(){cancelled++;},prepareIntro:(_frame,options)=>new Promise(resolve=>preparations.push({resolve,...options}))});
-    const[frame,notice]=container.children;const load=()=>frame.listeners.get('load')();
+    let[frame,notice]=container.children;const load=()=>frame.listeners.get('load')();
     const ready=(id,run='run')=>listeners.get('message')({origin:location.origin,source:frame.contentWindow,data:message('GAME_READY',id,'ready-'+run,{runGeneration:0},run)});
     load();const first=frame.contentWindow.sent.at(-1).sessionId;ready(first);ready(first);
     assert.equal(preparations.length,1);assert.equal(frame.inert,true);assert.equal(container.dataset.entry,'loading');
-    notice.children[1].listeners.get('click')();assert.equal(preparations[0].signal.aborted,true);
+    notice.children[1].listeners.get('click')();frame=container.children.at(-2);assert.equal(preparations[0].signal.aborted,true);
     preparations[0].resolve();await Promise.resolve();assert.equal(container.dataset.entry,'loading');
     load();const second=frame.contentWindow.sent.at(-1).sessionId;ready(second,'run2');preparations[1].resolve();await Promise.resolve();
     assert.equal(container.dataset.entry,'shown');assert.equal(frame.inert,false);assert.equal(notice.hidden,true);
