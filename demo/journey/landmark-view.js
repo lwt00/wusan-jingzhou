@@ -35,6 +35,8 @@
       this.poetry=document.createElement('div');this.poetry.id='guanyu-poetry';this.poetry.hidden=true;this.root.append(this.poetry);
       this.floatingPoem=document.createElement('div');this.floatingPoem.id='binyang-floating-poem';this.floatingPoem.hidden=true;this.root.append(this.floatingPoem);this.poemFrame=0;this.poemTime=0;
       this.poemVisibility=()=>{if(this.id!=='binyang'||this.floatingPoem.hidden)return;if(document.hidden){cancelAnimationFrame(this.poemFrame);this.poemFrame=0;}else if(!this.poemStopped)this.playFloatingPoem();};document.addEventListener('visibilitychange',this.poemVisibility);
+      this.poemGeometryAnimation=e=>{if(e.animationName!=='landmark-push')return;this.poemGeometryAnimating=e.type==='animationstart';this.poemGeometry=null;};
+      for(const type of ['animationstart','animationend','animationcancel'])this.image.addEventListener(type,this.poemGeometryAnimation);
 
     }
     current(){return this.config.landmarks?.[this.id]||{};}
@@ -57,7 +59,7 @@
       this.clearImageWait();const attempt=this.imageAttempt,c=this.config.landmarks[id];
       const current=()=>token===this.token&&attempt===this.imageAttempt&&this.active&&this.id===id;
       const fallback=document.getElementById('landmark-image-fallback');
-      this.ready=false;this.natural=null;this.image.hidden=true;
+      this.ready=false;this.natural=null;this.poemGeometry=null;this.image.hidden=true;
       fallback.hidden=false;fallback.setAttribute('role','status');fallback.setAttribute('aria-live','polite');
       fallback.replaceChildren(document.createTextNode('正在展开地标近景…'));
       const task=this.prepare(id),remaining=Math.max(0,(this.config.visuals?.loadTimeout||4000)-(performance.now()-task.startedAt));
@@ -103,13 +105,23 @@
         }
         this.root.append(gallery);
       }
+      this.poemGeometry=null;this.poemGeometryAnimating=id==='binyang'&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
       this.image.style.objectPosition=c.display?.imagePosition||'50% 50%';
       this.loadSceneImage(id,token);
     }
+    writePoemStyle(node,key,value){
+      this.poemStyles??=new WeakMap();let values=this.poemStyles.get(node);
+      if(!values){values=new Map();this.poemStyles.set(node,values);}
+      if(values.get(key)===value)return;values.set(key,value);node.style[key]=value;
+    }
     positionFloatingPoem(){
       if(this.id!=='binyang'||!this.natural)return;
-      const r=this.image.getBoundingClientRect(),scale=Math.min(r.width/this.natural.naturalWidth,r.height/this.natural.naturalHeight),w=this.natural.naturalWidth*scale,h=this.natural.naturalHeight*scale,a=this.current().poetryCycle.anchor;
-      this.floatingPoem.style.left=`${r.left+(r.width-w)/2+w*a.u}px`;this.floatingPoem.style.top=`${r.top+(r.height-h)/2+h*a.v}px`;
+      // The image's push animation changes its rect without a resize. Track it until animationend.
+      if(!this.poemGeometry||this.poemGeometryAnimating){
+        const r=this.image.getBoundingClientRect(),scale=Math.min(r.width/this.natural.naturalWidth,r.height/this.natural.naturalHeight),w=this.natural.naturalWidth*scale,h=this.natural.naturalHeight*scale,a=this.current().poetryCycle.anchor;
+        this.poemGeometry={left:`${r.left+(r.width-w)/2+w*a.u}px`,top:`${r.top+(r.height-h)/2+h*a.v}px`};
+      }
+      this.writePoemStyle(this.floatingPoem,'left',this.poemGeometry.left);this.writePoemStyle(this.floatingPoem,'top',this.poemGeometry.top);
     }
     startFloatingPoem(){
       if(this.id!=='binyang'||!this.current().poetryCycle)return;
@@ -122,12 +134,13 @@
     playFloatingPoem(){
       cancelAnimationFrame(this.poemFrame);let last=performance.now();
       const tick=now=>{if(this.poemStopped||this.id!=='binyang'||!this.active||this.root.dataset.state!=='display'||document.hidden){this.poemFrame=0;return;}this.poemTime+=Math.min(.1,(now-last)/1000);last=now;const c=this.current().poetryCycle,t=Math.max(0,this.poemTime-c.initialDelay),span=c.holdSeconds+c.fadeSeconds,index=Math.floor(t/span)%c.groups.length,phase=t%span,blend=Math.max(0,(phase-c.holdSeconds)/c.fadeSeconds),enter=Math.min(1,t/c.fadeSeconds);
-        this.poemGroups.forEach((p,i)=>{const alpha=i===index?(1-blend)*enter:i===(index+1)%c.groups.length?blend:0;p.style.opacity=String(alpha*c.opacity);p.style.filter=`blur(${(1-alpha)*1.1}px)`;p.setAttribute('aria-hidden',String(alpha<.5));});
+        this.poemGroups.forEach((p,i)=>{const alpha=i===index?(1-blend)*enter:i===(index+1)%c.groups.length?blend:0;this.writePoemStyle(p,'opacity',String(alpha*c.opacity));this.writePoemStyle(p,'filter',`blur(${(1-alpha)*1.1}px)`);const hidden=String(alpha<.5);if(p.getAttribute('aria-hidden')!==hidden)p.setAttribute('aria-hidden',hidden);});
         this.floatingPoem.style.setProperty('--poem-float',`${Math.sin(t/c.floatSeconds*Math.PI*2)*c.floatAmplitude}px`);this.positionFloatingPoem();this.poemFrame=requestAnimationFrame(tick);
       };this.poemFrame=requestAnimationFrame(tick);
     }
     stopFloatingPoem(hide=false){cancelAnimationFrame(this.poemFrame);this.poemFrame=0;this.poemStopped=true;if(hide)this.floatingPoem.hidden=true;}
     resize(){
+      this.poemGeometry=null;
       if(!this.natural||!this.active)return;
       const push=Math.min(1.045,Math.max(1,this.current().display?.pushScale||this.config.visuals?.pushScale||1.025)),dpr=this.current().display?.fullScene?1:Math.max(1,devicePixelRatio);
       this.root.style.setProperty('--landmark-image-width',`${Math.min(this.current().display?.maxWidth||680,this.natural.naturalWidth/dpr/push)}px`);
@@ -153,7 +166,7 @@
     }
     closeGame(){this.gameToken++;if(this.dispose){try{this.dispose();}catch(_){}this.dispose=null;}this.gameHost.replaceChildren();this.gameHost.hidden=true;delete this.gameHost.dataset.entry;delete this.root.dataset.zhangEntry;if(this.gameHost.dataset.game==='zhangjuzheng-memorial')delete this.gameHost.dataset.game;}
     displayAgain(){this.closeGame();this.root.dataset.state='display';if(this.id==='binyang')this.startFloatingPoem();}
-    hide(){this.clearImageWait();this.stopFloatingPoem(true);this.token++;this.closeGame();if(this.dialog.open)this.dialog.close();this.root.hidden=true;document.body.dataset.landmarkActive='false';}
-    destroy(){this.hide();document.removeEventListener('keydown',this.storyEscape);this.poetry.remove();document.removeEventListener('visibilitychange',this.poemVisibility);this.floatingPoem.remove();this.cache.clear();}
+    hide(){this.clearImageWait();this.stopFloatingPoem(true);this.poemGeometry=null;this.poemGeometryAnimating=false;this.token++;this.closeGame();if(this.dialog.open)this.dialog.close();this.root.hidden=true;document.body.dataset.landmarkActive='false';}
+    destroy(){this.hide();document.removeEventListener('keydown',this.storyEscape);this.poetry.remove();document.removeEventListener('visibilitychange',this.poemVisibility);for(const type of ['animationstart','animationend','animationcancel'])this.image.removeEventListener(type,this.poemGeometryAnimation);this.floatingPoem.remove();this.cache.clear();}
   };
 })();
