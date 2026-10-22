@@ -6,10 +6,13 @@ window.WusanTravelScene=class {
   }
   async texture(src){
     if(!src)return null;
-    if(!this.cache.has(src))this.cache.set(src,(async()=>{
-      const image=new Image();image.src=new URL(src,document.baseURI).href;
-      let timer;try{await Promise.race([image.decode(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('timeout')),this.config.loadTimeout||4500);})]);return this.P.Texture.from(image);}finally{clearTimeout(timer);}
-    })());
+    if(!this.cache.has(src)){
+      const task=(async()=>{
+        const image=new Image();image.src=new URL(src,document.baseURI).href;
+        let timer;try{await Promise.race([image.decode(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('timeout')),this.config.loadTimeout||4500);})]);return this.P.Texture.from(image);}finally{clearTimeout(timer);}
+      })().catch(error=>{if(this.cache.get(src)===task)this.cache.delete(src);throw error;});
+      this.cache.set(src,task);
+    }
     return this.cache.get(src);
   }
   async prepare(from,to,direction){
@@ -17,20 +20,27 @@ window.WusanTravelScene=class {
     const id=this.config.routes?.[`${from}->${to}`]||this.config.defaultScene;
     const basic=this.config.scenes?.[this.config.defaultScene]||{},specific=this.config.scenes?.[id]||basic;
     const slotNames=['sky','far','middle','road','foreground','character'];
-    this.scene={...basic,...specific,slots:Object.fromEntries(slotNames.map(name=>[name,{...(basic.slots?.[name]||{}),...(specific.slots?.[name]||{})}]))};
-    this.scene.width=this.scene.width||1600;this.scene.height=this.scene.height||900;this.scene.groundY=this.scene.groundY??640;
+    const scene={...basic,...specific,slots:Object.fromEntries(slotNames.map(name=>[name,{...(basic.slots?.[name]||{}),...(specific.slots?.[name]||{})}]))};
+    scene.width=scene.width||1600;scene.height=scene.height||900;scene.groundY=scene.groundY??640;
+    let slotFailed=false;
+    const loadSlot=async name=>{try{return await this.texture(scene.slots[name].src);}catch(_){slotFailed=true;return null;}};
+    const sceneryLoading=Promise.all((scene.scenery||[]).map(async item=>{try{return {item,texture:await this.texture(item.src)};}catch(_){return {item,texture:null};}}));
+    // Start independent animation frames now, rather than after the environment wait.
+    const frameConfig=scene.slots.character.frames;
+    const framesLoading=frameConfig?.sources?Promise.all(frameConfig.sources.map(async src=>{try{return await this.texture(src);}catch(_){return null;}})):Promise.resolve(null);
+    // Legacy foreground becomes invisible only when at least one scenery texture succeeds.
+    // Keep its existing fallback when all scenery fails or a configuration makes it visible.
+    const foregroundLoading=scene.legacyLayerOpacity?.foreground===0?
+      sceneryLoading.then(items=>token!==this.token||items.some(s=>s.texture)?null:loadSlot('foreground')):loadSlot('foreground');
+    const slotsLoading=Promise.all(slotNames.map(name=>name==='foreground'?foregroundLoading:loadSlot(name)));
+    const [loaded,sceneryLoaded,frames]=await Promise.all([slotsLoading,sceneryLoading,framesLoading]);
+    if(token!==this.token)return false;
+    this.scene=scene;this.warning=slotFailed?'部分赶路素材未加载，已使用开发占位图层':'';
     this.direction=direction;this.cameraX=0;this.walkDistance=0;this.previousDistance=0;this.frameElapsed=0;this.framePosition=0;this.environmentTime=0;
-    const sceneryLoading=Promise.all((this.scene.scenery||[]).map(async item=>{try{return {item,texture:await this.texture(item.src)};}catch(_){return {item,texture:null};}}));
-    const loaded=await Promise.all(slotNames.map(async name=>{try{return await this.texture(this.scene.slots[name].src);}catch(_){this.warning='部分赶路素材未加载，已使用开发占位图层';return null;}}));
-    if(token!==this.token)return false;
-    const sceneryLoaded=await sceneryLoading;
-    if(token!==this.token)return false;
     if(sceneryLoaded.some(s=>!s.texture))this.warning='部分沿途景物未加载，已保留基础赶路场景';
     // 独立PNG序列缓存加载；缺帧则整体回退普通探索者，不能用半套动作。
-    let sourceFrames=null;
-    const frameConfig=this.scene.slots.character.frames;
+    let sourceFrames=frames;
     if(frameConfig?.sources){
-      sourceFrames=await Promise.all(frameConfig.sources.map(async src=>{try{return await this.texture(src);}catch(_){return null;}}));
       if(sourceFrames.length!==frameConfig.count||sourceFrames.some(t=>!t)){
         sourceFrames=null;loaded[5]=null;this.warning='骑马动作素材未齐，暂用普通探索者';
       }else loaded[5]=sourceFrames[0];
