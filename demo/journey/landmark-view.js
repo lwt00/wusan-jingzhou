@@ -70,6 +70,7 @@
         if(image){
           this.natural=image;this.image.src=image.src;this.image.alt=`${c.name}近景艺术化占位`;this.image.hidden=false;fallback.hidden=true;this.resize();
           if(id==='binyang'&&this.root.dataset.state==='display')this.startFloatingPoem();
+          globalThis.WusanSceneAudio?.landmarkReady(this);
         }else{
           fallback.replaceChildren(document.createTextNode('画卷加载失败，请重试。 '));
           const retry=document.createElement('button');retry.type='button';retry.textContent='重新加载';
@@ -107,6 +108,7 @@
       }
       this.poemGeometry=null;this.poemGeometryAnimating=id==='binyang'&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
       this.image.style.objectPosition=c.display?.imagePosition||'50% 50%';
+      globalThis.WusanSceneAudio?.beginLandmark(this);
       this.loadSceneImage(id,token);
     }
     writePoemStyle(node,key,value){
@@ -150,6 +152,7 @@
       this.root.dataset.stage=stage;this.root.dataset.fog=done?'complete':this.started?'exploring':'arrived';this.start.disabled=stage!=='awaiting-explore';this.learn.disabled=stage!=='awaiting-explore';this.start.textContent=done?'再次探索':'开始探索';document.getElementById('landmark-back').disabled=!['awaiting-explore','exploring-demo'].includes(stage);
     }
     openGame(){
+      globalThis.WusanSceneAudio?.endLandmark(this);
       this.closeGame();if(this.id==='zhangjuzheng'){this.gameHost.dataset.game='zhangjuzheng-memorial';this.gameHost.dataset.entry='loading';this.root.dataset.zhangEntry='loading';}this.started=true;this.root.dataset.fog=this.root.dataset.fog==='complete'?'complete':'exploring';this.root.dataset.state='game';this.gameHost.hidden=false;
       const c=this.current(),adapter=c.game?.enabled&&games.get(c.game.id),session=++this.gameToken,id=this.id;
       const placeholder=message=>{
@@ -166,7 +169,7 @@
     }
     closeGame(){this.gameToken++;if(this.dispose){try{this.dispose();}catch(_){}this.dispose=null;}this.gameHost.replaceChildren();this.gameHost.hidden=true;delete this.gameHost.dataset.entry;delete this.root.dataset.zhangEntry;if(this.gameHost.dataset.game==='zhangjuzheng-memorial')delete this.gameHost.dataset.game;}
     displayAgain(){this.closeGame();this.root.dataset.state='display';if(this.id==='binyang')this.startFloatingPoem();}
-    hide(){this.clearImageWait();this.stopFloatingPoem(true);this.poemGeometry=null;this.poemGeometryAnimating=false;this.token++;this.closeGame();if(this.dialog.open)this.dialog.close();this.root.hidden=true;document.body.dataset.landmarkActive='false';}
+    hide(){globalThis.WusanSceneAudio?.endLandmark(this);this.clearImageWait();this.stopFloatingPoem(true);this.poemGeometry=null;this.poemGeometryAnimating=false;this.token++;this.closeGame();if(this.dialog.open)this.dialog.close();this.root.hidden=true;document.body.dataset.landmarkActive='false';}
     destroy(){this.hide();document.removeEventListener('keydown',this.storyEscape);this.poetry.remove();document.removeEventListener('visibilitychange',this.poemVisibility);for(const type of ['animationstart','animationend','animationcancel'])this.image.removeEventListener(type,this.poemGeometryAnimation);this.floatingPoem.remove();this.cache.clear();}
   };
 })();
