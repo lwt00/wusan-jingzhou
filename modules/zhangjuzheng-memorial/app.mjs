@@ -347,6 +347,7 @@ function selectChoice(choice, selectedButton) {
 
 function applySeal() {
   if (state.phase !== 'choosing' || !selectedChoice || !reading || transitioning || writingLocked) return;
+  window.WusanUIAudio?.confirm();
   const { choice, selectedButton } = selectedChoice;
   const memorial = MAINLINE_MEMORIALS[state.memorialIndex];
   const text = getTicketText(memorial.id, memorial.choices.indexOf(choice));

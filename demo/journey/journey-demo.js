@@ -203,7 +203,7 @@ onExplore(){
 },
     onBack:returnToOverview,
     onDisplay(){landmarkView.displayAgain();setPhase('awaiting-explore','请选择开始探索，或返回长卷');begin.focus({preventScroll:true});},
-    onComplete(id){if(mode!=='exploring-demo'||id!==stations[stationIndex].id)return;if(!completed[stationIndex])saveProgress(stationIndex);landmarkView.closeGame();travelSwitchDone=false;setPhase('landmark-reveal-return','探索完成 · 返回长卷揭晓文化印记');if(reduced.matches)endLandmarkTransition();}
+    onComplete(id){if(mode!=='exploring-demo'||id!==stations[stationIndex].id)return;if(!completed[stationIndex]){globalThis.WusanUIAudio?.confirm();saveProgress(stationIndex);}landmarkView.closeGame();travelSwitchDone=false;setPhase('landmark-reveal-return','探索完成 · 返回长卷揭晓文化印记');if(reduced.matches)endLandmarkTransition();}
   });
   const travelTransition=document.getElementById('travel-transition'),travelNote=document.getElementById('travel-scene-note');
   const travelTiming=window.WusanTravelConfig.travelTiming;

@@ -12,6 +12,7 @@ window.MuseumAudio=(()=>{
   return{
     unlock(){const c=get();if(c.state==='suspended')c.resume();master.gain.setTargetAtTime(levels[level],c.currentTime,.06);startAmbient()},
     cycleLevel(){level=(level+1)%3;const c=get();if(c.state==='suspended')c.resume();master.gain.setTargetAtTime(levels[level],c.currentTime,.06);level===0?stopAmbient():startAmbient();return level},
+    setSharedMuted(muted){if(muted){if(level) this.previousLevel=level;level=0;stopAmbient()}else if(level===0){level=this.previousLevel||2}if(ctx&&master)master.gain.setTargetAtTime(levels[level],ctx.currentTime,.06)},
     toggle(){return this.cycleLevel()>0},
     isOn(){return level>0},
     door(){noise(.9,180,.075,.5);tone(116,.8,'sine',.07,-32)},
@@ -19,7 +20,7 @@ window.MuseumAudio=(()=>{
     light(){tone(190,.08,'sine',.035);tone(720,.45,'sine',.035,60,.06)},
     brush(){noise(.085,2600,.018,.6)},swab(){noise(.06,950,.014,1.7)},scrape(){noise(.055,3800,.02,2.2)},
     wrong(){tone(150,.18,'sawtooth',.045,-45)},
-    snap(){tone(523,.12,'triangle',.07);tone(784,.25,'sine',.045,0,.05)},
+    snap(){if(window.WusanUIAudio){window.WusanUIAudio.confirm();return}tone(523,.12,'triangle',.07);tone(784,.25,'sine',.045,0,.05)},
     page(){noise(.14,1550,.022,.8)},
     hotspot(){tone(660,.25,'sine',.045);tone(990,.55,'sine',.035,0,.1)},
     chime(i=0){const scale=[392,440,523,587,659];tone(scale[i%scale.length],1.1,'sine',.075);tone(scale[i%scale.length]*2,1.25,'sine',.025)},
@@ -28,3 +29,11 @@ window.MuseumAudio=(()=>{
     finale(){[392,523,587,659,784].forEach((f,i)=>{tone(f,1.25,'sine',.06,0,i*.18);tone(f*2,1.1,'sine',.018,0,i*.18)})}
   };
 })();
+
+// Existing museum sounds claim the gesture so generic button sounds cannot layer over them.
+if(window.WusanUIAudio){
+ const A=window.MuseumAudio,ui=window.WusanUIAudio;
+ for(const key of Object.keys(A)){if(['unlock','cycleLevel','toggle','isOn','snap','setSharedMuted'].includes(key))continue;const fn=A[key];A[key]=function(...args){ui.exclusive();return fn.apply(this,args);};}
+ const cycle=A.cycleLevel;A.cycleLevel=function(){const level=cycle.call(this);ui.setMuted(level===0);return level;};
+ ui.onChange(muted=>{A.setSharedMuted(muted);const label=muted?'静':A.isOn()?'声':'静';for(const id of ['soundBtn','artifactSoundBtn']){const b=document.getElementById(id);if(b)b.textContent=label;}});
+}

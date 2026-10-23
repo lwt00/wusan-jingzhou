@@ -9,7 +9,7 @@ function createBinyangSounds() {
     }
   }
   function play(name, volume) {
-    if (muted) return;
+    if (muted || globalThis.WusanUIAudio?.state.muted) return;
     try {
       let voice = voices.get(name);
       if (!voice) {
@@ -29,5 +29,5 @@ function createBinyangSounds() {
     } catch (_) { const voice = voices.get(name); if (voice) voice.pending = false; }
   }
   return {arrow: () => play('arrow', 0.4), drum: () => play('battle-drum', 0.5), stop,
-    setMuted(value) { muted = !!value; if (muted) stop(); }};
+    setMuted(value) { muted = !!value; globalThis.WusanUIAudio?.setMuted(muted); if (muted) stop(); }};
 }

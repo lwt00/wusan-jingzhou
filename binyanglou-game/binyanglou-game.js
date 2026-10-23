@@ -102,6 +102,7 @@ startBtn.addEventListener('click',()=>{if(overlayMode==='pause')togglePause(fals
 window.addEventListener('message',e=>{if(parent===window||e.source!==parent||e.origin!==location.origin||e.data?.source!=='binyanglou-host')return;if(journeyEmbedded&&(e.data.channel!=='wusan-binyang'||e.data.session!==journeySession))return;if(e.data.type==='start'||e.data.type==='reset')start();if(e.data.type==='pause')togglePause(true);if(e.data.type==='resume')togglePause(false);if(e.data.type==='get-state')sendToHost({source:'binyanglou-game',type:'state',...getState()})});
 let soundMuted=false;
 $('sound-toggle').addEventListener('click',()=>{soundMuted=!soundMuted;sounds.setMuted(soundMuted);$('sound-toggle').textContent=soundMuted?'音效：关':'音效：开';$('sound-toggle').setAttribute('aria-pressed',String(soundMuted));});
+window.WusanUIAudio?.onChange(muted=>{soundMuted=muted;sounds.setMuted(muted);$('sound-toggle').textContent=muted?'音效：关':'音效：开';$('sound-toggle').setAttribute('aria-pressed',String(muted));});
 window.addEventListener('pagehide',()=>sounds.stop());
 document.addEventListener('visibilitychange',()=>{if(document.hidden)sounds.stop();});
 window.BinyanglouGame=Object.freeze({version:'11.4.2',start,reset:start,pause:()=>togglePause(true),resume:()=>togglePause(false),getState});reset();emit('ready');raf=requestAnimationFrame(frame);enemyRaf=requestAnimationFrame(enemyLoop);
