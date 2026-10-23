@@ -1,6 +1,7 @@
 'use strict';
 (() => {
   const engine = createHuarongEngine();
+  const moveSound = createHuarongMoveSound();
   const $ = id => document.getElementById(id);
   const directionNames = { left: '左', up: '上', down: '下', right: '右' };
   // Drop your generated images into assets/ and set a relative path here.
@@ -137,7 +138,7 @@
     revealOne(index, previous);
     message(revealed.size < 20 ? `落子有定，迷雾又散一格。已揭开 ${revealed.size} / 20 格。` : '迷雾已散，一键通关已解锁。也可继续自行解局。');
     if (result.won) complete();
-    render(); return true;
+    render(); moveSound.play(!automatic); return true;
   }
   function undo() {
     if (!history.length || paused || won || autoMode) return;
@@ -147,6 +148,7 @@
     message('退一步，重新寻路。棋局与迷雾已恢复，用时继续。'); render();
   }
   function reset() {
+    moveSound.stop();
     stopAuto();
     stopWorker(); version++; hintPath = null; state = engine.initial(); revealed = new Set(); history = [];
     selected = null; steps = 0; started = false; paused = false; won = false; elapsed = 0; runningSince = 0;
@@ -156,6 +158,7 @@
     message('拖动棋子，或选中后按键盘方向键。'); render();
   }
   function pause(showDialog = true) {
+    moveSound.stop();
     if (!started || paused || won) return;
     clearTimeout(autoTimer); autoTimer = null;
     if (autoMode === 'planning') stopAuto();
@@ -267,6 +270,15 @@
     const dir = { ArrowLeft: 'left', ArrowUp: 'up', ArrowDown: 'down', ArrowRight: 'right' }[event.key];
     if (dir && selected !== null) { event.preventDefault(); if (!event.repeat) movePiece(selected, dir); }
   });
+  $('sound-btn').onclick = () => {
+    const muted = $('sound-btn').getAttribute('aria-pressed') !== 'true';
+    moveSound.setMuted(muted);
+    $('sound-btn').setAttribute('aria-pressed', String(muted));
+    $('sound-btn').setAttribute('aria-label', muted ? '开启棋块移动音效' : '静音棋块移动音效');
+    $('sound-btn').textContent = muted ? '音效：关' : '音效：开';
+  };
+  window.WusanUIAudio?.onChange(muted => { moveSound.setMuted(muted); $('sound-btn').setAttribute('aria-pressed',String(muted)); $('sound-btn').textContent=muted?'音效：关':'音效：开'; });
+  window.addEventListener('pagehide', () => moveSound.stop());
   $('undo-btn').onclick = undo; $('hint-btn').onclick = requestHint;
   $('pause-btn').onclick = () => pause(); $('resume-btn').onclick = resume;
   $('pause-dialog').addEventListener('cancel', event => { event.preventDefault(); resume(); });
