@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="engine.js" defer></script>
   <script src="clouds.js" defer></script>
+  <script src="move-sound.js" defer></script>
   <script src="game.js" defer></script>
   <script src="journey-bridge.js" defer></script>
 </head>
@@ -33,7 +34,7 @@
       </aside>
 
       <div class="play-column">
-        <div class="board-heading"><button class="text-button" data-open="rules">玩法说明 <span class="circle-question">?</span></button></div>
+        <div class="board-heading"><button class="text-button" id="sound-btn" type="button" aria-pressed="false" aria-label="静音棋块移动音效">音效：开</button><button class="text-button" data-open="rules">玩法说明 <span class="circle-question">?</span></button></div>
         <div class="board-surround"><div class="board-corner corner-tl"></div><div class="board-corner corner-tr"></div><div class="board-corner corner-bl"></div><div class="board-corner corner-br"></div>
           <div class="board" id="board" role="group" aria-label="四列五行华容道棋盘"><div class="board-grid" aria-hidden="true"></div><div id="piece-layer"></div><div id="fog-layer" aria-hidden="true"></div><div class="board-hint" id="board-hint" aria-hidden="true"></div></div>
           <div class="exit-gate"><span>华 容 道</span><span class="exit-arrow">↓</span></div>

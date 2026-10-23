@@ -19,7 +19,7 @@ dialog{padding:42px 40px;border:1px solid #b1b397;background:#eee9dc;color:var(-
 
 .unlock-note{text-align:center;font-size:9px;color:#7b8970;letter-spacing:.5px;margin:11px 0 0;line-height:1.6}.control-bar #auto-solve-btn.unlocked:not(:disabled){color:#30573e;font-weight:600;background:#d8dfca;border-radius:2px}.board.auto-solving .piece:disabled{opacity:1;cursor:default}
 
-.board-heading,.rating-card .section-heading{justify-content:flex-end}
+.board-heading{justify-content:space-between;gap:12px}.board-heading button{white-space:nowrap}.rating-card .section-heading{justify-content:flex-end}
 
 main{padding-bottom:36px}.site-header nav{margin-right:auto;margin-left:auto}.brand{flex-shrink:0}@media(max-width:590px){.site-header nav{margin-right:0;margin-left:auto}}
 
